@@ -1,0 +1,14 @@
+[package]
+name = "nexus_example_addon"
+version = "0.1.0"
+edition = "2021"
+authors = ["Zerthox"]
+description = "Example Nexus addon"
+repository = "https://github.com/zerthox/nexus-rs"
+
+[dependencies]
+log = "0.4.21"
+nexus = { path = "../nexus", features = ["log"] }
+
+[lib]
+crate-type = ["cdylib"] # nexus addons are dynamic system libraries (dll)

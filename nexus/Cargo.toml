@@ -1,0 +1,28 @@
+[package]
+name = "nexus"
+version = "0.1.0"
+edition = "2021"
+authors = ["Zerthox"]
+description = "Rust bindings for Raidcore Nexus addons"
+repository = "https://github.com/zerthox/nexus-rs"
+rust-version = "1.71.0"
+
+[dependencies]
+bitflags = "2.4.2"
+imgui = { package = "arcdps-imgui", version = "0.8.0", features = ["tables-api"] }
+log = { version = "0.4.21", features = ["std"], optional = true }
+nexus_codegen = { path = "../nexus_codegen" }
+num_enum = "0.7.2"
+serde = { version = "1.0.197", features = ["derive"], optional = true }
+strum = { version = "0.26.2", features = ["derive"], optional = true }
+
+[dependencies.windows]
+version = "0.54.0"
+features = [
+    "System",
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_LibraryLoader",
+    "Win32_Graphics_Dxgi",
+    "Win32_Graphics_Direct3D11",
+]
