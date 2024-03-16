@@ -1,9 +1,8 @@
-pub mod data;
+pub mod data_link;
 pub mod event;
 pub mod gui;
 pub mod hook;
 pub mod keybind;
-pub mod link;
 pub mod localization;
 pub mod log;
 pub mod paths;
@@ -11,7 +10,7 @@ pub mod quick_access;
 pub mod texture;
 
 use self::{
-    data::{RawDataGetResource, RawDataShareResource},
+    data_link::{RawDataGetResource, RawDataShareResource},
     event::{RawEventRaise, RawEventRaiseNotification, RawEventSubscribe},
     gui::{ImguiFree, ImguiMalloc, RawGuiAddRender, RawGuiRemRender},
     hook::{RawHookCreate, RawHookDisable, RawHookEnable, RawHookRemove},
@@ -93,11 +92,15 @@ pub struct AddonApi {
     pub translate_to: LocalizationTranslateTo,
 }
 
+unsafe impl Sync for AddonApi {}
+
 impl AddonApi {
+    #[inline]
     pub fn get_swap_chain(&self) -> Option<&IDXGISwapChain> {
         unsafe { self.swap_chain.as_ref() }
     }
 
+    #[inline]
     pub fn get_d3d11_device(&self) -> Option<ID3D11Device> {
         self.get_swap_chain()
             .and_then(|swap_chain| unsafe { swap_chain.GetDevice() }.ok())
