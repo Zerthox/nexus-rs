@@ -67,11 +67,8 @@ impl AddonInfo {
     pub fn generate_update_link(&self) -> TokenStream {
         self.update_link
             .as_ref()
-            .map(|url| {
-                let url = as_char_ptr(url);
-                quote! {::std::option::Option::Some(#url) }
-            })
-            .unwrap_or_else(|| quote! { ::std::option::Option::None })
+            .map(as_char_ptr)
+            .unwrap_or_else(|| quote! { ::std::ptr::null() })
     }
 
     pub fn generate_export(&self) -> TokenStream {
@@ -103,8 +100,8 @@ impl AddonInfo {
                     version: #version,
                     author: #author,
                     description: #description,
-                    load,
-                    unload: ::std::option::Option::Some(unload),
+                    load: self::load_wrapper,
+                    unload: ::std::option::Option::Some(self::unload_wrapper),
                     flags: #flags,
                     provider: #provider,
                     update_link: #update_link,
@@ -115,12 +112,12 @@ impl AddonInfo {
                     &ADDON_DEF
                 }
 
-                unsafe extern "C-unwind" fn load(api: *const ::nexus::api::AddonApi) {
+                unsafe extern "C-unwind" fn load_wrapper(api: *const ::nexus::api::AddonApi) {
                     ::nexus::__macro::init(api);
                     #load
                 }
 
-                unsafe extern "C-unwind" fn unload() {
+                unsafe extern "C-unwind" fn unload_wrapper() {
                     #unload
                 }
             }

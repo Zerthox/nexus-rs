@@ -39,7 +39,7 @@ pub struct AddonDefinition {
     pub provider: UpdateProvider,
 
     /// Link to the update resource.
-    pub update_link: Option<*const c_char>,
+    pub update_link: *const c_char,
 }
 
 unsafe impl Send for AddonDefinition {}
