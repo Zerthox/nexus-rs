@@ -9,10 +9,12 @@ rust-version = "1.71.0"
 
 [dependencies]
 bitflags = "2.4.2"
+detour = { version = "0.8.1", default-features = false, optional = true }
 imgui = { package = "arcdps-imgui", version = "0.8.0", features = ["tables-api"] }
 log = { version = "0.4.21", features = ["std"], optional = true }
 nexus_codegen = { path = "../nexus_codegen" }
 num_enum = "0.7.2"
+once_cell = "1.19.0"
 serde = { version = "1.0.197", features = ["derive"], optional = true }
 strum = { version = "0.26.2", features = ["derive"], optional = true }
 
@@ -26,3 +28,6 @@ features = [
     "Win32_Graphics_Dxgi",
     "Win32_Graphics_Direct3D11",
 ]
+
+[features]
+hook = ["dep:detour"]
