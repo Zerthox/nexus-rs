@@ -73,8 +73,8 @@ impl AddonInfo {
 
     pub fn generate_export(&self) -> TokenStream {
         let signature = &self.signature;
-
-        let name = as_char_ptr(env_var("CARGO_PKG_NAME"));
+        let name = env_var("CARGO_PKG_NAME").to_token_stream();
+        let name_ptr = as_char_ptr(&name);
         let author = as_char_ptr(env_var("CARGO_PKG_AUTHORS"));
         let description = as_char_ptr(env_var("CARGO_PKG_DESCRIPTION"));
         let version = self.generate_version();
@@ -96,7 +96,7 @@ impl AddonInfo {
                 static ADDON_DEF: ::nexus::addon::AddonDefinition = ::nexus::addon::AddonDefinition {
                     signature: #signature,
                     api_version: ::nexus::api::API_VERSION,
-                    name: #name,
+                    name: #name_ptr,
                     version: #version,
                     author: #author,
                     description: #description,
@@ -113,7 +113,7 @@ impl AddonInfo {
                 }
 
                 unsafe extern "C-unwind" fn load_wrapper(api: *const ::nexus::api::AddonApi) {
-                    ::nexus::__macro::init(api);
+                    ::nexus::__macro::init(api, #name);
                     #load
                 }
 
