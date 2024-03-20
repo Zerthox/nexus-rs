@@ -15,6 +15,7 @@ nexus::export! {
 
 fn load() {
     let mut show = false;
+    log::info!("Loading addon");
     register_render(RenderType::Render, move |ui| {
         Window::new("Test window").build(ui, || {
             if show {
