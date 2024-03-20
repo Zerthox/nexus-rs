@@ -1,11 +1,12 @@
 use crate::log::{log as nexus_log, LogLevel};
 use log::Log;
 
-pub struct NexusLogger;
+pub struct NexusLogger(&'static str);
 
 impl NexusLogger {
-    pub fn set_logger() {
-        let _ = log::set_boxed_logger(Box::new(NexusLogger));
+    pub fn set_logger(channel: &'static str) {
+        let _ = log::set_boxed_logger(Box::new(NexusLogger(channel)));
+        log::set_max_level(log::LevelFilter::Trace);
     }
 }
 
@@ -15,12 +16,8 @@ impl Log for NexusLogger {
     }
 
     fn log(&self, record: &log::Record) {
-        let message = format!(
-            "{}: {}",
-            record.level().to_string().to_lowercase(),
-            record.args()
-        );
-        nexus_log(record.level().into(), "file", message)
+        let message = format!("{}", record.args());
+        nexus_log(record.level().into(), self.0, message)
     }
 
     fn flush(&self) {}

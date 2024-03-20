@@ -19,7 +19,7 @@ static IMGUI_CTX: OnceCell<ContextWrapper> = OnceCell::new();
 ///
 /// # Safety
 /// The passed pointer must be a valid [`AddonApi`] with `'static` lifetime.
-pub unsafe fn init(api: *const AddonApi) {
+pub unsafe fn init(api: *const AddonApi, log_channel: &'static str) {
     let api = api.as_ref().expect("no addon api supplied");
     ADDON_API
         .set(api)
@@ -27,12 +27,12 @@ pub unsafe fn init(api: *const AddonApi) {
 
     // panic hook
     panic::set_hook(Box::new(move |info| {
-        log(LogLevel::Critical, "file", format!("error: {info}"))
+        log(LogLevel::Critical, log_channel, format!("error: {info}"))
     }));
 
     // init logger
     #[cfg(feature = "log")]
-    NexusLogger::set_logger();
+    NexusLogger::set_logger(log_channel);
 
     // setup imgui
     imgui::sys::igSetCurrentContext(api.imgui_context);
