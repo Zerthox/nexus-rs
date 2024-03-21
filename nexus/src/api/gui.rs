@@ -49,7 +49,7 @@ macro_rules! define_render_wrappers {
                     .as_mut()
                     .expect("attempt to call non-existent render callback");
                 let ui = ui();
-                callback(&ui);
+                callback(ui);
             }
 
             pub fn register(callback: impl FnMut(&Ui) + Send + 'static) {
@@ -103,4 +103,13 @@ pub fn unregister_render(render_type: RenderType) {
         RenderType::PostRender => post_render::unregister(),
         RenderType::OptionsRender => options_render::unregister(),
     }
+}
+
+/// Unregisters all ImGui render callbacks.
+#[inline]
+pub fn unregister_all() {
+    pre_render::unregister();
+    render::unregister();
+    post_render::unregister();
+    options_render::unregister();
 }

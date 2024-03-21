@@ -53,7 +53,7 @@ impl AddonInfo {
             .map(|load| {
                 quote! {
                     const LOAD: ::nexus::addon::AddonLoad = #load;
-                    LOAD()
+                    LOAD();
                 }
             })
             .unwrap_or_default()
@@ -65,7 +65,7 @@ impl AddonInfo {
             .map(|unload| {
                 quote! {
                     const UNLOAD: ::nexus::addon::AddonUnload = #unload;
-                    UNLOAD()
+                    UNLOAD();
                 }
             })
             .unwrap_or_default()
@@ -128,6 +128,7 @@ impl AddonInfo {
 
                 unsafe extern "C-unwind" fn unload_wrapper() {
                     #unload
+                    ::nexus::__macro::deinit();
                 }
             }
         }

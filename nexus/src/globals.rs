@@ -1,5 +1,6 @@
 use crate::{
     api::AddonApi,
+    gui,
     log::{log, LogLevel},
 };
 use std::{fmt, panic, ptr, sync::OnceLock};
@@ -45,6 +46,14 @@ pub unsafe fn init(api: *const AddonApi, addon_name: &'static str) {
     IMGUI_UI
         .set(imgui::Ui::from_ctx(ctx).into())
         .expect("imgui ui initialized multiple times");
+}
+
+/// Cleans up during addon unload.
+///
+/// # Safety
+/// This may perform not thread-safe operations and leave globals in an invalid state.
+pub unsafe fn deinit() {
+    gui::unregister_all();
 }
 
 /// Returns the Nexus [`AddonApi`] instance.

@@ -1,5 +1,5 @@
 use nexus::{
-    gui::{register_render, unregister_render, RenderType},
+    gui::{register_render, RenderType},
     imgui::Window,
     AddonFlags, UpdateProvider,
 };
@@ -30,5 +30,5 @@ fn load() {
 }
 
 fn unload() {
-    unregister_render(RenderType::Render);
+    // render callbacks are unregistered automatically
 }

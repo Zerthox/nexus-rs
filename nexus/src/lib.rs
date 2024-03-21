@@ -39,5 +39,5 @@ pub struct SupportedFields {
 
 #[doc(hidden)]
 pub mod __macro {
-    pub use crate::globals::init;
+    pub use crate::globals::{deinit, init};
 }
