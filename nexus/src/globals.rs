@@ -11,6 +11,8 @@ static ADDON_API: OnceLock<&'static AddonApi> = OnceLock::new();
 
 static IMGUI_CTX: OnceLock<ContextWrapper> = OnceLock::new();
 
+static IMGUI_UI: OnceLock<UiWrapper> = OnceLock::new();
+
 /// Initializes globals.
 ///
 /// Any calls after the initial one will result in a panic.
@@ -18,7 +20,7 @@ static IMGUI_CTX: OnceLock<ContextWrapper> = OnceLock::new();
 ///
 /// # Safety
 /// The passed pointer must be a valid [`AddonApi`] with `'static` lifetime.
-pub unsafe fn init(api: *const AddonApi, log_channel: &'static str) {
+pub unsafe fn init(api: *const AddonApi, addon_name: &'static str) {
     let api = api.as_ref().expect("no addon api supplied");
     ADDON_API
         .set(api)
@@ -26,12 +28,12 @@ pub unsafe fn init(api: *const AddonApi, log_channel: &'static str) {
 
     // panic hook
     panic::set_hook(Box::new(move |info| {
-        log(LogLevel::Critical, log_channel, format!("error: {info}"))
+        log(LogLevel::Critical, addon_name, info.to_string())
     }));
 
     // init logger
     #[cfg(feature = "log")]
-    NexusLogger::set_logger(log_channel);
+    NexusLogger::set_logger(addon_name);
 
     // setup imgui
     imgui::sys::igSetCurrentContext(api.imgui_context);
@@ -39,6 +41,10 @@ pub unsafe fn init(api: *const AddonApi, log_channel: &'static str) {
     IMGUI_CTX
         .set(imgui::Context::current().into())
         .expect("imgui context initialized multiple times");
+    let ctx = &IMGUI_CTX.get().unwrap_unchecked().0;
+    IMGUI_UI
+        .set(imgui::Ui::from_ctx(ctx).into())
+        .expect("imgui ui initialized multiple times");
 }
 
 /// Returns the Nexus [`AddonApi`] instance.
@@ -49,7 +55,16 @@ pub fn addon_api() -> &'static AddonApi {
     ADDON_API.get().expect("addon api not initialized")
 }
 
-/// Helper to store [`imgui::Ui<'_>`] as a global
+/// Returns an [`imgui::Ui`] for rendering a frame.
+///
+/// # Safety
+/// It is not safe to share [`imgui::Ui`] between threads.
+#[inline]
+pub unsafe fn ui() -> &'static imgui::Ui<'static> {
+    &IMGUI_UI.get().expect("imgui not initialized").0
+}
+
+/// Helper to store [`imgui::Ui`] as a global
 #[repr(transparent)]
 struct UiWrapper(pub imgui::Ui<'static>);
 
@@ -68,19 +83,8 @@ impl fmt::Debug for UiWrapper {
 }
 
 unsafe impl Send for UiWrapper {}
-unsafe impl Sync for UiWrapper {}
 
-/// Creates an [`imgui::Ui`] for rendering a frame.
-///
-/// # Safety
-/// The caller must ensure this is only called after globals have been initialized
-/// and ensure an appropriate lifetime for the returned [`imgui::Ui`].
-#[inline]
-pub unsafe fn ui<'a>() -> &'static imgui::Ui<'a> {
-    static UI: OnceLock<UiWrapper> = OnceLock::new();
-    &UI.get_or_init(|| imgui::Ui::from_ctx(&IMGUI_CTX.get().unwrap_unchecked().0).into())
-        .0
-}
+unsafe impl Sync for UiWrapper {}
 
 /// Helper to store [`imgui::Context`] as a global.
 #[repr(transparent)]

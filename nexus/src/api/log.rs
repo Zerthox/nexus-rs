@@ -19,11 +19,10 @@ pub type RawLogOld = unsafe extern "C-unwind" fn(level: LogLevel, message: *cons
 pub type RawLog =
     unsafe extern "C-unwind" fn(level: LogLevel, channel: *const c_char, message: *const c_char);
 
-/// Logs a message
-// TODO: what is channel?
-pub fn log(level: LogLevel, channel: impl AsRef<str>, message: impl AsRef<str>) {
+/// Logs a message to the given channel.
+pub fn log(level: LogLevel, channel_name: impl AsRef<str>, message: impl AsRef<str>) {
     let log = addon_api().log;
-    let channel = CString::new(channel.as_ref()).expect("failed to convert channel");
+    let channel = CString::new(channel_name.as_ref()).expect("failed to convert channel");
     let message = CString::new(message.as_ref()).expect("failed to convert message");
     unsafe { log(level, channel.as_ptr(), message.as_ptr()) }
 }

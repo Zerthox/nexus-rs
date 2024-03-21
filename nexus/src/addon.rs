@@ -64,9 +64,7 @@ pub struct AddonVersion {
 }
 
 bitflags! {
-
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-    #[repr(C)]
     pub struct AddonFlags: u32 {
         const None = 0;
 
@@ -78,6 +76,7 @@ bitflags! {
     }
 }
 
+// TODO: rust enum encapsulating provider & link?
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(C)]
 pub enum UpdateProvider {
