@@ -5,6 +5,7 @@ use nexus::{
 };
 
 nexus::export! {
+    name: "Example Addon",
     signature: -0x12345678, // raidcore addon id or NEGATIVE random unique signature
     load,
     unload,

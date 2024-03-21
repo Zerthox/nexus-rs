@@ -19,6 +19,13 @@ fn as_char_ptr(value: impl ToTokens) -> TokenStream {
 }
 
 impl AddonInfo {
+    pub fn generate_name(&self) -> TokenStream {
+        self.name
+            .as_ref()
+            .map(|name| name.to_token_stream())
+            .unwrap_or_else(|| env_var("CARGO_PKG_NAME").to_token_stream())
+    }
+
     pub fn generate_version(&self) -> TokenStream {
         let major = env_var("CARGO_PKG_VERSION_MAJOR")
             .parse::<i16>()
@@ -73,7 +80,7 @@ impl AddonInfo {
 
     pub fn generate_export(&self) -> TokenStream {
         let signature = &self.signature;
-        let name = env_var("CARGO_PKG_NAME").to_token_stream();
+        let name = self.generate_name();
         let name_ptr = as_char_ptr(&name);
         let author = as_char_ptr(env_var("CARGO_PKG_AUTHORS"));
         let description = as_char_ptr(env_var("CARGO_PKG_DESCRIPTION"));
@@ -93,6 +100,8 @@ impl AddonInfo {
             mod __nexus_addon_export {
                 use super::*;
 
+                const ADDON_NAME: &'static ::std::primitive::str = #name;
+
                 static ADDON_DEF: ::nexus::addon::AddonDefinition = ::nexus::addon::AddonDefinition {
                     signature: #signature,
                     api_version: ::nexus::api::API_VERSION,
@@ -109,11 +118,11 @@ impl AddonInfo {
 
                 #[no_mangle]
                 unsafe extern "system-unwind" fn GetAddonDef() -> *const ::nexus::addon::AddonDefinition {
-                    &ADDON_DEF
+                    &self::ADDON_DEF
                 }
 
                 unsafe extern "C-unwind" fn load_wrapper(api: *const ::nexus::api::AddonApi) {
-                    ::nexus::__macro::init(api, #name);
+                    ::nexus::__macro::init(api, self::ADDON_NAME);
                     #load
                 }
 

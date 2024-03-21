@@ -3,6 +3,7 @@ use syn::{parse::Parse, punctuated::Punctuated, Error, Expr, FieldValue, Member,
 
 pub struct AddonInfo {
     pub signature: Expr,
+    pub name: Option<Expr>,
     pub load: Option<Expr>,
     pub unload: Option<Expr>,
     pub flags: Option<Expr>,
@@ -25,6 +26,7 @@ impl AddonInfo {
                         found_signature = true;
                         self.signature = field.expr;
                     }
+                    "name" => self.name = Some(field.expr),
                     "load" => self.load = Some(field.expr),
                     "unload" => self.unload = Some(field.expr),
                     "flags" => self.flags = Some(field.expr),
@@ -49,6 +51,7 @@ impl Default for AddonInfo {
     fn default() -> Self {
         Self {
             signature: Expr::Verbatim(TokenStream::new()),
+            name: None,
             load: None,
             unload: None,
             flags: None,
