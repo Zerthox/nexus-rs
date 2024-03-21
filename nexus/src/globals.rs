@@ -2,7 +2,6 @@ use crate::{
     api::AddonApi,
     log::{log, LogLevel},
 };
-use once_cell::sync::OnceCell;
 use std::{fmt, panic, ptr, sync::OnceLock};
 
 #[cfg(feature = "log")]
@@ -10,7 +9,7 @@ use crate::logger::NexusLogger;
 
 static ADDON_API: OnceLock<&'static AddonApi> = OnceLock::new();
 
-static IMGUI_CTX: OnceCell<ContextWrapper> = OnceCell::new();
+static IMGUI_CTX: OnceLock<ContextWrapper> = OnceLock::new();
 
 /// Initializes globals.
 ///
@@ -50,14 +49,37 @@ pub fn addon_api() -> &'static AddonApi {
     ADDON_API.get().expect("addon api not initialized")
 }
 
+/// Helper to store [`imgui::Ui<'_>`] as a global
+#[repr(transparent)]
+struct UiWrapper(pub imgui::Ui<'static>);
+
+impl From<imgui::Ui<'static>> for UiWrapper {
+    #[inline]
+    fn from(ui: imgui::Ui<'static>) -> Self {
+        Self(ui)
+    }
+}
+
+impl fmt::Debug for UiWrapper {
+    #[inline]
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+unsafe impl Send for UiWrapper {}
+unsafe impl Sync for UiWrapper {}
+
 /// Creates an [`imgui::Ui`] for rendering a frame.
 ///
 /// # Safety
 /// The caller must ensure this is only called after globals have been initialized
 /// and ensure an appropriate lifetime for the returned [`imgui::Ui`].
 #[inline]
-pub unsafe fn ui<'a>() -> imgui::Ui<'a> {
-    imgui::Ui::from_ctx(&IMGUI_CTX.get().unwrap_unchecked().0)
+pub unsafe fn ui<'a>() -> &'static imgui::Ui<'a> {
+    static UI: OnceLock<UiWrapper> = OnceLock::new();
+    &UI.get_or_init(|| imgui::Ui::from_ctx(&IMGUI_CTX.get().unwrap_unchecked().0).into())
+        .0
 }
 
 /// Helper to store [`imgui::Context`] as a global.

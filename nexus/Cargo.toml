@@ -14,7 +14,6 @@ imgui = { package = "arcdps-imgui", version = "0.8.0", features = ["tables-api"]
 log = { version = "0.4.21", features = ["std"], optional = true }
 nexus_codegen = { path = "../nexus_codegen" }
 num_enum = "0.7.2"
-once_cell = "1.19.0"
 serde = { version = "1.0.197", features = ["derive"], optional = true }
 strum = { version = "0.26.2", features = ["derive"], optional = true }
 

@@ -1,5 +1,5 @@
 use nexus::{
-    gui::{register_render, RenderType},
+    gui::{register_render, unregister_render, RenderType},
     imgui::Window,
     AddonFlags, UpdateProvider,
 };
@@ -7,7 +7,7 @@ use nexus::{
 nexus::export! {
     signature: -0x12345678, // raidcore addon id or NEGATIVE random unique signature
     load,
-    unload: || {},
+    unload,
     flags: AddonFlags::None,
     provider: UpdateProvider::GitHub,
     update_link: "https://github.com/zerthox/nexus-rs",
@@ -26,4 +26,8 @@ fn load() {
             }
         });
     });
+}
+
+fn unload() {
+    unregister_render(RenderType::Render);
 }
