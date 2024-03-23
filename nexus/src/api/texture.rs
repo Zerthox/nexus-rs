@@ -201,7 +201,7 @@ pub fn load_texture_from_resource_raw(
 /// # Usage
 /// ```no_run
 /// # use nexus::texture::*;
-/// # extern "C-unwind" fn receive_texture(_identifier: *const c_char, _texture: *const Texture) {}
+/// # extern "C-unwind" fn receive_texture(_identifier: *const std::ffi::c_char, _texture: *const Texture) {}
 /// load_texture_from_url_raw(
 ///     "TEX_DUNGEON_ICON",
 ///     "https://render.guildwars2.com",

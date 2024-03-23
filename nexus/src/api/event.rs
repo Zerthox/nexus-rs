@@ -48,7 +48,8 @@ pub fn event_unsubscribe_raw(identifier: impl AsRef<str>, callback: RawEventCons
 /// Returns a callable that reverts the subscribe.
 ///
 /// # Usage
-/// ```ignore
+/// ```no_run
+/// # use nexus::event::*;
 /// event_subscribe!(
 ///     "MY_EVENT" => i32,
 ///     |args| println!("Received {args:?}"),
@@ -56,7 +57,8 @@ pub fn event_unsubscribe_raw(identifier: impl AsRef<str>, callback: RawEventCons
 /// ```
 ///
 /// The event name and callback can also be dynamic.
-/// ```ignore
+/// ```no_run
+/// # use nexus::event::*;
 /// let event: &str = "MY_EVENT";
 /// fn event_callback(event_args: Option<&i32>) {
 ///     println!("Received {event_args:?}");
@@ -76,7 +78,7 @@ macro_rules! event_subscribe {
             callback(unsafe { data.as_ref() })
         }
 
-        $crate::event::subscribe_raw($event, event_callback_wrapper)
+        $crate::event::event_subscribe_raw($event, event_callback_wrapper)
     }};
 }
 

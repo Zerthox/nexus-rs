@@ -1,6 +1,7 @@
 use std::ffi::{c_char, CStr};
 
 use nexus::{
+    event::event_subscribe,
     gui::{register_render, RenderType},
     imgui::Window,
     keybind::register_keybind_with_string_raw,
@@ -56,8 +57,13 @@ fn load() {
 
     let remove_keybind = register_keybind_with_string_raw("MY_KEYBIND", keybind_handler, "");
     on_unload(remove_keybind);
+
+    let unsubscribe =
+        event_subscribe!("MY_EVENT" => i32, |data| println!("received event {data:?}"));
+    on_unload(unsubscribe);
 }
 
+// TODO: callback wrapping
 extern "C-unwind" fn receive_texture(identifier: *const c_char, _texture: *const Texture) {
     let identifier = unsafe { CStr::from_ptr(identifier) }.to_string_lossy();
     log::info!("texture {identifier} loaded");
