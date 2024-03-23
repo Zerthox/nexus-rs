@@ -104,7 +104,7 @@ impl AddonInfo {
 
                 static ADDON_DEF: ::nexus::addon::AddonDefinition = ::nexus::addon::AddonDefinition {
                     signature: #signature,
-                    api_version: ::nexus::api::API_VERSION,
+                    api_version: ::nexus::API_VERSION,
                     name: #name_ptr,
                     version: #version,
                     author: #author,
@@ -121,7 +121,7 @@ impl AddonInfo {
                     &self::ADDON_DEF
                 }
 
-                unsafe extern "C-unwind" fn load_wrapper(api: *const ::nexus::api::AddonApi) {
+                unsafe extern "C-unwind" fn load_wrapper(api: *const ::nexus::AddonApi) {
                     ::nexus::__macro::init(api, self::ADDON_NAME);
                     #load
                 }

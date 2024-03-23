@@ -1,4 +1,4 @@
-use crate::{addon_api, ui};
+use crate::{addon_api, ui, AddonApi};
 use imgui::Ui;
 use std::{ffi::c_void, sync::Mutex};
 
@@ -23,7 +23,7 @@ pub enum RenderType {
     OptionsRender,
 }
 
-pub type RawGuiRender = unsafe extern "C-unwind" fn();
+pub type RawGuiRender = extern "C-unwind" fn();
 
 pub type RawGuiAddRender =
     unsafe extern "C-unwind" fn(render_type: RenderType, render_callback: RawGuiRender);
@@ -43,28 +43,28 @@ macro_rules! define_render_wrappers {
 
             static RENDER_CALLBACK: Mutex<Option<RenderCallback>> = Mutex::new(None);
 
-            unsafe extern "C-unwind" fn render_wrapper() {
+            extern "C-unwind" fn render_wrapper() {
                 let mut guard = RENDER_CALLBACK.lock().unwrap();
                 let callback = guard
                     .as_mut()
                     .expect("attempt to call non-existent render callback");
-                let ui = ui();
+                let ui = unsafe { ui() };
                 callback(ui);
             }
 
             pub fn register(callback: impl FnMut(&Ui) + Send + 'static) {
                 let mut render_callback = RENDER_CALLBACK.lock().unwrap();
                 if render_callback.is_none() {
-                    let register = addon_api().register_render;
-                    unsafe { register($type, render_wrapper) }
+                    let AddonApi { register_render, .. } = addon_api();
+                    unsafe { register_render($type, render_wrapper) }
                 }
                 *render_callback = Some(Box::new(callback));
             }
 
             pub fn unregister() {
                 if RENDER_CALLBACK.lock().unwrap().take().is_some() {
-                    let deregister = addon_api().deregister_render;
-                    unsafe { deregister(render_wrapper) }
+                    let AddonApi { deregister_render, .. } = addon_api();
+                    unsafe { deregister_render(render_wrapper) }
                 }
             }
         } )*

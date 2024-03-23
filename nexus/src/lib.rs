@@ -1,16 +1,14 @@
 pub mod addon;
-pub mod api;
+mod api;
 mod globals;
+mod util;
 
 #[cfg(feature = "log")]
 mod logger;
 
 pub use self::{
     addon::{AddonFlags, AddonLoad, AddonUnload, UpdateProvider},
-    api::{
-        data_link, event, gui, hook, keybind, localization, log, paths, quick_access, texture,
-        API_VERSION,
-    },
+    api::*,
     globals::{addon_api, ui},
 };
 pub use imgui;
