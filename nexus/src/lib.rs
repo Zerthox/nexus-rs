@@ -9,7 +9,7 @@ mod logger;
 pub use self::{
     addon::{AddonFlags, AddonLoad, AddonUnload, UpdateProvider},
     api::*,
-    globals::{addon_api, ui},
+    globals::{addon_api, on_unload, ui},
 };
 pub use imgui;
 pub use nexus_codegen::export;

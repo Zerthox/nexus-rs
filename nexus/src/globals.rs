@@ -3,7 +3,10 @@ use crate::{
     gui,
     log::{log, LogLevel},
 };
-use std::{fmt, panic, ptr, sync::OnceLock};
+use std::{
+    fmt, mem, panic, ptr,
+    sync::{Mutex, OnceLock},
+};
 
 #[cfg(feature = "log")]
 use crate::logger::NexusLogger;
@@ -48,12 +51,28 @@ pub unsafe fn init(api: *const AddonApi, addon_name: &'static str) {
         .expect("imgui ui initialized multiple times");
 }
 
+static UNLOAD_ACTIONS: Mutex<Vec<Box<dyn FnOnce() + Send>>> = Mutex::new(Vec::new());
+
+/// Adds a new action to be perform on unload.
+#[inline]
+pub fn on_unload(action: impl FnOnce() + Send + 'static) {
+    UNLOAD_ACTIONS.lock().unwrap().push(Box::new(action));
+}
+
 /// Cleans up during addon unload.
 ///
 /// # Safety
 /// This may perform not thread-safe operations and leave globals in an invalid state.
 pub unsafe fn deinit() {
+    // remove gui callbacks
     gui::unregister_all();
+
+    // perform stored unload actions
+    let mut guard = UNLOAD_ACTIONS.lock().unwrap();
+    let vec: Vec<_> = mem::take(&mut guard);
+    for action in vec {
+        action();
+    }
 }
 
 /// Returns the Nexus [`AddonApi`] instance.
