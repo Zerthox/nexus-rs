@@ -1,6 +1,13 @@
+use std::ffi::{c_char, CStr};
+
 use nexus::{
     gui::{register_render, RenderType},
     imgui::Window,
+    keybind::register_keybind_with_string_raw,
+    on_unload,
+    paths::get_addon_dir,
+    quick_access::add_shortcut,
+    texture::{load_texture_from_file_raw, Texture},
     AddonFlags, UpdateProvider,
 };
 
@@ -15,8 +22,11 @@ nexus::export! {
 }
 
 fn load() {
-    let mut show = false;
     log::info!("Loading addon");
+
+    let addon_dir = get_addon_dir("example").expect("invalid addon dir");
+
+    let mut show = false;
     register_render(RenderType::Render, move |ui| {
         Window::new("Test window").build(ui, || {
             if show {
@@ -27,8 +37,38 @@ fn load() {
             }
         });
     });
+
+    let remove_shortcut = add_shortcut(
+        "MY_SHORTCUT",
+        "MY_ICON",
+        "MY_ICON_HOVER",
+        "MY_KEYBIND",
+        "This is my tooltip text",
+    );
+    on_unload(remove_shortcut);
+
+    load_texture_from_file_raw("MY_ICON", addon_dir.join("icon.png"), Some(receive_texture));
+    load_texture_from_file_raw(
+        "MY_ICON_HOVER",
+        addon_dir.join("icon_hover.png"),
+        Some(receive_texture),
+    );
+
+    let remove_keybind = register_keybind_with_string_raw("MY_KEYBIND", keybind_handler, "");
+    on_unload(remove_keybind);
+}
+
+extern "C-unwind" fn receive_texture(identifier: *const c_char, _texture: *const Texture) {
+    let identifier = unsafe { CStr::from_ptr(identifier) }.to_string_lossy();
+    log::info!("texture {identifier} loaded");
+}
+
+extern "C-unwind" fn keybind_handler(identifier: *const c_char) {
+    let identifier = unsafe { CStr::from_ptr(identifier) }.to_string_lossy();
+    log::info!("keybind {identifier} pressed");
 }
 
 fn unload() {
     // render callbacks are unregistered automatically
+    // all actions passed to on_load() are performed
 }
