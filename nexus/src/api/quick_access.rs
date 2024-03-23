@@ -1,7 +1,5 @@
-use crate::{addon_api, AddonApi};
-
-use super::gui::RawGuiRender;
-use std::ffi::{c_char, CString};
+use crate::{addon_api, gui::RawGuiRender, util::str_to_c, AddonApi};
+use std::ffi::c_char;
 
 pub type RawQuickAccessAddShortcut = unsafe extern "C-unwind" fn(
     identifier: *const c_char,
@@ -15,6 +13,8 @@ pub type RawQuickAccessAddSimple =
     unsafe extern "C-unwind" fn(identifier: *const c_char, shortcut_render_callback: RawGuiRender);
 
 pub type RawQuickAccessGeneric = unsafe extern "C-unwind" fn(identifier: *const c_char);
+
+// TODO: combination with texture & keybind calls
 
 /// Adds a new shortcut icon to the quick access with the given texture identifiers.
 /// When clicked the given keybind identifier is triggered.
@@ -32,16 +32,20 @@ pub fn add_shortcut(
         remove_shortcut,
         ..
     } = addon_api();
-    let identifier =
-        CString::new(identifier.as_ref()).expect("failed to convert shortcut identifier");
-    let texture_identifier = CString::new(texture_identifier.as_ref())
-        .expect("failed to convert shortcut texture identifier");
-    let texture_hover_identifier = CString::new(texture_hover_identifier.as_ref())
-        .expect("failed to convert shortcut hover texture identifier");
-    let keybind_identifier = CString::new(keybind_identifier.as_ref())
-        .expect("failed to convert shortcut keybind identifier");
-    let tooltip_text =
-        CString::new(tooltip_text.as_ref()).expect("failed to convert shortcut tooltip text");
+    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
+    let texture_identifier = str_to_c(
+        texture_identifier,
+        "failed to convert shortcut texture identifier",
+    );
+    let texture_hover_identifier = str_to_c(
+        texture_hover_identifier,
+        "failed to convert shortcut hover texture identifier",
+    );
+    let keybind_identifier = str_to_c(
+        keybind_identifier,
+        "failed to convert shortcut keybind identifier",
+    );
+    let tooltip_text = str_to_c(tooltip_text, "failed to convert shortcut tooltip text");
     unsafe {
         add_shortcut(
             identifier.as_ptr(),
@@ -59,8 +63,7 @@ pub fn remove_shortcut(identifier: impl AsRef<str>) {
     let AddonApi {
         remove_shortcut, ..
     } = addon_api();
-    let identifier =
-        CString::new(identifier.as_ref()).expect("failed to convert shortcut identifier");
+    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
     unsafe { remove_shortcut(identifier.as_ptr()) }
 }
 
@@ -76,8 +79,7 @@ pub fn add_simple_shortcut(
         remove_simple_shortcut,
         ..
     } = addon_api();
-    let identifier =
-        CString::new(identifier.as_ref()).expect("failed to convert simple shortcut identifier");
+    let identifier = str_to_c(identifier, "failed to convert simple shortcut identifier");
     unsafe { add_simple_shortcut(identifier.as_ptr(), render_callback) };
     move || unsafe { remove_simple_shortcut(identifier.as_ptr()) }
 }
@@ -88,7 +90,6 @@ pub fn remove_simple_shortcut(identifier: impl AsRef<str>) {
         remove_simple_shortcut,
         ..
     } = addon_api();
-    let identifier =
-        CString::new(identifier.as_ref()).expect("failed to convert simple shortcut identifier");
+    let identifier = str_to_c(identifier, "failed to convert simple shortcut identifier");
     unsafe { remove_simple_shortcut(identifier.as_ptr()) }
 }

@@ -1,5 +1,5 @@
-use crate::{addon_api, AddonApi};
-use std::ffi::{c_char, c_void, CString};
+use crate::{addon_api, util::str_to_c, AddonApi};
+use std::ffi::{c_char, c_void};
 
 pub type RawEventConsume = extern "C-unwind" fn(event_args: *const c_void);
 
@@ -24,7 +24,7 @@ pub fn event_subscribe_raw(
     identifier: impl AsRef<str>,
     callback: RawEventConsume,
 ) -> impl Fn() + Send + Sync + Clone + 'static {
-    let identifier = CString::new(identifier.as_ref()).expect("failed to convert event identifier");
+    let identifier = str_to_c(identifier, "failed to convert event identifier");
     let AddonApi {
         event_subscribe,
         event_unsubscribe,
@@ -36,7 +36,7 @@ pub fn event_subscribe_raw(
 
 /// Unsubscribes a previously registered raw event callback.
 pub fn event_unsubscribe_raw(identifier: impl AsRef<str>, callback: RawEventConsume) {
-    let identifier = CString::new(identifier.as_ref()).expect("failed to convert event identifier");
+    let identifier = str_to_c(identifier, "failed to convert event identifier");
     let AddonApi {
         event_unsubscribe, ..
     } = addon_api();
@@ -45,17 +45,23 @@ pub fn event_unsubscribe_raw(identifier: impl AsRef<str>, callback: RawEventCons
 
 /// Macro to subscribe to an event with a wrapped callback.
 ///
+/// Returns a callable that reverts the subscribe.
+///
 /// # Usage
-/// ```no_run
-/// use nexus::event;
+/// ```ignore
+/// event_subscribe!(
+///     "MY_EVENT" => i32,
+///     |args| println!("Received {args:?}"),
+/// );
+/// ```
 ///
-/// event::subscribe!("MY_EVENT_A" => i32, |args| println!("Received {args:?}"));
-///
-/// const EVENT_NAME: &str = "MY_EVENT_B";
+/// The event name and callback can also be dynamic.
+/// ```ignore
+/// let event: &str = "MY_EVENT";
 /// fn event_callback(event_args: Option<&i32>) {
 ///     println!("Received {event_args:?}");
 /// }
-/// let revert = event::subscribe!(EVENT_NAME => i32, event_callback);
+/// let revert = event_subscribe!(event => i32, event_callback);
 /// revert();
 /// ```
 #[macro_export]

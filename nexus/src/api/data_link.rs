@@ -1,6 +1,6 @@
-use crate::{addon_api, AddonApi};
+use crate::{addon_api, util::str_to_c, AddonApi};
 use std::{
-    ffi::{c_char, c_void, CString},
+    ffi::{c_char, c_void},
     mem,
 };
 
@@ -33,8 +33,7 @@ pub struct NexusLink {
 
 /// Gets a pointer to a shared resource.
 pub fn get_resource<T>(identifier: impl AsRef<str>) -> *const T {
-    let identifier =
-        CString::new(identifier.as_ref()).expect("failed to convert data link identifier");
+    let identifier = str_to_c(identifier, "failed to convert data link identifier");
     let AddonApi { get_resource, .. } = addon_api();
     unsafe { get_resource(identifier.as_ptr()) as _ }
 }
@@ -51,8 +50,7 @@ pub unsafe fn read_resource<T>(identifier: impl AsRef<str>) -> Option<T> {
 
 /// Creates a new shared resource.
 pub fn share_resource<T>(identifier: impl AsRef<str>) -> *mut T {
-    let identifier =
-        CString::new(identifier.as_ref()).expect("failed to convert data link identifier");
+    let identifier = str_to_c(identifier, "failed to convert data link identifier");
     let AddonApi { share_resource, .. } = addon_api();
     let size = mem::size_of::<T>();
     unsafe { share_resource(identifier.as_ptr(), size) as _ }
