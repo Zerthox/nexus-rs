@@ -11,6 +11,12 @@ pub type RawEventRaiseNotification = unsafe extern "C-unwind" fn(identifier: *co
 pub type RawEventSubscribe =
     unsafe extern "C-unwind" fn(identifier: *const c_char, consume_callback: RawEventConsume);
 
+/// Mumble identity update event identifier.
+pub const MUMBLE_IDENTITY_UPDATED: &str = "EV_MUMBLE_IDENTITY_UPDATED";
+
+/// Window resized event identifier.
+pub const WINDOW_RESIZED: &str = "EV_WINDOW_RESIZED";
+
 /// Subscribes to an event with a raw callback.
 ///
 /// Returns a callable that reverts the subscribe.
