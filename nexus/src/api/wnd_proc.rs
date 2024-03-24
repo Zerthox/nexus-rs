@@ -1,4 +1,4 @@
-use crate::{addon_api, AddonApi};
+use crate::{addon_api, revertible::Revertible, AddonApi};
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
 
 pub type RawWndProcCallback =
@@ -15,17 +15,18 @@ pub type RawWndProcSendToGame = unsafe extern "C-unwind" fn(
 
 /// Registers a new [WNDPROC](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-wndproc) callback.
 ///
-/// Returns a callable that reverts the register.
+/// Returns a [`Revertible`] to revert the register.
 pub fn register_wnd_proc(
     callback: RawWndProcCallback,
-) -> impl Fn() + Send + Sync + Clone + 'static {
+) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
     let AddonApi {
         register_wnd_proc,
         deregister_wnd_proc,
         ..
     } = addon_api();
     unsafe { register_wnd_proc(callback) };
-    move || unsafe { deregister_wnd_proc(callback) }
+    let revert = move || unsafe { deregister_wnd_proc(callback) };
+    revert.into()
 }
 
 /// Deregisters an already registered [WNDPROC](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-wndproc) callback.

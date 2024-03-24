@@ -1,4 +1,4 @@
-use crate::{addon_api, util::str_to_c, AddonApi};
+use crate::{addon_api, revertible::Revertible, util::str_to_c, AddonApi};
 use std::ffi::{c_char, c_void};
 
 pub type RawEventConsume = extern "C-unwind" fn(event_args: *const c_void);
@@ -19,11 +19,11 @@ pub const WINDOW_RESIZED: &str = "EV_WINDOW_RESIZED";
 
 /// Subscribes to an event with a raw callback.
 ///
-/// Returns a callable that reverts the subscribe.
+/// Returns a [`Revertible`] to revert the subscribe.
 pub fn event_subscribe_raw(
     identifier: impl AsRef<str>,
     callback: RawEventConsume,
-) -> impl Fn() + Send + Sync + Clone + 'static {
+) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
     let identifier = str_to_c(identifier, "failed to convert event identifier");
     let AddonApi {
         event_subscribe,
@@ -31,7 +31,8 @@ pub fn event_subscribe_raw(
         ..
     } = addon_api();
     unsafe { event_subscribe(identifier.as_ptr(), callback) };
-    move || unsafe { event_unsubscribe(identifier.as_ptr(), callback) }
+    let revert = move || unsafe { event_unsubscribe(identifier.as_ptr(), callback) };
+    revert.into()
 }
 
 /// Unsubscribes a previously registered raw event callback.

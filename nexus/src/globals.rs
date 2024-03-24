@@ -51,6 +51,7 @@ pub unsafe fn init(api: *const AddonApi, addon_name: &'static str) {
         .expect("imgui ui initialized multiple times");
 }
 
+/// Actions to be performed on addon unload.
 static UNLOAD_ACTIONS: Mutex<Vec<Box<dyn FnOnce() + Send>>> = Mutex::new(Vec::new());
 
 /// Adds a new action to be perform on unload.
@@ -60,6 +61,8 @@ pub fn on_unload(action: impl FnOnce() + Send + 'static) {
 }
 
 /// Cleans up during addon unload.
+///
+///  A call to this is inserted automatically by the [`export`](crate::export) macro.
 ///
 /// # Safety
 /// This may perform not thread-safe operations and leave globals in an invalid state.

@@ -1,4 +1,4 @@
-use crate::{addon_api, util::str_to_c, AddonApi};
+use crate::{addon_api, revertible::Revertible, util::str_to_c, AddonApi};
 use std::ffi::c_char;
 
 #[derive(Debug, Clone)]
@@ -30,12 +30,12 @@ pub type RawKeybindDeregister = unsafe extern "C-unwind" fn(identifier: *const c
 
 /// Registers a new keybind using a keybind string like `"ALT+SHIFT+T"`.
 ///
-/// Returns a callable that reverts the register.
+/// Returns a [`Revertible`] to revert the register.
 pub fn register_keybind_with_string_raw(
     identifier: impl AsRef<str>,
     handler: RawKeybindHandler,
     keybind: impl AsRef<str>,
-) -> impl Fn() + Send + Sync + Clone + 'static {
+) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
     let AddonApi {
         keybind_register_with_string,
         keybind_deregister,
@@ -44,17 +44,18 @@ pub fn register_keybind_with_string_raw(
     let identifier = str_to_c(identifier, "failed to convert keybind identifier");
     let keybind = str_to_c(keybind, "failed to convert keybind string");
     unsafe { keybind_register_with_string(identifier.as_ptr(), handler, keybind.as_ptr()) };
-    move || unsafe { keybind_deregister(identifier.as_ptr()) }
+    let revert = move || unsafe { keybind_deregister(identifier.as_ptr()) };
+    revert.into()
 }
 
 /// Registers a new keybind using a [`Keybind`] struct.
 ///
-/// Returns a callable that reverts the register.
+/// Returns a [`Revertible`] to revert the register.
 pub fn register_keybind_with_struct_raw(
     identifier: impl AsRef<str>,
     handler: RawKeybindHandler,
     keybind: Keybind,
-) -> impl Fn() + Send + Sync + Clone + 'static {
+) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
     let AddonApi {
         keybind_register_with_struct,
         keybind_deregister,
@@ -62,7 +63,8 @@ pub fn register_keybind_with_struct_raw(
     } = addon_api();
     let identifier = str_to_c(identifier, "failed to convert keybind identifier");
     unsafe { keybind_register_with_struct(identifier.as_ptr(), handler, keybind) };
-    move || unsafe { keybind_deregister(identifier.as_ptr()) }
+    let revert = move || unsafe { keybind_deregister(identifier.as_ptr()) };
+    revert.into()
 }
 
 /// Unregisters a previously registered keybind.

@@ -5,7 +5,6 @@ use nexus::{
     gui::{register_render, RenderType},
     imgui::Window,
     keybind::register_keybind_with_string_raw,
-    on_unload,
     paths::get_addon_dir,
     quick_access::add_shortcut,
     texture::{load_texture_from_file_raw, Texture},
@@ -39,14 +38,14 @@ fn load() {
         });
     });
 
-    let remove_shortcut = add_shortcut(
+    add_shortcut(
         "MY_SHORTCUT",
         "MY_ICON",
         "MY_ICON_HOVER",
         "MY_KEYBIND",
         "This is my tooltip text",
-    );
-    on_unload(remove_shortcut);
+    )
+    .revert_on_unload();
 
     load_texture_from_file_raw("MY_ICON", addon_dir.join("icon.png"), Some(receive_texture));
     load_texture_from_file_raw(
@@ -55,12 +54,10 @@ fn load() {
         Some(receive_texture),
     );
 
-    let remove_keybind = register_keybind_with_string_raw("MY_KEYBIND", keybind_handler, "");
-    on_unload(remove_keybind);
+    register_keybind_with_string_raw("MY_KEYBIND", keybind_handler, "").revert_on_unload();
 
-    let unsubscribe =
-        event_subscribe!("MY_EVENT" => i32, |data| println!("received event {data:?}"));
-    on_unload(unsubscribe);
+    event_subscribe!("MY_EVENT" => i32, |data| println!("received event {data:?}"))
+        .revert_on_unload();
 }
 
 // TODO: callback wrapping
@@ -76,5 +73,5 @@ extern "C-unwind" fn keybind_handler(identifier: *const c_char) {
 
 fn unload() {
     // render callbacks are unregistered automatically
-    // all actions passed to on_load() are performed
+    // all actions passed to on_load() or revert_on_unload() are performed
 }
