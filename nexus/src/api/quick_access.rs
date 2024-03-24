@@ -1,4 +1,4 @@
-use crate::{addon_api, gui::RawGuiRender, util::str_to_c, AddonApi};
+use crate::{addon_api, gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi};
 use std::ffi::c_char;
 
 pub type RawQuickAccessAddShortcut = unsafe extern "C-unwind" fn(
@@ -19,14 +19,14 @@ pub type RawQuickAccessGeneric = unsafe extern "C-unwind" fn(identifier: *const 
 /// Adds a new shortcut icon to the quick access with the given texture identifiers.
 /// When clicked the given keybind identifier is triggered.
 ///
-/// Returns a callable that removes the shortcut.
+/// Returns a [`Revertible`] to remove the shortcut.
 pub fn add_shortcut(
     identifier: impl AsRef<str>,
     texture_identifier: impl AsRef<str>,
     texture_hover_identifier: impl AsRef<str>,
     keybind_identifier: impl AsRef<str>,
     tooltip_text: impl AsRef<str>,
-) -> impl Fn() + Send + Sync + Clone + 'static {
+) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
     let AddonApi {
         add_shortcut,
         remove_shortcut,
@@ -55,7 +55,8 @@ pub fn add_shortcut(
             tooltip_text.as_ptr(),
         )
     };
-    move || unsafe { remove_shortcut(identifier.as_ptr()) }
+    let revert = move || unsafe { remove_shortcut(identifier.as_ptr()) };
+    revert.into()
 }
 
 /// Removes a previously registered shortcut from the quick access.
@@ -69,11 +70,11 @@ pub fn remove_shortcut(identifier: impl AsRef<str>) {
 
 /// Adds a new [`RawGuiRender`] callback fired when the quick access is right-clicked.
 ///
-/// Returns a callable that removes the shortcut.
+/// Returns a [`Revertible`] to remove the shortcut.
 pub fn add_simple_shortcut(
     identifier: impl AsRef<str>,
     render_callback: RawGuiRender,
-) -> impl Fn() + Send + Sync + Clone + 'static {
+) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
     let AddonApi {
         add_simple_shortcut,
         remove_simple_shortcut,
@@ -81,7 +82,8 @@ pub fn add_simple_shortcut(
     } = addon_api();
     let identifier = str_to_c(identifier, "failed to convert simple shortcut identifier");
     unsafe { add_simple_shortcut(identifier.as_ptr(), render_callback) };
-    move || unsafe { remove_simple_shortcut(identifier.as_ptr()) }
+    let revert = move || unsafe { remove_simple_shortcut(identifier.as_ptr()) };
+    revert.into()
 }
 
 /// Removes a previously registered simple shortcut callback.

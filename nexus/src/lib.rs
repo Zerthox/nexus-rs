@@ -1,6 +1,7 @@
 pub mod addon;
 mod api;
 mod globals;
+mod revertible;
 mod util;
 
 #[cfg(feature = "log")]
@@ -10,6 +11,7 @@ pub use self::{
     addon::{AddonFlags, AddonLoad, AddonUnload, UpdateProvider},
     api::*,
     globals::{addon_api, on_unload, ui},
+    revertible::Revertible,
 };
 pub use imgui;
 pub use nexus_codegen::export;
