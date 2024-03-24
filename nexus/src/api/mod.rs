@@ -37,7 +37,7 @@ pub const API_VERSION: i32 = 2;
 #[repr(C)]
 pub struct AddonApi {
     /// DirectX swap chain.
-    pub swap_chain: *const IDXGISwapChain,
+    pub swap_chain: IDXGISwapChain,
 
     /// ImGui context.
     pub imgui_context: *mut imgui::sys::ImGuiContext,
@@ -183,16 +183,9 @@ pub struct AddonApi {
 unsafe impl Sync for AddonApi {}
 
 impl AddonApi {
-    /// Returns the DirectX swap chain.
-    #[inline]
-    pub fn get_swap_chain(&self) -> Option<&IDXGISwapChain> {
-        unsafe { self.swap_chain.as_ref() }
-    }
-
     /// Retrieves the DirectX 11 device associated with the swap chain.
     #[inline]
     pub fn get_d3d11_device(&self) -> Option<ID3D11Device> {
-        self.get_swap_chain()
-            .and_then(|swap_chain| unsafe { swap_chain.GetDevice() }.ok())
+        unsafe { self.swap_chain.GetDevice() }.ok()
     }
 }
