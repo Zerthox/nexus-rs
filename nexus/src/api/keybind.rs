@@ -31,7 +31,7 @@ pub type RawKeybindDeregister = unsafe extern "C-unwind" fn(identifier: *const c
 /// Registers a new keybind using a keybind string like `"ALT+SHIFT+T"`.
 ///
 /// Returns a [`Revertible`] to revert the register.
-pub fn register_keybind_with_string_raw(
+pub fn register_keybind_with_string(
     identifier: impl AsRef<str>,
     handler: RawKeybindHandler,
     keybind: impl AsRef<str>,
@@ -51,7 +51,7 @@ pub fn register_keybind_with_string_raw(
 /// Registers a new keybind using a [`Keybind`] struct.
 ///
 /// Returns a [`Revertible`] to revert the register.
-pub fn register_keybind_with_struct_raw(
+pub fn register_keybind_with_struct(
     identifier: impl AsRef<str>,
     handler: RawKeybindHandler,
     keybind: Keybind,
@@ -75,3 +75,38 @@ pub fn unregister_keybind(identifier: impl AsRef<str>) {
     let identifier = str_to_c(identifier, "failed to convert keybind identifier");
     unsafe { keybind_deregister(identifier.as_ptr()) }
 }
+
+/// Macro to wrap a keybind handler callback.
+///
+/// Generates a [`RawKeybindHandler`] wrapper around the passed callback.
+///
+/// # Usage
+/// ```no_run
+/// # use nexus::keybind::*;
+/// let keybind_handler = keybind_handler!(|id| {
+///     use nexus::log::{log, LogLevel};
+///     log(LogLevel::Info, "My Addon", format!("keybind {id} pressed"));
+/// });
+/// register_keybind_with_string("MY_KEYBIND", keybind_handler, "ALT+SHIFT+X")
+///     .revert_on_unload();
+/// ```
+// TODO: optionally allow captures by storing a dyn FnMut
+#[macro_export]
+macro_rules! keybind_handler {
+    (dyn $callback:expr) => {{
+        todo!("dynamic keybind handler closure")
+    }};
+    ($callback:expr) => {{
+        const CALLBACK: fn(&::std::primitive::str) = $callback;
+
+        extern "C-unwind" fn keybind_callback_wrapper(identifier: *const ::std::ffi::c_char) {
+            let identifier = unsafe { $crate::__macro::str_from_c(identifier) }
+                .expect("invalid identifier in keybind callback");
+            CALLBACK(identifier)
+        }
+
+        keybind_callback_wrapper
+    }};
+}
+
+pub use keybind_handler;

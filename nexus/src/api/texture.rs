@@ -181,7 +181,7 @@ pub fn get_texture_or_create_from_memory(
 }
 
 /// Loads a texture from the given file path.
-pub fn load_texture_from_file_raw(
+pub fn load_texture_from_file(
     identifier: impl AsRef<str>,
     file: impl AsRef<Path>,
     callback: Option<RawTextureReceiveCallback>,
@@ -202,7 +202,7 @@ pub fn load_texture_from_file_raw(
 }
 
 /// Loads a texture from the given resource.
-pub fn load_texture_from_resource_raw(
+pub fn load_texture_from_resource(
     identifier: impl AsRef<str>,
     resource_id: u32,
     module: HMODULE,
@@ -229,14 +229,14 @@ pub fn load_texture_from_resource_raw(
 /// ```no_run
 /// # use nexus::texture::*;
 /// # extern "C-unwind" fn receive_texture(_identifier: *const std::ffi::c_char, _texture: *const Texture) {}
-/// load_texture_from_url_raw(
+/// load_texture_from_url(
 ///     "TEX_DUNGEON_ICON",
 ///     "https://render.guildwars2.com",
 ///     "/file/943538394A94A491C8632FBEF6203C2013443555/102478.png",
 ///     Some(receive_texture),
 /// )
 /// ```
-pub fn load_texture_from_url_raw(
+pub fn load_texture_from_url(
     identifier: impl AsRef<str>,
     remote: impl AsRef<str>,
     endpoint: impl AsRef<str>,
@@ -260,7 +260,7 @@ pub fn load_texture_from_url_raw(
 }
 
 /// Loads a texture from the given memory.
-pub fn load_texture_from_memory_raw(
+pub fn load_texture_from_memory(
     identifier: impl AsRef<str>,
     memory: impl AsRef<[u8]>,
     callback: Option<RawTextureReceiveCallback>,
@@ -282,3 +282,41 @@ pub fn load_texture_from_memory_raw(
 }
 
 extern "C-unwind" fn dummy_receive_texture(_identifier: *const c_char, _texture: *const Texture) {}
+
+/// Macro to wrap a texture receive callback.
+///
+/// Generates a [`RawTextureReceiveCallback`] wrapper around the passed callback.
+///
+/// # Usage
+/// ```no_run
+/// # use nexus::texture::*;
+/// use nexus::log::{log, LogLevel};
+/// let texture_receive: RawTextureReceiveCallback = texture_receive!(|id, _texture| {
+///     log(LogLevel::Info, "My Addon", format!("texture {id} loaded"));
+/// });
+/// load_texture_from_file("MY_TEXTURE", r"C:\path\to\texture.png", Some(texture_receive));
+/// ```
+// TODO: optionally allow captures by storing a dyn FnMut
+#[macro_export]
+macro_rules! texture_receive {
+    (dyn $callback:expr) => {{
+        todo!("dynamic texture receive closure")
+    }};
+    ($callback:expr) => {{
+        const CALLBACK: fn(&::std::primitive::str, &$crate::texture::Texture) = $callback;
+
+        extern "C-unwind" fn keybind_callback_wrapper(
+            identifier: *const ::std::ffi::c_char,
+            texture: *const $crate::texture::Texture,
+        ) {
+            let identifier = unsafe { $crate::__macro::str_from_c(identifier) }
+                .expect("invalid identifier in texture callback");
+            let texture = unsafe { texture.as_ref() }.expect("no texture in texture callback");
+            CALLBACK(identifier, texture)
+        }
+
+        keybind_callback_wrapper
+    }};
+}
+
+pub use texture_receive;

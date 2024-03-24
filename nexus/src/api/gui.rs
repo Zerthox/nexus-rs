@@ -34,6 +34,8 @@ pub type ImguiMalloc = unsafe extern "C" fn(size: usize, user_data: *mut c_void)
 
 pub type ImguiFree = unsafe extern "C" fn(ptr: *mut c_void, user_data: *mut c_void);
 
+// TODO: render callback wrapping with macro?
+
 type RenderCallback = Box<dyn FnMut(&Ui) + Send + 'static>;
 
 macro_rules! define_render_wrappers {

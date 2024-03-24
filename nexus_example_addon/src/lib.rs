@@ -2,13 +2,12 @@ use nexus::{
     event::event_subscribe,
     gui::{register_render, RenderType},
     imgui::Window,
-    keybind::register_keybind_with_string_raw,
+    keybind::{keybind_handler, register_keybind_with_string},
     paths::get_addon_dir,
     quick_access::add_shortcut,
-    texture::{load_texture_from_file_raw, Texture},
+    texture::{load_texture_from_file, texture_receive, Texture},
     AddonFlags, UpdateProvider,
 };
-use std::ffi::{c_char, CStr};
 
 nexus::export! {
     name: "Example Addon",
@@ -46,28 +45,20 @@ fn load() {
     )
     .revert_on_unload();
 
-    load_texture_from_file_raw("MY_ICON", addon_dir.join("icon.png"), Some(receive_texture));
-    load_texture_from_file_raw(
+    let receive_texture =
+        texture_receive!(|id: &str, _texture: &Texture| log::info!("texture {id} loaded"));
+    load_texture_from_file("MY_ICON", addon_dir.join("icon.png"), Some(receive_texture));
+    load_texture_from_file(
         "MY_ICON_HOVER",
         addon_dir.join("icon_hover.png"),
         Some(receive_texture),
     );
 
-    register_keybind_with_string_raw("MY_KEYBIND", keybind_handler, "").revert_on_unload();
+    let keybind_handler = keybind_handler!(|id| log::info!("keybind {id} pressed"));
+    register_keybind_with_string("MY_KEYBIND", keybind_handler, "").revert_on_unload();
 
     event_subscribe!("MY_EVENT" => i32, |data| println!("received event {data:?}"))
         .revert_on_unload();
-}
-
-// TODO: callback wrapping
-extern "C-unwind" fn receive_texture(identifier: *const c_char, _texture: *const Texture) {
-    let identifier = unsafe { CStr::from_ptr(identifier) }.to_string_lossy();
-    log::info!("texture {identifier} loaded");
-}
-
-extern "C-unwind" fn keybind_handler(identifier: *const c_char) {
-    let identifier = unsafe { CStr::from_ptr(identifier) }.to_string_lossy();
-    log::info!("keybind {identifier} pressed");
 }
 
 fn unload() {

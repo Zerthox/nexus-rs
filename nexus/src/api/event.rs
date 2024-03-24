@@ -64,19 +64,27 @@ pub fn event_unsubscribe_raw(identifier: impl AsRef<str>, callback: RawEventCons
 /// fn event_callback(event_args: Option<&i32>) {
 ///     println!("Received {event_args:?}");
 /// }
-/// let revert = event_subscribe!(event => i32, event_callback);
-/// revert();
+/// let revertible = event_subscribe!(event => i32, event_callback);
+/// revertible.revert();
 /// ```
+// TODO: optionally allow captures by storing a dyn FnMut
 #[macro_export]
 macro_rules! event_subscribe {
+    ( $event:expr , $ty:ty , dyn $callback:expr $(,)? ) => {
+        $crate::event::subscribe!($event => $ty, dyn $callback)
+    };
     ( $event:expr , $ty:ty , $callback:expr $(,)? ) => {
         $crate::event::subscribe!($event => $ty, $callback)
     };
+    ( $event:expr => $ty:ty , dyn $callback:expr $(,)? ) => {{
+        todo!("dynamic event subscribe callback")
+    }};
     ( $event:expr => $ty:ty , $callback:expr $(,)? ) => {{
+        const CALLBACK: fn(::std::option::Option<&$ty>) = $callback;
+
         extern "C-unwind" fn event_callback_wrapper(data: *const ::std::ffi::c_void) {
-            let callback = ( $callback );
             let data = data as *const $ty;
-            callback(unsafe { data.as_ref() })
+            CALLBACK(unsafe { data.as_ref() })
         }
 
         $crate::event::event_subscribe_raw($event, event_callback_wrapper)
