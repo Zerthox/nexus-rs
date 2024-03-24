@@ -7,14 +7,41 @@ use std::{
     ffi::{c_char, c_void},
     path::Path,
 };
-use windows::Win32::Foundation::HMODULE;
+use windows::Win32::{Foundation::HMODULE, Graphics::Direct3D11::ID3D11ShaderResourceView};
 
+/// A loaded texture.
 #[derive(Debug, Clone)]
 #[repr(C)]
 pub struct Texture {
+    /// Width of the texture.
     pub width: u32,
+
+    /// Height of the texture.
     pub height: u32,
-    pub resource: *const c_void,
+
+    /// Shader resource view of the texture.
+    pub resource: *const ID3D11ShaderResourceView,
+}
+
+impl Texture {
+    /// Returns the associated [`imgui::TextureId`].
+    #[inline]
+    pub fn id(&self) -> imgui::TextureId {
+        self.resource.into()
+    }
+
+    /// Returns the original texture size in [`imgui`] format.
+    #[inline]
+    pub fn size(&self) -> [f32; 2] {
+        [self.width as f32, self.height as f32]
+    }
+
+    /// Returns a resized texture size in [`imgui`] format.
+    #[inline]
+    pub fn size_resized(&self, factor: f32) -> [f32; 2] {
+        let [x, y] = self.size();
+        [factor * x, factor * y]
+    }
 }
 
 pub type RawTextureReceiveCallback =

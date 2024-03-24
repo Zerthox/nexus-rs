@@ -1,5 +1,3 @@
-use std::ffi::{c_char, CStr};
-
 use nexus::{
     event::event_subscribe,
     gui::{register_render, RenderType},
@@ -10,6 +8,7 @@ use nexus::{
     texture::{load_texture_from_file_raw, Texture},
     AddonFlags, UpdateProvider,
 };
+use std::ffi::{c_char, CStr};
 
 nexus::export! {
     name: "Example Addon",
