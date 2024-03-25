@@ -5,7 +5,9 @@ use crate::{
 };
 use std::{
     ffi::{c_char, c_void},
+    mem,
     path::Path,
+    ptr::NonNull,
 };
 use windows::Win32::{Foundation::HMODULE, Graphics::Direct3D11::ID3D11ShaderResourceView};
 
@@ -20,14 +22,21 @@ pub struct Texture {
     pub height: u32,
 
     /// Shader resource view of the texture.
-    pub resource: *const ID3D11ShaderResourceView,
+    pub resource: ID3D11ShaderResourceView,
 }
 
 impl Texture {
+    /// Returns the associated resource as raw pointer.
+    #[inline]
+    pub fn resource_ptr(&self) -> *const c_void {
+        // ShaderResourceView is a IUnknown, which is is a NonNull<c_void>
+        unsafe { mem::transmute::<_, &NonNull<c_void>>(&self.resource) }.as_ptr()
+    }
+
     /// Returns the associated [`imgui::TextureId`].
     #[inline]
     pub fn id(&self) -> imgui::TextureId {
-        self.resource.into()
+        self.resource_ptr().into()
     }
 
     /// Returns the original texture size in [`imgui`] format.
