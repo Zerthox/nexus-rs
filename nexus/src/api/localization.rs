@@ -15,6 +15,7 @@ pub type RawLocalizationTranslateTo = unsafe extern "C-unwind" fn(
 
 /// Attempts to translate the identifier into the current active language.
 /// Returns the same identifier if not available.
+#[inline]
 pub fn translate(identifier: impl AsRef<str>) -> Option<String> {
     let AddonApi { translate, .. } = addon_api();
     let identifier = str_to_c(identifier, "failed to convert translate identifier");
@@ -23,6 +24,7 @@ pub fn translate(identifier: impl AsRef<str>) -> Option<String> {
 
 /// Attempts to translate the identifier into the given language.
 /// Returns the same identifier if not available.
+#[inline]
 pub fn translate_to(
     identifier: impl AsRef<str>,
     language_identifier: impl AsRef<str>,

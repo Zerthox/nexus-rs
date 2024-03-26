@@ -53,11 +53,20 @@ pub type RawKeybindRegisterWithStruct = unsafe extern "C-unwind" fn(
 
 pub type RawKeybindDeregister = unsafe extern "C-unwind" fn(identifier: *const c_char);
 
-// TODO: wrapped callbacks
-
 /// Registers a new keybind using a keybind string like `"ALT+SHIFT+T"`.
 ///
 /// Returns a [`Revertible`] to revert the register.
+///
+/// # Usage
+/// ```no_run
+/// use nexus::keybind::{register_keybind_with_string, keybind_handler};
+/// let keybind_handler = keybind_handler!(|id| {
+///     use nexus::log::{log, LogLevel};
+///     log(LogLevel::Info, "My Addon", format!("keybind {id} pressed"));
+/// });
+/// register_keybind_with_string("MY_KEYBIND", keybind_handler, "ALT+SHIFT+X")
+///     .revert_on_unload();
+/// ```
 pub fn register_keybind_with_string(
     identifier: impl AsRef<str>,
     handler: RawKeybindHandler,
@@ -78,6 +87,23 @@ pub fn register_keybind_with_string(
 /// Registers a new keybind using a [`Keybind`] struct.
 ///
 /// Returns a [`Revertible`] to revert the register.
+///
+/// # Usage
+/// ```no_run
+/// use nexus::keybind::{register_keybind_with_struct, Keybind, keybind_handler};
+/// let keybind = Keybind {
+///     key: 123,
+///     alt: true,
+///     ctrl: false,
+///     shift: true,
+/// };
+/// let keybind_handler = keybind_handler!(|id| {
+///     use nexus::log::{log, LogLevel};
+///     log(LogLevel::Info, "My Addon", format!("keybind {id} pressed"));
+/// });
+/// register_keybind_with_struct("MY_KEYBIND", keybind_handler, keybind)
+///     .revert_on_unload();
+/// ```
 pub fn register_keybind_with_struct(
     identifier: impl AsRef<str>,
     handler: RawKeybindHandler,
@@ -114,25 +140,19 @@ pub fn unregister_keybind(identifier: impl AsRef<str>) {
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("keybind {id} pressed"));
 /// });
-/// register_keybind_with_string("MY_KEYBIND", keybind_handler, "ALT+SHIFT+X")
-///     .revert_on_unload();
 /// ```
-// TODO: optionally allow captures by storing a dyn FnMut
 #[macro_export]
 macro_rules! keybind_handler {
-    (dyn $callback:expr) => {{
-        todo!("dynamic keybind handler closure")
-    }};
-    ($callback:expr) => {{
-        const CALLBACK: fn(&::std::primitive::str) = $callback;
+    ( $callback:expr $(,)? ) => {{
+        const __CALLBACK: fn(&::std::primitive::str) = $callback;
 
-        extern "C-unwind" fn keybind_callback_wrapper(identifier: *const ::std::ffi::c_char) {
+        extern "C-unwind" fn __keybind_callback_wrapper(identifier: *const ::std::ffi::c_char) {
             let identifier = unsafe { $crate::__macro::str_from_c(identifier) }
                 .expect("invalid identifier in keybind callback");
-            CALLBACK(identifier)
+            __CALLBACK(identifier)
         }
 
-        keybind_callback_wrapper
+        __keybind_callback_wrapper
     }};
 }
 

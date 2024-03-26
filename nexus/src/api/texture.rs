@@ -190,6 +190,8 @@ pub fn get_texture_or_create_from_memory(
 }
 
 /// Loads a texture from the given file path.
+///
+/// You can create a [`RawTextureReceiveCallback`] using the [`texture_receive`] macro.
 pub fn load_texture_from_file(
     identifier: impl AsRef<str>,
     file: impl AsRef<Path>,
@@ -211,6 +213,8 @@ pub fn load_texture_from_file(
 }
 
 /// Loads a texture from the given resource.
+///
+/// You can create a [`RawTextureReceiveCallback`] using the [`texture_receive`] macro.
 pub fn load_texture_from_resource(
     identifier: impl AsRef<str>,
     resource_id: u32,
@@ -233,6 +237,8 @@ pub fn load_texture_from_resource(
 }
 
 /// Loads a texture from the given URL.
+///
+/// You can create a [`RawTextureReceiveCallback`] using the [`texture_receive`] macro.
 ///
 /// # Usage
 /// ```no_run
@@ -269,6 +275,8 @@ pub fn load_texture_from_url(
 }
 
 /// Loads a texture from the given memory.
+/// ///
+/// You can create a [`RawTextureReceiveCallback`] using the [`texture_receive`] macro.
 pub fn load_texture_from_memory(
     identifier: impl AsRef<str>,
     memory: impl AsRef<[u8]>,
@@ -305,26 +313,22 @@ extern "C-unwind" fn dummy_receive_texture(_identifier: *const c_char, _texture:
 /// });
 /// load_texture_from_file("MY_TEXTURE", r"C:\path\to\texture.png", Some(texture_receive));
 /// ```
-// TODO: optionally allow captures by storing a dyn FnMut
 #[macro_export]
 macro_rules! texture_receive {
-    (dyn $callback:expr) => {{
-        todo!("dynamic texture receive closure")
-    }};
-    ($callback:expr) => {{
-        const CALLBACK: fn(&::std::primitive::str, &$crate::texture::Texture) = $callback;
+    ( $callback:expr $(,)? ) => {{
+        const __CALLBACK: fn(&::std::primitive::str, &$crate::texture::Texture) = $callback;
 
-        extern "C-unwind" fn keybind_callback_wrapper(
+        extern "C-unwind" fn __keybind_callback_wrapper(
             identifier: *const ::std::ffi::c_char,
             texture: *const $crate::texture::Texture,
         ) {
             let identifier = unsafe { $crate::__macro::str_from_c(identifier) }
                 .expect("invalid identifier in texture callback");
             let texture = unsafe { texture.as_ref() }.expect("no texture in texture callback");
-            CALLBACK(identifier, texture)
+            __CALLBACK(identifier, texture)
         }
 
-        keybind_callback_wrapper
+        __keybind_callback_wrapper
     }};
 }
 

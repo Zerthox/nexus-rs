@@ -22,6 +22,7 @@ pub type RawLog =
 /// Logs a message to the given channel.
 ///
 /// Supports custom coloring for addon window messages, for example `<c=#FF0000>this text is red</c>`.
+#[inline]
 pub fn log(level: LogLevel, channel_name: impl AsRef<str>, message: impl AsRef<str>) {
     let AddonApi { log, .. } = addon_api();
     let channel = str_to_c(channel_name, "failed to convert log channel");
