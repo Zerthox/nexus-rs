@@ -1,6 +1,5 @@
 use crate::{
     api::AddonApi,
-    gui,
     log::{log, LogLevel},
 };
 use std::{
@@ -62,14 +61,11 @@ pub fn on_unload(action: impl FnOnce() + Send + 'static) {
 
 /// Cleans up during addon unload.
 ///
-///  A call to this is inserted automatically by the [`export`](crate::export) macro.
+/// A call to this is inserted automatically by the [`export`](crate::export) macro.
 ///
 /// # Safety
 /// This may perform not thread-safe operations and leave globals in an invalid state.
 pub unsafe fn deinit() {
-    // remove gui callbacks
-    gui::unregister_all();
-
     // perform stored unload actions
     let mut guard = UNLOAD_ACTIONS.lock().unwrap();
     let vec: Vec<_> = mem::take(&mut guard);

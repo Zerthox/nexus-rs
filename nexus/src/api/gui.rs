@@ -1,6 +1,5 @@
-use crate::{addon_api, ui, AddonApi};
-use imgui::Ui;
-use std::{ffi::c_void, sync::Mutex};
+use crate::{addon_api, AddonApi, Revertible};
+use std::ffi::c_void;
 
 /// ImGui version.
 // TODO: is this still correct?
@@ -34,84 +33,61 @@ pub type ImguiMalloc = unsafe extern "C" fn(size: usize, user_data: *mut c_void)
 
 pub type ImguiFree = unsafe extern "C" fn(ptr: *mut c_void, user_data: *mut c_void);
 
-// TODO: render callback wrapping with macro?
-
-type RenderCallback = Box<dyn FnMut(&Ui) + Send + 'static>;
-
-macro_rules! define_render_wrappers {
-    ($( $name:ident: $type:expr ),*) => {
-        $( mod $name {
-            use super::*;
-
-            static RENDER_CALLBACK: Mutex<Option<RenderCallback>> = Mutex::new(None);
-
-            extern "C-unwind" fn render_wrapper() {
-                let mut guard = RENDER_CALLBACK.lock().unwrap();
-                let callback = guard
-                    .as_mut()
-                    .expect("attempt to call non-existent render callback");
-                let ui = unsafe { ui() };
-                callback(ui);
-            }
-
-            pub fn register(callback: impl FnMut(&Ui) + Send + 'static) {
-                let mut render_callback = RENDER_CALLBACK.lock().unwrap();
-                if render_callback.is_none() {
-                    let AddonApi { register_render, .. } = addon_api();
-                    unsafe { register_render($type, render_wrapper) }
-                }
-                *render_callback = Some(Box::new(callback));
-            }
-
-            pub fn unregister() {
-                if RENDER_CALLBACK.lock().unwrap().take().is_some() {
-                    let AddonApi { deregister_render, .. } = addon_api();
-                    unsafe { deregister_render(render_wrapper) }
-                }
-            }
-        } )*
-    };
-}
-
-define_render_wrappers! {
-    pre_render: RenderType::PreRender,
-    render: RenderType::Render,
-    post_render: RenderType::PostRender,
-    options_render: RenderType::OptionsRender
-}
-
-/// Registers the ImGui render callback of the given [`RenderType`].
+/// Registers a new ImGui render callback of the given [`RenderType`].
 ///
-/// **Important:** currently this function only supports one callback for each type.
-/// Adding another callback of the same type will overwrite the previous one.
-#[inline]
-pub fn register_render(render_type: RenderType, callback: impl FnMut(&Ui) + Send + 'static) {
-    match render_type {
-        RenderType::PreRender => pre_render::register(callback),
-        RenderType::Render => render::register(callback),
-        RenderType::PostRender => post_render::register(callback),
-        RenderType::OptionsRender => options_render::register(callback),
-    }
-}
-
-/// Unregisters the ImGui render callback of the given [`RenderType`].
+/// Returns a [`Revertible`] to revert the register.
 ///
-/// Noop if no callback was registered for the given type.
+/// # Usage
+/// ```no_run
+/// # use nexus::gui::*;
+/// let render_callback = render!(|ui| ui.text("Hello World"));
+/// register_render(RenderType::Render, render_callback).revert_on_unload();
+/// ```
 #[inline]
-pub fn unregister_render(render_type: RenderType) {
-    match render_type {
-        RenderType::PreRender => pre_render::unregister(),
-        RenderType::Render => render::unregister(),
-        RenderType::PostRender => post_render::unregister(),
-        RenderType::OptionsRender => options_render::unregister(),
-    }
+pub fn register_render(
+    render_type: RenderType,
+    callback: RawGuiRender,
+) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
+    let AddonApi {
+        register_render,
+        deregister_render,
+        ..
+    } = addon_api();
+    unsafe { register_render(render_type, callback) };
+    let revert = move || unsafe { deregister_render(callback) };
+    revert.into()
 }
 
-/// Unregisters all ImGui render callbacks.
+/// Unregisters a previously registered ImGui render callback.
 #[inline]
-pub fn unregister_all() {
-    pre_render::unregister();
-    render::unregister();
-    post_render::unregister();
-    options_render::unregister();
+pub fn unregister_render(callback: RawGuiRender) {
+    let AddonApi {
+        deregister_render, ..
+    } = addon_api();
+    unsafe { deregister_render(callback) }
 }
+
+/// Macro to wrap an ImGui render callback.
+///
+/// Generates a [`RawGuiRender`] wrapper around the passed callback.
+///
+/// # Usage
+/// ```no_run
+/// # use nexus::gui::*;
+/// let render_callback = render!(|ui| ui.text("Hello World"));
+/// ```
+#[macro_export]
+macro_rules! render {
+    ( $callback:expr $(,)? ) => {{
+        const __CALLBACK: fn(&$crate::imgui::Ui) = $callback;
+
+        extern "C-unwind" fn __render_callback_wrapper() {
+            let ui = unsafe { $crate::ui() };
+            __CALLBACK(&ui)
+        }
+
+        __render_callback_wrapper
+    }};
+}
+
+pub use render;
