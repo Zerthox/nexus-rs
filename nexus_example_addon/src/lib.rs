@@ -1,6 +1,6 @@
 use nexus::{
     event::event_subscribe,
-    gui::{register_render, RenderType},
+    gui::{register_render, render, RenderType},
     imgui::Window,
     keybind::{keybind_handler, register_keybind_with_string},
     paths::get_addon_dir,
@@ -24,17 +24,26 @@ fn load() {
 
     let addon_dir = get_addon_dir("example").expect("invalid addon dir");
 
-    let mut show = false;
-    register_render(RenderType::Render, move |ui| {
-        Window::new("Test window").build(ui, || {
-            if show {
-                show = !ui.button("hide");
-                ui.text("Hello world");
-            } else {
-                show = ui.button("show");
-            }
-        });
-    });
+    register_render(
+        RenderType::Render,
+        render!(|ui| {
+            Window::new("Test window").build(ui, || {
+                // this is fine since imgui is single threaded
+                static mut SHOW: bool = false;
+                let mut show = unsafe { SHOW };
+
+                if show {
+                    show = !ui.button("hide");
+                    ui.text("Hello world");
+                } else {
+                    show = ui.button("show");
+                }
+
+                unsafe { SHOW = show };
+            });
+        }),
+    )
+    .revert_on_unload();
 
     add_shortcut(
         "MY_SHORTCUT",
@@ -57,11 +66,11 @@ fn load() {
     let keybind_handler = keybind_handler!(|id| log::info!("keybind {id} pressed"));
     register_keybind_with_string("MY_KEYBIND", keybind_handler, "").revert_on_unload();
 
-    event_subscribe!("MY_EVENT" => i32, |data| println!("received event {data:?}"))
+    unsafe { event_subscribe!("MY_EVENT" => i32, |data| println!("received event {data:?}")) }
         .revert_on_unload();
 }
 
 fn unload() {
-    // render callbacks are unregistered automatically
-    // all actions passed to on_load() or revert_on_unload() are performed
+    log::info!("Unloading addon");
+    // all actions passed to on_load() or revert_on_unload() are performed automatically
 }
