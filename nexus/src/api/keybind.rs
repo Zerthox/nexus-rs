@@ -1,13 +1,40 @@
 use crate::{addon_api, revertible::Revertible, util::str_to_c, AddonApi};
 use std::ffi::c_char;
 
+/// A keybind.
 #[derive(Debug, Clone)]
 #[repr(C)]
 pub struct Keybind {
+    /// The key.
     pub key: u16,
+
+    /// Alt modifier.
     pub alt: bool,
+
+    /// Control modifier.
     pub ctrl: bool,
+
+    /// Shift modifier.
     pub shift: bool,
+}
+
+impl Keybind {
+    /// Creates a new keybind without modifiers.
+    #[inline]
+    pub fn without_modifiers(key: u16) -> Self {
+        Self {
+            key,
+            alt: false,
+            ctrl: false,
+            shift: false,
+        }
+    }
+
+    /// Checks whether the keybind has modifiers.
+    #[inline]
+    pub fn has_modifiers(&self) -> bool {
+        !self.alt && !self.ctrl && !self.shift
+    }
 }
 
 pub type RawKeybindHandler = extern "C-unwind" fn(identifier: *const c_char);
