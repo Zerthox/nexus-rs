@@ -74,7 +74,7 @@ pub fn unregister_render(callback: RawGuiRender) {
 /// # Usage
 /// ```no_run
 /// # use nexus::gui::*;
-/// let render_callback = render!(|ui| ui.text("Hello World"));
+/// let render_callback: RawGuiRender = render!(|ui| ui.text("Hello World"));
 /// ```
 #[macro_export]
 macro_rules! render {

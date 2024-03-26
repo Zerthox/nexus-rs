@@ -74,9 +74,11 @@ pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeU
 }
 
 /// Macro to subscribe to an event with a wrapped callback.
-/// This macro is [unsafe](https://doc.rust-lang.org/std/keyword.unsafe.html).
 ///
-/// Returns a callable that reverts the subscribe.
+/// This macro is [unsafe](https://doc.rust-lang.org/std/keyword.unsafe.html).
+/// See [`event_subscribe_typed`] for more information.
+///
+/// Returns a [`Revertible`] to revert the subscribe.
 ///
 /// # Usage
 /// ```no_run

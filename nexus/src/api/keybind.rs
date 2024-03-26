@@ -136,7 +136,7 @@ pub fn unregister_keybind(identifier: impl AsRef<str>) {
 /// # Usage
 /// ```no_run
 /// # use nexus::keybind::*;
-/// let keybind_handler = keybind_handler!(|id| {
+/// let keybind_handler: RawKeybindHandler = keybind_handler!(|id| {
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("keybind {id} pressed"));
 /// });
