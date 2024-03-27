@@ -52,8 +52,8 @@ impl AddonInfo {
             .as_ref()
             .map(|load| {
                 quote! {
-                    const LOAD: ::nexus::addon::AddonLoad = #load;
-                    LOAD();
+                    const __LOAD: ::nexus::addon::AddonLoad = #load;
+                    __LOAD();
                 }
             })
             .unwrap_or_default()
@@ -64,8 +64,8 @@ impl AddonInfo {
             .as_ref()
             .map(|unload| {
                 quote! {
-                    const UNLOAD: ::nexus::addon::AddonUnload = #unload;
-                    UNLOAD();
+                    const __UNLOAD: ::nexus::addon::AddonUnload = #unload;
+                    __UNLOAD();
                 }
             })
             .unwrap_or_default()
@@ -100,17 +100,17 @@ impl AddonInfo {
             mod __nexus_addon_export {
                 use super::*;
 
-                const ADDON_NAME: &'static ::std::primitive::str = #name;
+                const __ADDON_NAME: &'static ::std::primitive::str = #name;
 
-                static ADDON_DEF: ::nexus::addon::AddonDefinition = ::nexus::addon::AddonDefinition {
+                static __ADDON_DEF: ::nexus::addon::AddonDefinition = ::nexus::addon::AddonDefinition {
                     signature: #signature,
                     api_version: ::nexus::API_VERSION,
                     name: #name_ptr,
                     version: #version,
                     author: #author,
                     description: #description,
-                    load: self::load_wrapper,
-                    unload: ::std::option::Option::Some(self::unload_wrapper),
+                    load: self::__load_wrapper,
+                    unload: ::std::option::Option::Some(self::__unload_wrapper),
                     flags: #flags,
                     provider: #provider,
                     update_link: #update_link,
@@ -118,15 +118,15 @@ impl AddonInfo {
 
                 #[no_mangle]
                 unsafe extern "system-unwind" fn GetAddonDef() -> *const ::nexus::addon::AddonDefinition {
-                    &self::ADDON_DEF
+                    &self::__ADDON_DEF
                 }
 
-                unsafe extern "C-unwind" fn load_wrapper(api: *const ::nexus::AddonApi) {
-                    ::nexus::__macro::init(api, self::ADDON_NAME);
+                unsafe extern "C-unwind" fn __load_wrapper(api: *const ::nexus::AddonApi) {
+                    ::nexus::__macro::init(api, self::__ADDON_NAME);
                     #load
                 }
 
-                unsafe extern "C-unwind" fn unload_wrapper() {
+                unsafe extern "C-unwind" fn __unload_wrapper() {
                     #unload
                     ::nexus::__macro::deinit();
                 }
