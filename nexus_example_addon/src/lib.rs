@@ -55,7 +55,7 @@ fn load() {
     .revert_on_unload();
 
     let receive_texture =
-        texture_receive!(|id: &str, _texture: &Texture| log::info!("texture {id} loaded"));
+        texture_receive!(|id: &str, _texture: Option<&Texture>| log::info!("texture {id} loaded"));
     load_texture_from_file("MY_ICON", addon_dir.join("icon.png"), Some(receive_texture));
     load_texture_from_file(
         "MY_ICON_HOVER",

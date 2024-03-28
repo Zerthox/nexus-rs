@@ -316,7 +316,7 @@ extern "C-unwind" fn dummy_receive_texture(_identifier: *const c_char, _texture:
 #[macro_export]
 macro_rules! texture_receive {
     ( $callback:expr $(,)? ) => {{
-        const __CALLBACK: fn(&::std::primitive::str, &$crate::texture::Texture) = $callback;
+        const __CALLBACK: fn(&::std::primitive::str, Option<&$crate::texture::Texture>) = $callback;
 
         extern "C-unwind" fn __keybind_callback_wrapper(
             identifier: *const ::std::ffi::c_char,
@@ -324,7 +324,7 @@ macro_rules! texture_receive {
         ) {
             let identifier = unsafe { $crate::__macro::str_from_c(identifier) }
                 .expect("invalid identifier in texture callback");
-            let texture = unsafe { texture.as_ref() }.expect("no texture in texture callback");
+            let texture = unsafe { texture.as_ref() };
             __CALLBACK(identifier, texture)
         }
 
