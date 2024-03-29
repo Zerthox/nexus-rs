@@ -32,3 +32,4 @@ features = [
 [features]
 mumble = ["dep:gw2_mumble"]
 hook = ["dep:detour"]
+serde = ["dep:serde", "gw2_mumble/serde"]
