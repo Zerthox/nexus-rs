@@ -73,15 +73,18 @@ pub fn read_nexus_link() -> Option<NexusLink> {
 pub mod mumble {
     use super::*;
 
-    pub use gw2_mumble::{
-        map_type, Context, Identity, LinkedMem as MumbleLink, Mount, Position, Profession, Race,
-        UIScaling, UiState,
-    };
+    pub use gw2_mumble::{LinkedMem as MumbleLink, *};
 
     /// Returns the shared [`MumbleLink`] pointer.
     #[inline]
-    pub fn get_mumble_link() -> *const MumbleLink {
+    pub fn get_mumble_link_ptr() -> *const MumbleLink {
         get_resource(MUMBLE_LINK)
+    }
+
+    /// Returns the shared [`MumbleLink`] pointer as [`MumblePtr`].
+    #[inline]
+    pub fn get_mumble_link() -> Option<MumblePtr> {
+        MumblePtr::new(get_mumble_link_ptr().cast_mut())
     }
 
     /// Reads the shared [`MumbleLink`] data.
@@ -92,4 +95,4 @@ pub mod mumble {
 }
 
 #[cfg(feature = "mumble")]
-pub use self::mumble::{get_mumble_link, read_mumble_link, MumbleLink};
+pub use self::mumble::{get_mumble_link, get_mumble_link_ptr, read_mumble_link, MumbleLink};
