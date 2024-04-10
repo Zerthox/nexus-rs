@@ -84,7 +84,8 @@ pub mod mumble {
     /// Returns the shared [`MumbleLink`] pointer as [`MumblePtr`].
     #[inline]
     pub fn get_mumble_link() -> Option<MumblePtr> {
-        MumblePtr::new(get_mumble_link_ptr().cast_mut())
+        let ptr = get_mumble_link_ptr().cast_mut();
+        unsafe { MumblePtr::new(ptr) }
     }
 
     /// Reads the shared [`MumbleLink`] data.
