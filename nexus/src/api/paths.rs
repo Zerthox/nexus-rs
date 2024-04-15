@@ -28,7 +28,7 @@ pub fn get_addon_dir(name: impl AsRef<str>) -> Option<PathBuf> {
 
 /// Returns the common addon directory.
 ///
-/// Synonymous with `get_addon_dir("common")`.
+/// Alias for `get_addon_dir("common")`.
 #[inline]
 pub fn get_common_dir() -> Option<PathBuf> {
     let AddonApi { get_common_dir, .. } = addon_api();

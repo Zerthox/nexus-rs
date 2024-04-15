@@ -21,7 +21,7 @@ pub struct SupportedFields {
     /// Raidcore addon id or random unique negative integer, if not on Raidcore.
     pub signature: i32,
 
-    /// Name of the addon (default: CARGO_PKG_NAME)
+    /// Name of the addon. Defaults to `CARGO_PKG_NAME`.
     pub name: Option<String>,
 
     /// Load function of the addon.

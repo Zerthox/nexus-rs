@@ -104,7 +104,7 @@ impl AddonInfo {
 
                 static __ADDON_DEF: ::nexus::addon::AddonDefinition = ::nexus::addon::AddonDefinition {
                     signature: #signature,
-                    api_version: ::nexus::API_VERSION,
+                    api_version: ::nexus::AddonApi::VERSION,
                     name: #name_ptr,
                     version: #version,
                     author: #author,
