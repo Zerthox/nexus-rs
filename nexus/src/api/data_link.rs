@@ -28,13 +28,13 @@ pub struct NexusLink {
     pub is_camera_moving: bool,
     pub is_gameplay: bool,
 
-    #[serde(skip)]
+    #[cfg_attr(feature = "serde", serde(skip))]
     pub font: *const c_void,
 
-    #[serde(skip)]
+    #[cfg_attr(feature = "serde", serde(skip))]
     pub font_big: *const c_void,
 
-    #[serde(skip)]
+    #[cfg_attr(feature = "serde", serde(skip))]
     pub font_ui: *const c_void,
 }
 

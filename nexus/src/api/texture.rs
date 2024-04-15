@@ -23,7 +23,7 @@ pub struct Texture {
     pub height: u32,
 
     /// Shader resource view of the texture.
-    #[serde(skip)]
+    #[cfg_attr(feature = "serde", serde(skip))]
     pub resource: ID3D11ShaderResourceView,
 }
 
