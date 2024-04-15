@@ -18,6 +18,7 @@ pub const NEXUS_LINK: &str = "DL_NEXUS_LINK";
 
 /// Nexus link data.
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
 #[repr(C)]
 pub struct NexusLink {
     pub width: u32,
@@ -26,8 +27,14 @@ pub struct NexusLink {
     pub is_moving: bool,
     pub is_camera_moving: bool,
     pub is_gameplay: bool,
+
+    #[serde(skip)]
     pub font: *const c_void,
+
+    #[serde(skip)]
     pub font_big: *const c_void,
+
+    #[serde(skip)]
     pub font_ui: *const c_void,
 }
 

@@ -7,6 +7,19 @@ pub const IMGUI_VERSION: u32 = 18000;
 
 /// Type of render callback.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "strum",
+    derive(
+        strum::AsRefStr,
+        strum::Display,
+        strum::EnumCount,
+        strum::EnumIter,
+        strum::IntoStaticStr,
+        strum::VariantArray,
+        strum::VariantNames
+    )
+)]
 #[repr(C)]
 pub enum RenderType {
     /// Before ImGui frame is initialized.

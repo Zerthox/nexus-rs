@@ -2,6 +2,19 @@ use std::ffi::c_void;
 
 /// MinHook error codes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "strum",
+    derive(
+        strum::AsRefStr,
+        strum::Display,
+        strum::EnumCount,
+        strum::EnumIter,
+        strum::IntoStaticStr,
+        strum::VariantArray,
+        strum::VariantNames
+    )
+)]
 #[repr(C)]
 pub enum HookStatus {
     /// Unknown error. Should not be returned.

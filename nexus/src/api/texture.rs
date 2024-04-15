@@ -13,6 +13,7 @@ use windows::Win32::{Foundation::HMODULE, Graphics::Direct3D11::ID3D11ShaderReso
 
 /// A loaded texture.
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
 #[repr(C)]
 pub struct Texture {
     /// Width of the texture.
@@ -22,6 +23,7 @@ pub struct Texture {
     pub height: u32,
 
     /// Shader resource view of the texture.
+    #[serde(skip)]
     pub resource: ID3D11ShaderResourceView,
 }
 

@@ -55,6 +55,7 @@ pub type RawAddonLoad = unsafe extern "C-unwind" fn(api: *const AddonApi);
 pub type RawAddonUnload = unsafe extern "C-unwind" fn();
 
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(C)]
 pub struct AddonVersion {
     pub major: i16,
@@ -65,6 +66,7 @@ pub struct AddonVersion {
 
 bitflags! {
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
     pub struct AddonFlags: u32 {
         const None = 0;
 
@@ -77,7 +79,20 @@ bitflags! {
 }
 
 // TODO: rust enum encapsulating provider & link?
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "strum",
+    derive(
+        strum::AsRefStr,
+        strum::Display,
+        strum::EnumCount,
+        strum::EnumIter,
+        strum::IntoStaticStr,
+        strum::VariantArray,
+        strum::VariantNames
+    )
+)]
 #[repr(C)]
 pub enum UpdateProvider {
     /// Does not support auto updating.

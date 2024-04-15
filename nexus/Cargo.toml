@@ -33,4 +33,4 @@ features = [
 mumble = ["dep:gw2_mumble"]
 mumble_json = ["mumble", "gw2_mumble/json"]
 hook = ["dep:detour"]
-serde = ["dep:serde", "gw2_mumble/serde"]
+serde = ["dep:serde", "bitflags/serde", "gw2_mumble/serde"]

@@ -3,6 +3,7 @@ use std::ffi::c_char;
 
 /// A keybind.
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(C)]
 pub struct Keybind {
     /// The key.
