@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["get_addon_dir","get_common_dir","get_game_dir"],"type":["RawGetAddonDir","RawGetCommonDir","RawGetGameDir"]};

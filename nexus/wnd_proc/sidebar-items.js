@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["deregister_wnd_proc","register_wnd_proc","send_wnd_proc_to_game"],"type":["RawWndProcAddRem","RawWndProcCallback","RawWndProcSendToGame"]};

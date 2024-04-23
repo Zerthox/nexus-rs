@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["UpdateProvider"],"struct":["AddonDefinition","AddonFlags","AddonVersion","UpdateProviderIter"],"type":["AddonLoad","AddonUnload","RawAddonLoad","RawAddonUnload"]};

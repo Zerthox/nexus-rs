@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ImColor32","ImColor32Fields"]};

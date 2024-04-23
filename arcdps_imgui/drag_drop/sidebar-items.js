@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["DragDropFlags","DragDropPayload","DragDropPayloadEmpty","DragDropPayloadPod","DragDropSource","DragDropSourceToolTip","DragDropTarget","PayloadIsWrongType"]};

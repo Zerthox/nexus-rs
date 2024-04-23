@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["add_shortcut","add_simple_shortcut","remove_shortcut","remove_simple_shortcut"],"type":["RawQuickAccessAddShortcut","RawQuickAccessAddSimple","RawQuickAccessGeneric"]};

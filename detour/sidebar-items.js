@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"struct":["GenericDetour","RawDetour"],"trait":["Function","HookableWith"],"type":["Result"]};

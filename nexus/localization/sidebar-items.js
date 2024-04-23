@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["translate","translate_to"],"type":["RawLocalizationTranslate","RawLocalizationTranslateTo"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["addon_api","on_unload","ui"],"macro":["event_subscribe","export","keybind_handler","render","texture_receive"],"mod":["addon","alert","data_link","event","gui","hook","keybind","localization","log","paths","quick_access","texture","v2","v3","wnd_proc"],"struct":["AddonApi","Revertible","SupportedFields"]};

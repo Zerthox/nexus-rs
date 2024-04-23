@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["IMGUI_VERSION"],"enum":["RenderType"],"fn":["register_render","unregister_render"],"macro":["render"],"struct":["RenderTypeIter"],"type":["ImguiFree","ImguiMalloc","RawGuiAddRender","RawGuiRemRender","RawGuiRender"]};

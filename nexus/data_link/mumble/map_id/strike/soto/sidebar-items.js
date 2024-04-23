@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["COSMIC_OBSERVATORY","TEMPLE_OF_FEBE"]};

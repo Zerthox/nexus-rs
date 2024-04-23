@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["DEFINE_DEVPROPKEY","DEFINE_GUID","DEFINE_PROPERTYKEY","ENUM","RIDL","STRUCT"],"mod":["ctypes","km","shared","ucrt","um","vc","winrt"],"trait":["Class","Interface"]};
