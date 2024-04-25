@@ -1,3 +1,5 @@
+//! Quick access creation.
+
 use crate::{addon_api, gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi};
 use std::ffi::c_char;
 

@@ -1,3 +1,5 @@
+//! Paths.
+
 use crate::{
     addon_api,
     util::{path_from_c, str_to_c},

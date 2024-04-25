@@ -1,3 +1,5 @@
+//! Event system.
+
 use crate::{addon_api, revertible::Revertible, util::str_to_c, AddonApi};
 use std::{
     ffi::{c_char, c_void},

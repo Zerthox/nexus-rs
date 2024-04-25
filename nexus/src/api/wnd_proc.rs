@@ -1,3 +1,5 @@
+//! Windows [WNDPROC](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-wndproc).
+
 use crate::{addon_api, revertible::Revertible, AddonApi};
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
 

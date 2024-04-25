@@ -1,3 +1,5 @@
+//! Addon API version 3.
+
 use super::{
     alert::RawAlertNotify,
     data_link::{RawDataGetResource, RawDataShareResource},

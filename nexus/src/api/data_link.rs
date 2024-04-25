@@ -1,3 +1,7 @@
+//! Data link for sharing resources.
+//!
+//! Enable the `"mumble"` or `"mumble_json"` feature for Mumble link bindings.
+
 use crate::{addon_api, util::str_to_c, AddonApi};
 use std::{
     ffi::{c_char, c_void},
@@ -38,7 +42,7 @@ pub struct NexusLink {
     pub font_ui: *const c_void,
 }
 
-/// Gets a pointer to a shared resource.
+/// Returns a pointer to a shared resource.
 pub fn get_resource<T>(identifier: impl AsRef<str>) -> *const T {
     let identifier = str_to_c(identifier, "failed to convert data link identifier");
     let AddonApi { get_resource, .. } = addon_api();

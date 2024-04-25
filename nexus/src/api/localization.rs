@@ -1,3 +1,5 @@
+//! Localization of strings.
+
 use crate::{
     addon_api,
     util::{str_to_c, string_from_c},

@@ -1,3 +1,5 @@
+//! Logging.
+
 use crate::{addon_api, util::str_to_c, AddonApi};
 use std::ffi::c_char;
 

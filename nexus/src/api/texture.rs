@@ -1,3 +1,5 @@
+//! Texture loading.
+
 use crate::{
     addon_api,
     util::{path_to_c, str_to_c},

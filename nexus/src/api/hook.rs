@@ -1,3 +1,7 @@
+//! Hooking via [MinHook](https://github.com/TsudaKageyu/minhook).
+//!
+//! Enable the `"hook"` feature for bindings using trait interfaces from the [detour](https://github.com/darfink/detour-rs) crate.
+
 use std::ffi::c_void;
 
 /// MinHook error codes.
@@ -73,7 +77,6 @@ pub type RawHookEnable = unsafe extern "stdcall-unwind" fn(target: *const c_void
 
 pub type RawHookDisable = unsafe extern "stdcall-unwind" fn(target: *const c_void) -> HookStatus;
 
-/// MinHook bindings using trait interfaces from the [detour](https://github.com/darfink/detour-rs) crate.
 #[cfg(feature = "hook")]
 mod bindings {
     use super::*;

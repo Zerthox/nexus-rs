@@ -1,8 +1,10 @@
+//! Addon information.
+
+use crate::api::AddonApi;
 use bitflags::bitflags;
 use std::ffi::c_char;
 
-use crate::api::AddonApi;
-
+/// Addon definition.
 #[derive(Debug, Clone)]
 #[repr(C)]
 pub struct AddonDefinition {
@@ -54,6 +56,7 @@ pub type RawAddonLoad = unsafe extern "C-unwind" fn(api: *const AddonApi);
 
 pub type RawAddonUnload = unsafe extern "C-unwind" fn();
 
+/// Addon version.
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[repr(C)]
@@ -65,6 +68,7 @@ pub struct AddonVersion {
 }
 
 bitflags! {
+    /// Addon flags.
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
     #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
     pub struct AddonFlags: u32 {
@@ -78,6 +82,7 @@ bitflags! {
     }
 }
 
+/// Addon update provider.
 // TODO: rust enum encapsulating provider & link?
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

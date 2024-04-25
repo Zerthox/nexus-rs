@@ -1,3 +1,5 @@
+//! Addon API version 2.
+
 use super::{
     data_link::{RawDataGetResource, RawDataShareResource},
     event::{RawEventRaise, RawEventRaiseNotification, RawEventSubscribe},

@@ -1,13 +1,15 @@
 # Raidcore Nexus bindings
 Rust bindings for [Raidcore Nexus](https://raidcore.gg/Nexus) addons.
+Documentation available at [zerthox.github.io/nexus-rs/nexus](https://zerthox.github.io/nexus-rs/nexus).
 
 ## Features
-- Rust abstractions for Nexus Addon API
+- Rust abstractions for the [Nexus Addon API](https://github.com/RaidcoreGG/RCGG-lib-nexus-api)
 - Wrapping custom callbacks via macros 
-- ImGui interfacing via [imgui-rs](https://github.com/imgui-rs/imgui-rs)
+- [ImGui](https://github.com/ocornut/imgui) interfacing via [imgui-rs](https://github.com/imgui-rs/imgui-rs)
 - Optional logging via [log](https://github.com/rust-lang/log)
 - Optional [serde](https://serde.rs) and [strum](https://github.com/Peternator7/strum) integration
-- Optional bindings for GW2 Mumble API
+- Optional bindings for the GW2 Mumble API
+- Optional [MinHook](https://github.com/TsudaKageyu/minhook) bindings with interfaces from [detour-rs](https://github.com/darfink/detour-rs)
 
 ## Usage
 ```toml
@@ -29,4 +31,3 @@ nexus::export! {
     },
 }
 ```
- 

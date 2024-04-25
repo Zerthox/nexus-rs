@@ -1,3 +1,22 @@
+//! Bindings for Raidcore Nexus addons.
+//!
+//! # Usage
+//! ```no_run
+//! use nexus::gui::{register_render, render, RenderType};
+//!
+//! nexus::export! {
+//!     name: "My Addon",
+//!     signature: -0x12345678,
+//!     load: || {
+//!         register_render(RenderType::Render, render!(|ui| {
+//!             Window::new("My Window").build(ui, || {
+//!                 ui.text("Hello World");
+//!             });
+//!         }));
+//!     },
+//! }
+//! ```
+
 pub mod addon;
 mod api;
 mod globals;

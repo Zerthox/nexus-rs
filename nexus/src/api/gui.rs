@@ -1,3 +1,5 @@
+//! [ImGui](https://github.com/ocornut/imgui) rendering via [`imgui-rs`](crate::imgui).
+
 use crate::{addon_api, AddonApi, Revertible};
 use std::ffi::c_void;
 
