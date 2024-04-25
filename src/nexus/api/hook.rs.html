@@ -141,7 +141,14 @@
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::ffi::c_void;
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Hooking via [MinHook](https://github.com/TsudaKageyu/minhook).
+//!
+//! Enable the `"hook"` feature for bindings using trait interfaces from the [detour](https://github.com/darfink/detour-rs) crate.
+
+</span><span class="kw">use </span>std::ffi::c_void;
 
 <span class="doccomment">/// MinHook error codes.
 </span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -216,8 +223,7 @@
 
 <span class="kw">pub type </span>RawHookDisable = <span class="kw">unsafe extern </span><span class="string">"stdcall-unwind" </span><span class="kw">fn</span>(target: <span class="kw-2">*const </span>c_void) -&gt; HookStatus;
 
-<span class="doccomment">/// MinHook bindings using trait interfaces from the [detour](https://github.com/darfink/detour-rs) crate.
-</span><span class="attr">#[cfg(feature = <span class="string">"hook"</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"hook"</span>)]
 </span><span class="kw">mod </span>bindings {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::addon_api;

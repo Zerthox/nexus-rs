@@ -106,7 +106,15 @@
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
-</pre></div><pre class="rust"><code><span class="kw">use crate</span>::{addon_api, util::str_to_c, AddonApi};
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Data link for sharing resources.
+//!
+//! Enable the `"mumble"` or `"mumble_json"` feature for Mumble link bindings.
+
+</span><span class="kw">use crate</span>::{addon_api, util::str_to_c, AddonApi};
 <span class="kw">use </span>std::{
     ffi::{c_char, c_void},
     mem,
@@ -146,7 +154,7 @@
     </span><span class="kw">pub </span>font_ui: <span class="kw-2">*const </span>c_void,
 }
 
-<span class="doccomment">/// Gets a pointer to a shared resource.
+<span class="doccomment">/// Returns a pointer to a shared resource.
 </span><span class="kw">pub fn </span>get_resource&lt;T&gt;(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;) -&gt; <span class="kw-2">*const </span>T {
     <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert data link identifier"</span>);
     <span class="kw">let </span>AddonApi { get_resource, .. } = addon_api();

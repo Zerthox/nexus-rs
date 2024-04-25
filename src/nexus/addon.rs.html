@@ -109,12 +109,19 @@
 <a href="#107" id="107">107</a>
 <a href="#108" id="108">108</a>
 <a href="#109" id="109">109</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>bitflags::bitflags;
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Addon information.
+
+</span><span class="kw">use </span><span class="kw">crate</span>::api::AddonApi;
+<span class="kw">use </span>bitflags::bitflags;
 <span class="kw">use </span>std::ffi::c_char;
 
-<span class="kw">use </span><span class="kw">crate</span>::api::AddonApi;
-
-<span class="attr">#[derive(Debug, Clone)]
+<span class="doccomment">/// Addon definition.
+</span><span class="attr">#[derive(Debug, Clone)]
 #[repr(C)]
 </span><span class="kw">pub struct </span>AddonDefinition {
     <span class="doccomment">/// Raidcore addon id or random unique negative integer, if not on Raidcore.
@@ -165,7 +172,8 @@
 
 <span class="kw">pub type </span>RawAddonUnload = <span class="kw">unsafe extern </span><span class="string">"C-unwind" </span><span class="kw">fn</span>();
 
-<span class="attr">#[derive(Debug, Clone)]
+<span class="doccomment">/// Addon version.
+</span><span class="attr">#[derive(Debug, Clone)]
 #[cfg_attr(feature = <span class="string">"serde"</span>, derive(serde::Serialize, serde::Deserialize))]
 #[repr(C)]
 </span><span class="kw">pub struct </span>AddonVersion {
@@ -176,7 +184,8 @@
 }
 
 <span class="macro">bitflags! </span>{
-    <span class="attr">#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    <span class="doccomment">/// Addon flags.
+    </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
     #[cfg_attr(feature = <span class="string">"serde"</span>, derive(serde::Serialize, serde::Deserialize))]
     </span><span class="kw">pub struct </span>AddonFlags: u32 {
         <span class="kw">const </span><span class="prelude-val">None </span>= <span class="number">0</span>;
@@ -189,7 +198,8 @@
     }
 }
 
-<span class="comment">// TODO: rust enum encapsulating provider &amp; link?
+<span class="doccomment">/// Addon update provider.
+</span><span class="comment">// TODO: rust enum encapsulating provider &amp; link?
 </span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = <span class="string">"serde"</span>, derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(

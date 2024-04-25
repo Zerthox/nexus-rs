@@ -97,7 +97,11 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
-</pre></div><pre class="rust"><code><span class="kw">use crate</span>::{addon_api, gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi};
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Quick access creation.
+
+</span><span class="kw">use crate</span>::{addon_api, gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi};
 <span class="kw">use </span>std::ffi::c_char;
 
 <span class="kw">pub type </span>RawQuickAccessAddShortcut = <span class="kw">unsafe extern </span><span class="string">"C-unwind" </span><span class="kw">fn</span>(
