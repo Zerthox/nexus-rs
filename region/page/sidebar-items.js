@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["ceil","floor","size","size_from_range"]};

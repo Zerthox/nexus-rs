@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["MapError","MapOption","MemoryMapKind"],"struct":["MemoryMap"]};

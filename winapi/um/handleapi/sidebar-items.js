@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["INVALID_HANDLE_VALUE"],"fn":["CloseHandle","CompareObjectHandles","DuplicateHandle","GetHandleInformation","SetHandleInformation"]};

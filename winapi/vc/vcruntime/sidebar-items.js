@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"type":["intptr_t","ptrdiff_t","size_t"]};
