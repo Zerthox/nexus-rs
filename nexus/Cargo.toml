@@ -10,7 +10,7 @@ rust-version = "1.71.0"
 [dependencies]
 bitflags = "2.4.2"
 detour = { version = "0.8.1", default-features = false, optional = true }
-gw2_mumble = { git = "https://github.com/zerthox/gw2-mumble-rs", optional = true }
+gw2_mumble = { git = "https://github.com/zerthox/gw2-mumble-rs", tag = "0.2.1", optional = true }
 imgui = { package = "arcdps-imgui", version = "0.8.0", features = ["tables-api"] }
 log = { version = "0.4.21", features = ["std"], optional = true }
 nexus_codegen = { path = "../nexus_codegen" }
