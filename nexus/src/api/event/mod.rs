@@ -1,10 +1,49 @@
 //! Event system.
 
+mod nexus;
+
+#[cfg(feature = "arc")]
+pub mod arc;
+
+#[cfg(feature = "extras")]
+pub mod extras;
+
 use crate::{addon_api, revertible::Revertible, util::str_to_c, AddonApi};
 use std::{
     ffi::{c_char, c_void},
+    marker::PhantomData,
     mem,
 };
+
+pub use self::nexus::*;
+
+/// An event identifier & payload type pair.
+#[derive(Debug, Clone, Copy)]
+pub struct Event<T> {
+    pub identifier: &'static str,
+    _phantom: PhantomData<T>,
+}
+
+impl<T> Event<T> {
+    /// Creates a new event identifier & payload type pair.
+    ///
+    /// # Safety
+    /// See [`event_subscribe_typed`].
+    pub const unsafe fn new(identifier: &'static str) -> Self {
+        Self {
+            identifier,
+            _phantom: PhantomData,
+        }
+    }
+
+    /// Subscribes to the event.
+    pub fn subscribe(
+        &self,
+        callback: RawEventConsume<T>,
+    ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
+        unsafe { event_subscribe_typed(self.identifier, callback) }
+    }
+}
 
 pub type RawEventConsume<T> = extern "C-unwind" fn(event_args: *const T);
 
@@ -28,12 +67,6 @@ pub type RawEventSubscribe = unsafe extern "C-unwind" fn(
     identifier: *const c_char,
     consume_callback: RawEventConsumeUnknown,
 );
-
-/// Mumble identity update event identifier.
-pub const MUMBLE_IDENTITY_UPDATED: &str = "EV_MUMBLE_IDENTITY_UPDATED";
-
-/// Window resized event identifier.
-pub const WINDOW_RESIZED: &str = "EV_WINDOW_RESIZED";
 
 /// Subscribes to an event with a raw callback using an unknown payload.
 ///
@@ -84,6 +117,51 @@ pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeU
     unsafe { event_unsubscribe(identifier.as_ptr(), callback) }
 }
 
+/// Macro to wrap an event callback.
+///
+/// Generates a [`RawEventConsume`] wrapper around the passed callback.
+///
+/// # Usage
+/// ```no_run
+/// # use nexus::event::*;
+/// let event_callback = event_consume!(|data: Option<&i32>| {
+///     use nexus::log::{log, LogLevel};
+///     log(LogLevel::Info, "My Addon", format!("received event with data {data}"));
+/// });
+/// ```
+///
+/// ```no_run
+/// fn event_callback(event_args: Option<&i32>) {
+///     use nexus::log::{log, LogLevel};
+///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {event_args:?}"));
+/// }
+/// let event_callback = event_consume!(<i32> event_callback);
+/// ```
+#[macro_export]
+macro_rules! event_consume {
+    ( < $ty:ty > $callback:expr $(,)? ) => {{
+        const __CALLBACK: fn(::std::option::Option<&$ty>) = $callback;
+
+        extern "C-unwind" fn __event_callback_wrapper(data: *const $ty) {
+            let data = unsafe { data.as_ref() };
+            __CALLBACK(data)
+        }
+
+        __event_callback_wrapper
+    }};
+    ( $ty:ty , $callback:expr $(,)? ) => {
+        $crate::event::event_consume!(<$ty> $callback)
+    };
+    ( | $arg:ident : Option< & $ty:ty > | $body:expr $(,)? ) => {
+        $crate::event::event_consume!(<$ty> |$arg: Option<&$ty>| $body)
+    };
+    ( $callback:expr $(,)? ) => {{
+        $crate::event::event_consume!(<()> $callback)
+    }};
+}
+
+pub use event_consume;
+
 /// Macro to subscribe to an event with a wrapped callback.
 ///
 /// This macro is [unsafe](https://doc.rust-lang.org/std/keyword.unsafe.html).
@@ -96,7 +174,8 @@ pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeU
 /// # use nexus::event::*;
 /// unsafe {
 ///     event_subscribe!("MY_EVENT" => i32, |args| {
-///         println!("Received {args:?}");
+///         use nexus::log::{log, LogLevel};
+///         log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {args:?}"));
 ///     })
 /// }.revert_on_unload();
 /// ```
@@ -106,7 +185,8 @@ pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeU
 /// # use nexus::event::*;
 /// let event: &str = "MY_EVENT";
 /// fn event_callback(event_args: Option<&i32>) {
-///     println!("Received {event_args:?}");
+///     use nexus::log::{log, LogLevel};
+///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {event_args:?}"));
 /// }
 /// let revertible = unsafe { event_subscribe!(event => i32, event_callback) };
 /// revertible.revert();
@@ -132,16 +212,9 @@ macro_rules! event_subscribe {
     ( $event:expr , $ty:ty , $callback:expr $(,)? ) => {
         $crate::event::event_subscribe!($event => $ty, $callback)
     };
-    ( $event:expr => $ty:ty , $callback:expr $(,)? ) => {{
-        const __CALLBACK: fn(::std::option::Option<&$ty>) = $callback;
-
-        extern "C-unwind" fn __event_callback_wrapper(data: *const $ty) {
-            let data = unsafe { data.as_ref() };
-            __CALLBACK(data)
-        }
-
-        $crate::event::event_subscribe_typed($event, __event_callback_wrapper)
-    }};
+    ( $event:expr => $ty:ty , $callback:expr $(,)? ) => {
+        $crate::event::event_subscribe_typed($event, $crate::event::event_consume!(<$ty> $callback))
+    };
 }
 
 pub use event_subscribe;
