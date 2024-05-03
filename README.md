@@ -9,6 +9,7 @@ Documentation available at [zerthox.github.io/nexus-rs/nexus](https://zerthox.gi
 - Optional logging via [log](https://github.com/rust-lang/log)
 - Optional [serde](https://serde.rs) and [strum](https://github.com/Peternator7/strum) integration
 - Optional bindings for the GW2 Mumble API
+- Optional bindings for events forwarded from [ArcDPS](https://deltaconnected.com/arcdps/) & [Unofficial Extras](https://github.com/Krappa322/arcdps_unofficial_extras_releases)).
 - Optional [MinHook](https://github.com/TsudaKageyu/minhook) bindings with interfaces from [detour-rs](https://github.com/darfink/detour-rs)
 
 ## Usage
