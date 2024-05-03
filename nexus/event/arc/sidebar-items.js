@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["COMBAT_LOCAL","COMBAT_SQUAD"],"struct":["CombatData"]};

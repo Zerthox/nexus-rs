@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CHAT_MESSAGE","EXTRAS_SQUAD_UPDATE","KEYBIND_CHANGED","LANGUAGE_CHANGED"],"struct":["SquadUpdate"]};
