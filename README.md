@@ -17,7 +17,10 @@ nexus = { git = "https://github.com/zerthox/nexus-rs" }
 ```
 
 ```rs
-use nexus::gui::{register_render, render, RenderType};
+use nexus::{
+    gui::{register_render, render, RenderType},
+    imgui::Window,
+};
 
 nexus::export! {
     name: "My Addon",
