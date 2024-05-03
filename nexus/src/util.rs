@@ -45,6 +45,7 @@ pub fn path_to_c(path: impl AsRef<Path>, err_msg: &str) -> CString {
 /// Helper trait to handle `Option<&CStr>` and  `Option<CString>`.
 pub trait OptionCStrExt {
     /// Returns the string as [`c_char`] pointer or `null`.
+    #[allow(dead_code)]
     fn as_ptr_opt(&self) -> *const c_char;
 }
 

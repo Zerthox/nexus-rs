@@ -1,3 +1,5 @@
+//! Nexus events.
+
 use super::Event;
 
 /// Nexus addon loaded event.
