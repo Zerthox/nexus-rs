@@ -2,7 +2,11 @@
 //!
 //! # Usage
 //! ```no_run
-//! use nexus::gui::{register_render, render, RenderType};
+//! # mod main {
+//! use nexus::{
+//!     gui::{register_render, render, RenderType},
+//!     imgui::Window
+//! };
 //!
 //! nexus::export! {
 //!     name: "My Addon",
@@ -13,8 +17,9 @@
 //!                 ui.text("Hello World");
 //!             });
 //!         }));
-//!     },
+//!     }
 //! }
+//! # }
 //! ```
 
 pub mod addon;

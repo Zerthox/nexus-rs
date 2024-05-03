@@ -1,4 +1,19 @@
 //! Event system.
+//!
+//! ```no_run
+//! use nexus::{
+//!     event::{ADDON_LOADED, event_consume},
+//!     log::{log, LogLevel}
+//! };
+//!
+//! let callback = event_consume!(|payload: Option<&i32>| {
+//!     if let Some(signature) = payload {
+//!         log(LogLevel::Info, "My Addon", format!("Addon {signature:?} loaded"));
+//!     }
+//! });
+//!
+//! ADDON_LOADED.subscribe(callback);
+//! ```
 
 mod nexus;
 
@@ -126,11 +141,12 @@ pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeU
 /// # use nexus::event::*;
 /// let event_callback = event_consume!(|data: Option<&i32>| {
 ///     use nexus::log::{log, LogLevel};
-///     log(LogLevel::Info, "My Addon", format!("received event with data {data}"));
+///     log(LogLevel::Info, "My Addon", format!("received event with data {data:?}"));
 /// });
 /// ```
 ///
 /// ```no_run
+/// # use nexus::event::*;
 /// fn event_callback(event_args: Option<&i32>) {
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {event_args:?}"));
