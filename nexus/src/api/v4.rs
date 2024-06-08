@@ -1,14 +1,5 @@
 //! Addon API version 4.
 
-use crate::{
-    font::{
-        RawFontAddFromFile, RawFontAddFromMemory, RawFontAddFromResource, RawFontGet,
-        RawFontRelease,
-    },
-    keybind::{RawKeybindRegisterWithString, RawKeybindRegisterWithStruct},
-    updater::RawRequestUpdate,
-};
-
 use super::{
     alert::RawAlertNotify,
     data_link::{RawDataGetResource, RawDataShareResource},
@@ -16,9 +7,13 @@ use super::{
         RawEventRaise, RawEventRaiseNotification, RawEventRaiseNotificationTargeted,
         RawEventRaiseTargeted, RawEventSubscribe,
     },
+    font::{
+        RawFontAddFromFile, RawFontAddFromMemory, RawFontAddFromResource, RawFontGet,
+        RawFontRelease,
+    },
     gui::{ImguiFree, ImguiMalloc, RawGuiAddRender, RawGuiRemRender},
     hook::{RawHookCreate, RawHookDisable, RawHookEnable, RawHookRemove},
-    keybind::RawKeybindDeregister,
+    keybind::{RawKeybindDeregister, RawKeybindRegisterWithString, RawKeybindRegisterWithStruct},
     localization::{RawLocalizationTranslate, RawLocalizationTranslateTo},
     log::RawLog,
     paths::{RawGetAddonDir, RawGetCommonDir, RawGetGameDir},
@@ -28,6 +23,7 @@ use super::{
         RawTextureGetOrCreateFromResource, RawTextureGetOrCreateFromUrl, RawTextureLoadFromFile,
         RawTextureLoadFromMemory, RawTextureLoadFromResource, RawTextureLoadFromUrl,
     },
+    updater::RawRequestUpdate,
     wnd_proc::{RawWndProcAddRem, RawWndProcSendToGame},
 };
 use windows::Win32::Graphics::{Direct3D11::ID3D11Device, Dxgi::IDXGISwapChain};
