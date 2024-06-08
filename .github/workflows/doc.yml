@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo doc --all-features --no-deps -p nexus -p detour -p gw2_mumble -p arcdps-imgui -p arcdps-imgui-sys -p log -p windows
+      - run: cargo doc --all-features --no-deps -p nexus -p detour -p gw2_mumble -p arcdps-imgui -p arcdps-imgui-sys -p log -p windows@0.57
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
