@@ -198,6 +198,8 @@
 <a href="#196" id="196">196</a>
 <a href="#197" id="197">197</a>
 <a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Addon API version 3.
 
 </span><span class="kw">use super</span>::{
@@ -209,7 +211,9 @@
     },
     gui::{ImguiFree, ImguiMalloc, RawGuiAddRender, RawGuiRemRender},
     hook::{RawHookCreate, RawHookDisable, RawHookEnable, RawHookRemove},
-    keybind::{RawKeybindDeregister, RawKeybindRegisterWithString, RawKeybindRegisterWithStruct},
+    keybind::{
+        RawKeybindDeregister, RawKeybindRegisterWithStringOld, RawKeybindRegisterWithStructOld,
+    },
     localization::{RawLocalizationTranslate, RawLocalizationTranslateTo},
     log::RawLog,
     paths::{RawGetAddonDir, RawGetCommonDir, RawGetGameDir},
@@ -314,12 +318,12 @@
     <span class="doccomment">/// Registers a new keybind handler for a given named keybind.
     ///
     /// Keybind is a string like `"ALT+SHIFT+T`.
-    </span><span class="kw">pub </span>keybind_register_with_string: RawKeybindRegisterWithString,
+    </span><span class="kw">pub </span>keybind_register_with_string: RawKeybindRegisterWithStringOld,
 
     <span class="doccomment">/// Registers a new keybind handler for a given named keybind.
     ///
     /// Keybind is a [`Keybind`](crate::keybind::Keybind) struct.
-    </span><span class="kw">pub </span>keybind_register_with_struct: RawKeybindRegisterWithStruct,
+    </span><span class="kw">pub </span>keybind_register_with_struct: RawKeybindRegisterWithStructOld,
 
     <span class="doccomment">/// Removes a registered keybind.
     </span><span class="kw">pub </span>keybind_deregister: RawKeybindDeregister,

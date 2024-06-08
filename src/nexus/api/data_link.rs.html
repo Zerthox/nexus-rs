@@ -158,7 +158,7 @@
 </span><span class="kw">pub fn </span>get_resource&lt;T&gt;(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;) -&gt; <span class="kw-2">*const </span>T {
     <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert data link identifier"</span>);
     <span class="kw">let </span>AddonApi { get_resource, .. } = addon_api();
-    <span class="kw">unsafe </span>{ get_resource(identifier.as_ptr()) <span class="kw">as _ </span>}
+    <span class="kw">unsafe </span>{ get_resource(identifier.as_ptr()).cast() }
 }
 
 <span class="doccomment">/// Reads a shared resource.
@@ -176,7 +176,7 @@
     <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert data link identifier"</span>);
     <span class="kw">let </span>AddonApi { share_resource, .. } = addon_api();
     <span class="kw">let </span>size = mem::size_of::&lt;T&gt;();
-    <span class="kw">unsafe </span>{ share_resource(identifier.as_ptr(), size) <span class="kw">as _ </span>}
+    <span class="kw">unsafe </span>{ share_resource(identifier.as_ptr(), size).cast() }
 }
 
 <span class="doccomment">/// Returns the shared [`NexusLink`] pointer.

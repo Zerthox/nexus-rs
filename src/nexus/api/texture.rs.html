@@ -528,7 +528,7 @@
     <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert texture identifier"</span>);
     <span class="kw">let </span>memory = memory.as_ref();
     <span class="kw">unsafe </span>{
-        get_texture_or_create_from_memory(identifier.as_ptr(), memory.as_ptr() <span class="kw">as _</span>, memory.len())
+        get_texture_or_create_from_memory(identifier.as_ptr(), memory.as_ptr().cast(), memory.len())
             .as_ref()
             .cloned()
     }
@@ -624,7 +624,7 @@
 /// You can create a [`RawTextureReceiveCallback`] using the [`texture_receive`] macro.
 </span><span class="kw">pub fn </span>load_texture_from_memory(
     identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
-    memory: <span class="kw">impl </span>AsRef&lt;[u8]&gt;,
+    data: <span class="kw">impl </span>AsRef&lt;[u8]&gt;,
     callback: <span class="prelude-ty">Option</span>&lt;RawTextureReceiveCallback&gt;,
 ) {
     <span class="kw">let </span>AddonApi {
@@ -632,12 +632,12 @@
         ..
     } = addon_api();
     <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert texture identifier"</span>);
-    <span class="kw">let </span>memory = memory.as_ref();
+    <span class="kw">let </span>data = data.as_ref();
     <span class="kw">unsafe </span>{
         load_texture_from_memory(
             identifier.as_ptr(),
-            memory.as_ptr() <span class="kw">as _</span>,
-            memory.len(),
+            data.as_ptr().cast(),
+            data.len(),
             callback.unwrap_or(dummy_receive_texture),
         )
     }
