@@ -9,7 +9,9 @@ use super::{
     },
     gui::{ImguiFree, ImguiMalloc, RawGuiAddRender, RawGuiRemRender},
     hook::{RawHookCreate, RawHookDisable, RawHookEnable, RawHookRemove},
-    keybind::{RawKeybindDeregister, RawKeybindRegisterWithString, RawKeybindRegisterWithStruct},
+    keybind::{
+        RawKeybindDeregister, RawKeybindRegisterWithStringOld, RawKeybindRegisterWithStructOld,
+    },
     localization::{RawLocalizationTranslate, RawLocalizationTranslateTo},
     log::RawLog,
     paths::{RawGetAddonDir, RawGetCommonDir, RawGetGameDir},
@@ -114,12 +116,12 @@ pub struct AddonApi {
     /// Registers a new keybind handler for a given named keybind.
     ///
     /// Keybind is a string like `"ALT+SHIFT+T`.
-    pub keybind_register_with_string: RawKeybindRegisterWithString,
+    pub keybind_register_with_string: RawKeybindRegisterWithStringOld,
 
     /// Registers a new keybind handler for a given named keybind.
     ///
     /// Keybind is a [`Keybind`](crate::keybind::Keybind) struct.
-    pub keybind_register_with_struct: RawKeybindRegisterWithStruct,
+    pub keybind_register_with_struct: RawKeybindRegisterWithStructOld,
 
     /// Removes a registered keybind.
     pub keybind_deregister: RawKeybindDeregister,

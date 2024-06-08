@@ -95,9 +95,15 @@ mod bindings {
     {
         let mut original = ptr::null();
         let create = addon_api().hook_create;
-        let err = unsafe { create(target.to_ptr() as _, detour.to_ptr() as _, &mut original) };
+        let err = unsafe {
+            create(
+                target.to_ptr().cast(),
+                detour.to_ptr().cast(),
+                &mut original,
+            )
+        };
         match err {
-            HookStatus::Ok => Ok(original as _),
+            HookStatus::Ok => Ok(original.cast()),
             _ => Err(err),
         }
     }
@@ -122,21 +128,21 @@ mod bindings {
     #[inline]
     pub fn remove_hook(target: impl Function) -> HookStatus {
         let remove = addon_api().hook_remove;
-        unsafe { remove(target.to_ptr() as _) }
+        unsafe { remove(target.to_ptr().cast()) }
     }
 
     /// Enables an already created hook.
     #[inline]
     pub fn enable_hook(target: impl Function) -> HookStatus {
         let enable = addon_api().hook_enable;
-        unsafe { enable(target.to_ptr() as _) }
+        unsafe { enable(target.to_ptr().cast()) }
     }
 
     /// Disables an already created hook.
     #[inline]
     pub fn disable_hook(target: impl Function) -> HookStatus {
         let disable = addon_api().hook_disable;
-        unsafe { disable(target.to_ptr() as _) }
+        unsafe { disable(target.to_ptr().cast()) }
     }
 }
 

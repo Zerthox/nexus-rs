@@ -15,7 +15,7 @@ fn expr_or(expr: &Option<Expr>, default: impl FnOnce() -> TokenStream) -> TokenS
 }
 
 fn as_char_ptr(value: impl ToTokens) -> TokenStream {
-    quote! { ::std::primitive::str::as_ptr(concat!(#value, "\0")) as _ }
+    quote! { ::std::primitive::str::as_ptr(concat!(#value, "\0")).cast()}
 }
 
 impl AddonInfo {

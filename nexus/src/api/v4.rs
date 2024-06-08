@@ -1,13 +1,24 @@
-//! Addon API version 2.
+//! Addon API version 4.
+
+use crate::{
+    font::{
+        RawFontAddFromFile, RawFontAddFromMemory, RawFontAddFromResource, RawFontGet,
+        RawFontRelease,
+    },
+    keybind::{RawKeybindRegisterWithString, RawKeybindRegisterWithStruct},
+    updater::RawRequestUpdate,
+};
 
 use super::{
+    alert::RawAlertNotify,
     data_link::{RawDataGetResource, RawDataShareResource},
-    event::{RawEventRaise, RawEventRaiseNotification, RawEventSubscribe},
+    event::{
+        RawEventRaise, RawEventRaiseNotification, RawEventRaiseNotificationTargeted,
+        RawEventRaiseTargeted, RawEventSubscribe,
+    },
     gui::{ImguiFree, ImguiMalloc, RawGuiAddRender, RawGuiRemRender},
     hook::{RawHookCreate, RawHookDisable, RawHookEnable, RawHookRemove},
-    keybind::{
-        RawKeybindDeregister, RawKeybindRegisterWithStringOld, RawKeybindRegisterWithStructOld,
-    },
+    keybind::RawKeybindDeregister,
     localization::{RawLocalizationTranslate, RawLocalizationTranslateTo},
     log::RawLog,
     paths::{RawGetAddonDir, RawGetCommonDir, RawGetGameDir},
@@ -21,7 +32,7 @@ use super::{
 };
 use windows::Win32::Graphics::{Direct3D11::ID3D11Device, Dxgi::IDXGISwapChain};
 
-/// Nexus addon API (version 2).
+/// Nexus addon API (version 4).
 #[derive(Debug, Clone)]
 #[repr(C)]
 pub struct AddonApi {
@@ -42,6 +53,9 @@ pub struct AddonApi {
 
     /// Removes a registered render callback.
     pub deregister_render: RawGuiRemRender,
+
+    /// Downloads the addon available at remote without checking its version.
+    pub request_update: RawRequestUpdate,
 
     /// Returns the path to the game directory.
     ///
@@ -75,13 +89,24 @@ pub struct AddonApi {
     /// Supports custom coloring for addon window messages, for example `<c=#FF0000>this text is red</c>`.
     pub log: RawLog,
 
+    /// Sends a text alert to the user visible for a short amount of time.
+    pub alert_notify: RawAlertNotify,
+
     /// Raises an event to all subscribing addons.
     pub event_raise: RawEventRaise,
 
-    /// Raises an event without a payload.
+    /// Raises an event without payload to all subscribing addons.
     ///
-    /// Alias `event_raise("EV_FOO", null)`.
+    /// Alias for `event_raise("EV_FOO", null)`.
     pub event_raise_notification: RawEventRaiseNotification,
+
+    /// Raises an event for a specific subscribing addon.
+    pub event_raise_targeted: RawEventRaiseTargeted,
+
+    /// Raises an event without payload for a specific subscribing addon.
+    ///
+    /// Alias for `event_raise_targeted("EV_FOO", null)`.
+    pub event_raise_notification_targeted: RawEventRaiseNotificationTargeted,
 
     /// Registers a new event callback.
     pub event_subscribe: RawEventSubscribe,
@@ -101,12 +126,12 @@ pub struct AddonApi {
     /// Registers a new keybind handler for a given named keybind.
     ///
     /// Keybind is a string like `"ALT+SHIFT+T`.
-    pub keybind_register_with_string: RawKeybindRegisterWithStringOld,
+    pub keybind_register_with_string: RawKeybindRegisterWithString,
 
     /// Registers a new keybind handler for a given named keybind.
     ///
     /// Keybind is a [`Keybind`](crate::keybind::Keybind) struct.
-    pub keybind_register_with_struct: RawKeybindRegisterWithStructOld,
+    pub keybind_register_with_struct: RawKeybindRegisterWithStruct,
 
     /// Removes a registered keybind.
     pub keybind_deregister: RawKeybindDeregister,
@@ -167,6 +192,21 @@ pub struct AddonApi {
     /// Translates the identifier into the given language.
     /// Returns the same identifier if unavailable.
     pub translate_to: RawLocalizationTranslateTo,
+
+    /// Requests a font to be sent to the given callback/receiver.
+    pub get_font: RawFontGet,
+
+    /// Releases a callback/receiver from a specific font.
+    pub release_font: RawFontRelease,
+
+    /// Adds a font from disk and sends updates to the callback.
+    pub add_font_from_file: RawFontAddFromFile,
+
+    /// Adds a font from an embedded resource and sends updates to the callback.
+    pub add_font_from_resource: RawFontAddFromResource,
+
+    /// Adds a font from memory and sends updates to the callback.
+    pub add_font_from_memory: RawFontAddFromMemory,
 }
 
 unsafe impl Sync for AddonApi {}
@@ -175,7 +215,7 @@ unsafe impl Send for AddonApi {}
 
 impl AddonApi {
     /// Nexus Addon API version.
-    pub const VERSION: i32 = 2;
+    pub const VERSION: i32 = 4;
 
     /// Retrieves the DirectX 11 device associated with the swap chain.
     #[inline]

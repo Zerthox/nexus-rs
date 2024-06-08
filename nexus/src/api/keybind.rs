@@ -40,7 +40,21 @@ impl Keybind {
     }
 }
 
-pub type RawKeybindHandler = extern "C-unwind" fn(identifier: *const c_char);
+pub type RawKeybindHandlerOld = extern "C-unwind" fn(identifier: *const c_char);
+
+pub type RawKeybindRegisterWithStringOld = unsafe extern "C-unwind" fn(
+    identifier: *const c_char,
+    keybind_handler: RawKeybindHandlerOld,
+    keybind: *const c_char,
+);
+
+pub type RawKeybindRegisterWithStructOld = unsafe extern "C-unwind" fn(
+    identifier: *const c_char,
+    keybind_handler: RawKeybindHandlerOld,
+    keybind: Keybind,
+);
+
+pub type RawKeybindHandler = extern "C-unwind" fn(identifier: *const c_char, is_release: bool);
 
 pub type RawKeybindRegisterWithString = unsafe extern "C-unwind" fn(
     identifier: *const c_char,
@@ -63,9 +77,12 @@ pub type RawKeybindDeregister = unsafe extern "C-unwind" fn(identifier: *const c
 /// # Usage
 /// ```no_run
 /// use nexus::keybind::{register_keybind_with_string, keybind_handler};
-/// let keybind_handler = keybind_handler!(|id| {
+/// let keybind_handler = keybind_handler!(|id, is_release| {
 ///     use nexus::log::{log, LogLevel};
-///     log(LogLevel::Info, "My Addon", format!("keybind {id} pressed"));
+///     log(LogLevel::Info, "My Addon", format!(
+///         "keybind {id} {}",
+///         if is_release { "released" } else { "pressed "},
+///     ));
 /// });
 /// register_keybind_with_string("MY_KEYBIND", keybind_handler, "ALT+SHIFT+X")
 ///     .revert_on_unload();
@@ -100,9 +117,12 @@ pub fn register_keybind_with_string(
 ///     ctrl: false,
 ///     shift: true,
 /// };
-/// let keybind_handler = keybind_handler!(|id| {
+/// let keybind_handler = keybind_handler!(|id, is_release| {
 ///     use nexus::log::{log, LogLevel};
-///     log(LogLevel::Info, "My Addon", format!("keybind {id} pressed"));
+///     log(LogLevel::Info, "My Addon", format!(
+///         "keybind {id} {}",
+///         if is_release { "released" } else { "pressed "},
+///     ));
 /// });
 /// register_keybind_with_struct("MY_KEYBIND", keybind_handler, keybind)
 ///     .revert_on_unload();
@@ -139,20 +159,26 @@ pub fn unregister_keybind(identifier: impl AsRef<str>) {
 /// # Usage
 /// ```no_run
 /// # use nexus::keybind::*;
-/// let keybind_handler: RawKeybindHandler = keybind_handler!(|id| {
+/// let keybind_handler: RawKeybindHandler = keybind_handler!(|id, is_release| {
 ///     use nexus::log::{log, LogLevel};
-///     log(LogLevel::Info, "My Addon", format!("keybind {id} pressed"));
+///     log(LogLevel::Info, "My Addon", format!(
+///         "keybind {id} {}",
+///         if is_release { "released" } else { "pressed "},
+///     ));
 /// });
 /// ```
 #[macro_export]
 macro_rules! keybind_handler {
     ( $callback:expr $(,)? ) => {{
-        const __CALLBACK: fn(&::std::primitive::str) = $callback;
+        const __CALLBACK: fn(&::std::primitive::str, ::std::primitive::bool) = $callback;
 
-        extern "C-unwind" fn __keybind_callback_wrapper(identifier: *const ::std::ffi::c_char) {
+        extern "C-unwind" fn __keybind_callback_wrapper(
+            identifier: *const ::std::ffi::c_char,
+            is_release: ::std::primitive::bool,
+        ) {
             let identifier = unsafe { $crate::__macro::str_from_c(identifier) }
                 .expect("invalid identifier in keybind callback");
-            __CALLBACK(identifier)
+            __CALLBACK(identifier, is_release)
         }
 
         __keybind_callback_wrapper

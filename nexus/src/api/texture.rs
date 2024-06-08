@@ -187,7 +187,7 @@ pub fn get_texture_or_create_from_memory(
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
     let memory = memory.as_ref();
     unsafe {
-        get_texture_or_create_from_memory(identifier.as_ptr(), memory.as_ptr() as _, memory.len())
+        get_texture_or_create_from_memory(identifier.as_ptr(), memory.as_ptr().cast(), memory.len())
             .as_ref()
             .cloned()
     }
@@ -283,7 +283,7 @@ pub fn load_texture_from_url(
 /// You can create a [`RawTextureReceiveCallback`] using the [`texture_receive`] macro.
 pub fn load_texture_from_memory(
     identifier: impl AsRef<str>,
-    memory: impl AsRef<[u8]>,
+    data: impl AsRef<[u8]>,
     callback: Option<RawTextureReceiveCallback>,
 ) {
     let AddonApi {
@@ -291,12 +291,12 @@ pub fn load_texture_from_memory(
         ..
     } = addon_api();
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
-    let memory = memory.as_ref();
+    let data = data.as_ref();
     unsafe {
         load_texture_from_memory(
             identifier.as_ptr(),
-            memory.as_ptr() as _,
-            memory.len(),
+            data.as_ptr().cast(),
+            data.len(),
             callback.unwrap_or(dummy_receive_texture),
         )
     }

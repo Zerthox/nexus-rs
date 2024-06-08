@@ -46,7 +46,7 @@ pub struct NexusLink {
 pub fn get_resource<T>(identifier: impl AsRef<str>) -> *const T {
     let identifier = str_to_c(identifier, "failed to convert data link identifier");
     let AddonApi { get_resource, .. } = addon_api();
-    unsafe { get_resource(identifier.as_ptr()) as _ }
+    unsafe { get_resource(identifier.as_ptr()).cast() }
 }
 
 /// Reads a shared resource.
@@ -64,7 +64,7 @@ pub fn share_resource<T>(identifier: impl AsRef<str>) -> *mut T {
     let identifier = str_to_c(identifier, "failed to convert data link identifier");
     let AddonApi { share_resource, .. } = addon_api();
     let size = mem::size_of::<T>();
-    unsafe { share_resource(identifier.as_ptr(), size) as _ }
+    unsafe { share_resource(identifier.as_ptr(), size).cast() }
 }
 
 /// Returns the shared [`NexusLink`] pointer.

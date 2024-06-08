@@ -63,7 +63,10 @@ fn load() {
         Some(receive_texture),
     );
 
-    let keybind_handler = keybind_handler!(|id| log::info!("keybind {id} pressed"));
+    let keybind_handler = keybind_handler!(|id, is_release| log::info!(
+        "keybind {id} {}",
+        if is_release { "released" } else { "pressed" }
+    ));
     register_keybind_with_string("MY_KEYBIND", keybind_handler, "").revert_on_unload();
 
     unsafe { event_subscribe!("MY_EVENT" => i32, |data| println!("received event {data:?}")) }
