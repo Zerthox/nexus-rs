@@ -117,7 +117,8 @@ pub unsafe fn event_subscribe_typed<T>(
         event_unsubscribe,
         ..
     } = addon_api();
-    let callback = unsafe { mem::transmute(callback) };
+    let callback =
+        unsafe { mem::transmute::<RawEventConsume<T>, RawEventConsumeUnknown>(callback) };
     unsafe { event_subscribe(identifier.as_ptr(), callback) };
     let revert = move || unsafe { event_unsubscribe(identifier.as_ptr(), callback) };
     revert.into()

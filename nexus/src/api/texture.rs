@@ -34,7 +34,8 @@ impl Texture {
     #[inline]
     pub fn resource_ptr(&self) -> *const c_void {
         // ShaderResourceView is a IUnknown, which is is a NonNull<c_void>
-        unsafe { mem::transmute::<_, &NonNull<c_void>>(&self.resource) }.as_ptr()
+        unsafe { mem::transmute::<&ID3D11ShaderResourceView, &NonNull<c_void>>(&self.resource) }
+            .as_ptr()
     }
 
     /// Returns the associated [`imgui::TextureId`].
