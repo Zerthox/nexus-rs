@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["HookStatus"],"fn":["create_hook","create_hook_enabled","disable_hook","enable_hook","remove_hook"],"struct":["HookStatusIter"],"type":["RawHookCreate","RawHookDisable","RawHookEnable","RawHookRemove"]};
+window.SIDEBAR_ITEMS = {"enum":["HookStatus"],"fn":["create_hook","create_hook_enabled","create_hook_raw","disable_hook","disable_hook_raw","enable_hook","enable_hook_raw","remove_hook","remove_hook_raw"],"struct":["HookStatusIter"],"type":["RawHookCreate","RawHookDisable","RawHookEnable","RawHookRemove"]};

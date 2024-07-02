@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["fractal","hub","raid","strike"]};
+window.SIDEBAR_ITEMS = {"mod":["activity","fractal","hub","pvp","raid","strike","wvw"]};

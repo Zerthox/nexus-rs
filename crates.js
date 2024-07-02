@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["arcdps_imgui","arcdps_imgui_sys","detour","gw2_mumble","log","nexus","windows"];
+window.ALL_CRATES = ["arcdps_imgui","arcdps_imgui_sys","gw2_mumble","log","nexus","retour","windows"];
