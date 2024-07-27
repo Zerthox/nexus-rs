@@ -4,7 +4,7 @@ use nexus::{
     imgui::Window,
     keybind::{keybind_handler, register_keybind_with_string},
     paths::get_addon_dir,
-    quick_access::add_shortcut,
+    quick_access::add_quick_access,
     texture::{load_texture_from_file, texture_receive, Texture},
     AddonFlags, UpdateProvider,
 };
@@ -47,7 +47,7 @@ fn load() {
     )
     .revert_on_unload();
 
-    add_shortcut(
+    add_quick_access(
         "MY_SHORTCUT",
         "MY_ICON",
         "MY_ICON_HOVER",
