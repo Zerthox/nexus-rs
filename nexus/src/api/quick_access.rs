@@ -22,7 +22,7 @@ pub type RawQuickAccessGeneric = unsafe extern "C-unwind" fn(identifier: *const 
 /// When clicked the given keybind identifier is triggered.
 ///
 /// Returns a [`Revertible`] to remove the shortcut.
-pub fn add_shortcut(
+pub fn add_quick_access(
     identifier: impl AsRef<str>,
     texture_identifier: impl AsRef<str>,
     texture_hover_identifier: impl AsRef<str>,
@@ -58,16 +58,23 @@ pub fn add_shortcut(
 }
 
 /// Removes a previously registered shortcut from the quick access.
-pub fn remove_shortcut(identifier: impl AsRef<str>) {
+pub fn remove_quick_access(identifier: impl AsRef<str>) {
     let QuickAccessApi { remove, .. } = AddonApi::get().quick_access;
     let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
     unsafe { remove(identifier.as_ptr()) }
 }
 
-/// Adds a new [`RawGuiRender`] callback fired when the quick access is right-clicked.
+/// Sends a notification to the given quick access shortcut.
+pub fn notify_quick_access(identifier: impl AsRef<str>) {
+    let QuickAccessApi { notify, .. } = AddonApi::get().quick_access;
+    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
+    unsafe { notify(identifier.as_ptr()) }
+}
+
+/// Adds a new [`RawGuiRender`] callback for the shortcut context menu.
 ///
-/// Returns a [`Revertible`] to remove the shortcut.
-pub fn add_simple_shortcut(
+/// Returns a [`Revertible`] to remove the context menu.
+pub fn add_quick_access_context_menu(
     identifier: impl AsRef<str>,
     render_callback: RawGuiRender,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
@@ -76,18 +83,62 @@ pub fn add_simple_shortcut(
         remove_context_menu,
         ..
     } = AddonApi::get().quick_access;
-    let identifier = str_to_c(identifier, "failed to convert simple shortcut identifier");
+    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
     unsafe { add_context_menu(identifier.as_ptr(), render_callback) };
     let revert = move || unsafe { remove_context_menu(identifier.as_ptr()) };
     revert.into()
 }
 
-/// Removes a previously registered simple shortcut callback.
-pub fn remove_simple_shortcut(identifier: impl AsRef<str>) {
+/// Removes a previously registered shortcut context menu callback.
+pub fn remove_quick_access_context_menu(identifier: impl AsRef<str>) {
     let QuickAccessApi {
         remove_context_menu,
         ..
     } = AddonApi::get().quick_access;
-    let identifier = str_to_c(identifier, "failed to convert simple shortcut identifier");
+    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
     unsafe { remove_context_menu(identifier.as_ptr()) }
+}
+
+/// Adds a new shortcut icon to the quick access with the given texture identifiers.
+/// When clicked the given keybind identifier is triggered.
+///
+/// Returns a [`Revertible`] to remove the shortcut.
+#[deprecated = "use add_quick_access"]
+pub fn add_shortcut(
+    identifier: impl AsRef<str>,
+    texture_identifier: impl AsRef<str>,
+    texture_hover_identifier: impl AsRef<str>,
+    keybind_identifier: impl AsRef<str>,
+    tooltip_text: impl AsRef<str>,
+) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
+    add_quick_access(
+        identifier,
+        texture_identifier,
+        texture_hover_identifier,
+        keybind_identifier,
+        tooltip_text,
+    )
+}
+
+/// Removes a previously registered shortcut from the quick access.
+#[deprecated = "use remove_quick_access"]
+pub fn remove_shortcut(identifier: impl AsRef<str>) {
+    remove_quick_access(identifier)
+}
+
+/// Adds a new [`RawGuiRender`] callback fired when the quick access is right-clicked.
+///
+/// Returns a [`Revertible`] to remove the shortcut.
+#[deprecated = "use add_quick_access_context_menu"]
+pub fn add_simple_shortcut(
+    identifier: impl AsRef<str>,
+    render_callback: RawGuiRender,
+) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
+    add_quick_access_context_menu(identifier, render_callback)
+}
+
+/// Removes a previously registered simple shortcut callback.
+#[deprecated = "use remove_quick_access_context_menu"]
+pub fn remove_simple_shortcut(identifier: impl AsRef<str>) {
+    remove_quick_access_context_menu(identifier)
 }
