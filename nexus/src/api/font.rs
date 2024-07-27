@@ -1,7 +1,6 @@
 //! Font loading.
 
 use crate::{
-    addon_api,
     util::{path_to_c, str_to_c},
     AddonApi, Revertible,
 };
@@ -53,22 +52,18 @@ pub fn get_font(
     identifier: impl AsRef<str>,
     callback: RawFontReceive,
 ) -> Revertible<impl Fn() + Send + Sync + 'static> {
-    let AddonApi {
-        get_font,
-        release_font,
-        ..
-    } = addon_api();
+    let FontApi { get, release, .. } = AddonApi::get().font;
     let identifier = str_to_c(identifier, "failed to convert font identifier");
-    unsafe { get_font(identifier.as_ptr(), callback) };
-    let revert = move || unsafe { release_font(identifier.as_ptr(), callback) };
+    unsafe { get(identifier.as_ptr(), callback) };
+    let revert = move || unsafe { release(identifier.as_ptr(), callback) };
     revert.into()
 }
 
 /// Releases a previously registered callback for the font with the given identifier.
 pub fn release_font(identifier: impl AsRef<str>, callback: RawFontReceive) {
-    let AddonApi { release_font, .. } = addon_api();
+    let FontApi { release, .. } = AddonApi::get().font;
     let identifier = str_to_c(identifier, "failed to convert font identifier");
-    unsafe { release_font(identifier.as_ptr(), callback) }
+    unsafe { release(identifier.as_ptr(), callback) }
 }
 
 /// Adds a font from a file path and sends updates to the callback.
@@ -79,15 +74,15 @@ pub fn add_font_from_file(
     config: &mut ImFontConfig,
     callback: RawFontReceive,
 ) -> Revertible<impl Fn() + Send + Sync + 'static> {
-    let AddonApi {
-        add_font_from_file,
-        release_font,
+    let FontApi {
+        add_from_file,
+        release,
         ..
-    } = addon_api();
+    } = AddonApi::get().font;
     let identifier = str_to_c(identifier, "failed to convert font identifier");
     let file = path_to_c(file, "failed to convert font file path");
     unsafe {
-        add_font_from_file(
+        add_from_file(
             identifier.as_ptr(),
             font_size,
             file.as_ptr(),
@@ -95,7 +90,7 @@ pub fn add_font_from_file(
             config,
         )
     };
-    let revert = move || unsafe { release_font(identifier.as_ptr(), callback) };
+    let revert = move || unsafe { release(identifier.as_ptr(), callback) };
     revert.into()
 }
 
@@ -108,14 +103,14 @@ pub fn add_font_from_resource(
     config: &mut ImFontConfig,
     callback: RawFontReceive,
 ) -> Revertible<impl Fn() + Send + Sync + 'static> {
-    let AddonApi {
-        add_font_from_resource,
-        release_font,
+    let FontApi {
+        add_from_resource,
+        release,
         ..
-    } = addon_api();
+    } = AddonApi::get().font;
     let identifier = str_to_c(identifier, "failed to convert font identifier");
     unsafe {
-        add_font_from_resource(
+        add_from_resource(
             identifier.as_ptr(),
             font_size,
             resource,
@@ -124,7 +119,7 @@ pub fn add_font_from_resource(
             config,
         )
     };
-    let revert = move || unsafe { release_font(identifier.as_ptr(), callback) };
+    let revert = move || unsafe { release(identifier.as_ptr(), callback) };
     revert.into()
 }
 
@@ -136,15 +131,15 @@ pub fn add_font_from_memory(
     config: &mut ImFontConfig,
     callback: RawFontReceive,
 ) -> Revertible<impl Fn() + Send + Sync + 'static> {
-    let AddonApi {
-        add_font_from_memory,
-        release_font,
+    let FontApi {
+        add_from_memory,
+        release,
         ..
-    } = addon_api();
+    } = AddonApi::get().font;
     let identifier = str_to_c(identifier, "failed to convert font identifier");
     let data = data.as_ref();
     unsafe {
-        add_font_from_memory(
+        add_from_memory(
             identifier.as_ptr(),
             font_size,
             data.as_ptr().cast(),
@@ -153,7 +148,7 @@ pub fn add_font_from_memory(
             config,
         )
     };
-    let revert = move || unsafe { release_font(identifier.as_ptr(), callback) };
+    let revert = move || unsafe { release(identifier.as_ptr(), callback) };
     revert.into()
 }
 
@@ -192,3 +187,5 @@ macro_rules! font_receive {
 }
 
 pub use font_receive;
+
+use super::FontApi;

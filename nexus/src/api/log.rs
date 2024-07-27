@@ -1,6 +1,6 @@
 //! Logging.
 
-use crate::{addon_api, util::str_to_c, AddonApi};
+use crate::{util::str_to_c, AddonApi};
 use std::ffi::c_char;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -39,7 +39,7 @@ pub type RawLog =
 /// Supports custom coloring for addon window messages, for example `<c=#FF0000>this text is red</c>`.
 #[inline]
 pub fn log(level: LogLevel, channel_name: impl AsRef<str>, message: impl AsRef<str>) {
-    let AddonApi { log, .. } = addon_api();
+    let AddonApi { log, .. } = AddonApi::get();
     let channel = str_to_c(channel_name, "failed to convert log channel");
     let message = str_to_c(message, "failed to convert log message");
     unsafe { log(level, channel.as_ptr(), message.as_ptr()) }

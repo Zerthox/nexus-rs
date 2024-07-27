@@ -1,6 +1,6 @@
 //! Quick access creation.
 
-use crate::{addon_api, gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi};
+use crate::{gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi, QuickAccessApi};
 use std::ffi::c_char;
 
 pub type RawQuickAccessAddShortcut = unsafe extern "C-unwind" fn(
@@ -29,11 +29,7 @@ pub fn add_shortcut(
     keybind_identifier: impl AsRef<str>,
     tooltip_text: impl AsRef<str>,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
-    let AddonApi {
-        add_shortcut,
-        remove_shortcut,
-        ..
-    } = addon_api();
+    let QuickAccessApi { add, remove, .. } = AddonApi::get().quick_access;
     let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
     let texture_identifier = str_to_c(
         texture_identifier,
@@ -49,7 +45,7 @@ pub fn add_shortcut(
     );
     let tooltip_text = str_to_c(tooltip_text, "failed to convert shortcut tooltip text");
     unsafe {
-        add_shortcut(
+        add(
             identifier.as_ptr(),
             texture_identifier.as_ptr(),
             texture_hover_identifier.as_ptr(),
@@ -57,17 +53,15 @@ pub fn add_shortcut(
             tooltip_text.as_ptr(),
         )
     };
-    let revert = move || unsafe { remove_shortcut(identifier.as_ptr()) };
+    let revert = move || unsafe { remove(identifier.as_ptr()) };
     revert.into()
 }
 
 /// Removes a previously registered shortcut from the quick access.
 pub fn remove_shortcut(identifier: impl AsRef<str>) {
-    let AddonApi {
-        remove_shortcut, ..
-    } = addon_api();
+    let QuickAccessApi { remove, .. } = AddonApi::get().quick_access;
     let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
-    unsafe { remove_shortcut(identifier.as_ptr()) }
+    unsafe { remove(identifier.as_ptr()) }
 }
 
 /// Adds a new [`RawGuiRender`] callback fired when the quick access is right-clicked.
@@ -77,23 +71,23 @@ pub fn add_simple_shortcut(
     identifier: impl AsRef<str>,
     render_callback: RawGuiRender,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
-    let AddonApi {
-        add_simple_shortcut,
-        remove_simple_shortcut,
+    let QuickAccessApi {
+        add_context_menu,
+        remove_context_menu,
         ..
-    } = addon_api();
+    } = AddonApi::get().quick_access;
     let identifier = str_to_c(identifier, "failed to convert simple shortcut identifier");
-    unsafe { add_simple_shortcut(identifier.as_ptr(), render_callback) };
-    let revert = move || unsafe { remove_simple_shortcut(identifier.as_ptr()) };
+    unsafe { add_context_menu(identifier.as_ptr(), render_callback) };
+    let revert = move || unsafe { remove_context_menu(identifier.as_ptr()) };
     revert.into()
 }
 
 /// Removes a previously registered simple shortcut callback.
 pub fn remove_simple_shortcut(identifier: impl AsRef<str>) {
-    let AddonApi {
-        remove_simple_shortcut,
+    let QuickAccessApi {
+        remove_context_menu,
         ..
-    } = addon_api();
+    } = AddonApi::get().quick_access;
     let identifier = str_to_c(identifier, "failed to convert simple shortcut identifier");
-    unsafe { remove_simple_shortcut(identifier.as_ptr()) }
+    unsafe { remove_context_menu(identifier.as_ptr()) }
 }

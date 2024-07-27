@@ -1,9 +1,8 @@
 //! Texture loading.
 
 use crate::{
-    addon_api,
     util::{path_to_c, str_to_c},
-    AddonApi,
+    AddonApi, TextureApi,
 };
 use std::{
     ffi::{c_char, c_void},
@@ -115,9 +114,9 @@ pub type RawTextureLoadFromMemory = unsafe extern "C-unwind" fn(
 
 /// Attempts to retrieve a texture by its identifier.
 pub fn get_texture(identifier: impl AsRef<str>) -> Option<Texture> {
-    let AddonApi { get_texture, .. } = addon_api();
+    let TextureApi { get, .. } = AddonApi::get().texture;
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
-    unsafe { get_texture(identifier.as_ptr()).as_ref().cloned() }
+    unsafe { get(identifier.as_ptr()).as_ref().cloned() }
 }
 
 /// Attempts to retrieve a texture or creates it from the given file path.
@@ -125,14 +124,14 @@ pub fn get_texture_or_create_from_file(
     identifier: impl AsRef<str>,
     file: impl AsRef<Path>,
 ) -> Option<Texture> {
-    let AddonApi {
-        get_texture_or_create_from_file,
+    let TextureApi {
+        get_or_create_from_file,
         ..
-    } = addon_api();
+    } = AddonApi::get().texture;
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
     let file = path_to_c(file, "failed to convert texture file");
     unsafe {
-        get_texture_or_create_from_file(identifier.as_ptr(), file.as_ptr())
+        get_or_create_from_file(identifier.as_ptr(), file.as_ptr())
             .as_ref()
             .cloned()
     }
@@ -144,13 +143,13 @@ pub fn get_texture_or_create_from_resource(
     resource_id: u32,
     module: HMODULE,
 ) -> Option<Texture> {
-    let AddonApi {
-        get_texture_or_create_from_resource,
+    let TextureApi {
+        get_or_create_from_resource,
         ..
-    } = addon_api();
+    } = AddonApi::get().texture;
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
     unsafe {
-        get_texture_or_create_from_resource(identifier.as_ptr(), resource_id, module)
+        get_or_create_from_resource(identifier.as_ptr(), resource_id, module)
             .as_ref()
             .cloned()
     }
@@ -162,15 +161,15 @@ pub fn get_texture_or_create_from_url(
     remote: impl AsRef<str>,
     endpoint: impl AsRef<str>,
 ) -> Option<Texture> {
-    let AddonApi {
-        get_texture_or_create_from_url,
+    let TextureApi {
+        get_or_create_from_url,
         ..
-    } = addon_api();
+    } = AddonApi::get().texture;
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
     let remote = str_to_c(remote, "failed to convert texture url remote");
     let endpoint = str_to_c(endpoint, "failed to convert texture url endpoint");
     unsafe {
-        get_texture_or_create_from_url(identifier.as_ptr(), remote.as_ptr(), endpoint.as_ptr())
+        get_or_create_from_url(identifier.as_ptr(), remote.as_ptr(), endpoint.as_ptr())
             .as_ref()
             .cloned()
     }
@@ -181,14 +180,14 @@ pub fn get_texture_or_create_from_memory(
     identifier: impl AsRef<str>,
     memory: impl AsRef<[u8]>,
 ) -> Option<Texture> {
-    let AddonApi {
-        get_texture_or_create_from_memory,
+    let TextureApi {
+        get_or_create_from_memory,
         ..
-    } = addon_api();
+    } = AddonApi::get().texture;
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
     let memory = memory.as_ref();
     unsafe {
-        get_texture_or_create_from_memory(identifier.as_ptr(), memory.as_ptr().cast(), memory.len())
+        get_or_create_from_memory(identifier.as_ptr(), memory.as_ptr().cast(), memory.len())
             .as_ref()
             .cloned()
     }
@@ -202,14 +201,11 @@ pub fn load_texture_from_file(
     file: impl AsRef<Path>,
     callback: Option<RawTextureReceiveCallback>,
 ) {
-    let AddonApi {
-        load_texture_from_file,
-        ..
-    } = addon_api();
+    let TextureApi { load_from_file, .. } = AddonApi::get().texture;
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
     let file = path_to_c(file, "foo");
     unsafe {
-        load_texture_from_file(
+        load_from_file(
             identifier.as_ptr(),
             file.as_ptr(),
             callback.unwrap_or(dummy_receive_texture),
@@ -226,13 +222,12 @@ pub fn load_texture_from_resource(
     module: HMODULE,
     callback: Option<RawTextureReceiveCallback>,
 ) {
-    let AddonApi {
-        load_texture_from_resource,
-        ..
-    } = addon_api();
+    let TextureApi {
+        load_from_resource, ..
+    } = AddonApi::get().texture;
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
     unsafe {
-        load_texture_from_resource(
+        load_from_resource(
             identifier.as_ptr(),
             resource_id,
             module,
@@ -262,15 +257,12 @@ pub fn load_texture_from_url(
     endpoint: impl AsRef<str>,
     callback: Option<RawTextureReceiveCallback>,
 ) {
-    let AddonApi {
-        load_texture_from_url,
-        ..
-    } = addon_api();
+    let TextureApi { load_from_url, .. } = AddonApi::get().texture;
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
     let remote = str_to_c(remote, "failed to convert texture url remote");
     let endpoint = str_to_c(endpoint, "failed to convert texture url endpoint");
     unsafe {
-        load_texture_from_url(
+        load_from_url(
             identifier.as_ptr(),
             remote.as_ptr(),
             endpoint.as_ptr(),
@@ -287,14 +279,13 @@ pub fn load_texture_from_memory(
     data: impl AsRef<[u8]>,
     callback: Option<RawTextureReceiveCallback>,
 ) {
-    let AddonApi {
-        load_texture_from_memory,
-        ..
-    } = addon_api();
+    let TextureApi {
+        load_from_memory, ..
+    } = AddonApi::get().texture;
     let identifier = str_to_c(identifier, "failed to convert texture identifier");
     let data = data.as_ref();
     unsafe {
-        load_texture_from_memory(
+        load_from_memory(
             identifier.as_ptr(),
             data.as_ptr().cast(),
             data.len(),

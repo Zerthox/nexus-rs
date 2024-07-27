@@ -19,4 +19,14 @@ pub mod v6;
 pub mod wnd_proc;
 
 // export current supported version
-pub use v4::*;
+pub use v6::*;
+
+impl AddonApi {
+    /// Returns the Nexus [`AddonApi`] instance.
+    ///
+    /// Panics if called before initialization.
+    #[inline]
+    pub fn get() -> &'static Self {
+        crate::globals::addon_api()
+    }
+}

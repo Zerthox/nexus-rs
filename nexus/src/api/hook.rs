@@ -2,7 +2,7 @@
 //!
 //! Enable the `"hook"` feature for bindings using trait interfaces from the [detour](https://github.com/darfink/detour-rs) crate.
 
-use crate::{addon_api, AddonApi};
+use crate::{AddonApi, MinHookApi};
 use std::{ffi::c_void, ptr};
 
 /// MinHook error codes.
@@ -112,32 +112,32 @@ pub unsafe fn create_hook_raw(
     detour: *const (),
 ) -> Result<*const (), HookStatus> {
     let mut original = ptr::null();
-    let AddonApi { hook_create, .. } = addon_api();
-    let result = unsafe { hook_create(target.cast(), detour.cast(), &mut original) };
+    let MinHookApi { create, .. } = AddonApi::get().min_hook;
+    let result = unsafe { create(target.cast(), detour.cast(), &mut original) };
     result.ok_then(original.cast())
 }
 
 /// Removes an already created hook.
 #[inline]
 pub fn remove_hook_raw(target: *const ()) -> Result<(), HookStatus> {
-    let AddonApi { hook_remove, .. } = addon_api();
-    let result = unsafe { hook_remove(target.cast()) };
+    let MinHookApi { remove, .. } = AddonApi::get().min_hook;
+    let result = unsafe { remove(target.cast()) };
     result.ok()
 }
 
 /// Enables an already created hook.
 #[inline]
 pub fn enable_hook_raw(target: *const ()) -> Result<(), HookStatus> {
-    let AddonApi { hook_enable, .. } = addon_api();
-    let result = unsafe { hook_enable(target.cast()) };
+    let MinHookApi { enable, .. } = AddonApi::get().min_hook;
+    let result = unsafe { enable(target.cast()) };
     result.ok()
 }
 
 /// Dsiables an already created hook.
 #[inline]
 pub fn disable_hook_raw(target: *const ()) -> Result<(), HookStatus> {
-    let AddonApi { hook_disable, .. } = addon_api();
-    let result = unsafe { hook_disable(target.cast()) };
+    let MinHookApi { disable, .. } = AddonApi::get().min_hook;
+    let result = unsafe { disable(target.cast()) };
     result.ok()
 }
 

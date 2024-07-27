@@ -1,6 +1,6 @@
 //! Addon keybinds.
 
-use crate::{addon_api, revertible::Revertible, util::str_to_c, AddonApi};
+use crate::{revertible::Revertible, util::str_to_c, AddonApi, InputBindsApi};
 use std::ffi::c_char;
 
 /// A keybind.
@@ -94,15 +94,15 @@ pub fn register_keybind_with_string(
     handler: RawKeybindHandler,
     keybind: impl AsRef<str>,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
-    let AddonApi {
-        keybind_register_with_string,
-        keybind_deregister,
+    let InputBindsApi {
+        register_with_string,
+        deregister,
         ..
-    } = addon_api();
+    } = AddonApi::get().input_binds;
     let identifier = str_to_c(identifier, "failed to convert keybind identifier");
     let keybind = str_to_c(keybind, "failed to convert keybind string");
-    unsafe { keybind_register_with_string(identifier.as_ptr(), handler, keybind.as_ptr()) };
-    let revert = move || unsafe { keybind_deregister(identifier.as_ptr()) };
+    unsafe { register_with_string(identifier.as_ptr(), handler, keybind.as_ptr()) };
+    let revert = move || unsafe { deregister(identifier.as_ptr()) };
     revert.into()
 }
 
@@ -134,24 +134,22 @@ pub fn register_keybind_with_struct(
     handler: RawKeybindHandler,
     keybind: Keybind,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
-    let AddonApi {
-        keybind_register_with_struct,
-        keybind_deregister,
+    let InputBindsApi {
+        register_with_struct,
+        deregister,
         ..
-    } = addon_api();
+    } = AddonApi::get().input_binds;
     let identifier = str_to_c(identifier, "failed to convert keybind identifier");
-    unsafe { keybind_register_with_struct(identifier.as_ptr(), handler, keybind) };
-    let revert = move || unsafe { keybind_deregister(identifier.as_ptr()) };
+    unsafe { register_with_struct(identifier.as_ptr(), handler, keybind) };
+    let revert = move || unsafe { deregister(identifier.as_ptr()) };
     revert.into()
 }
 
 /// Unregisters a previously registered keybind.
 pub fn unregister_keybind(identifier: impl AsRef<str>) {
-    let AddonApi {
-        keybind_deregister, ..
-    } = addon_api();
+    let InputBindsApi { deregister, .. } = AddonApi::get().input_binds;
     let identifier = str_to_c(identifier, "failed to convert keybind identifier");
-    unsafe { keybind_deregister(identifier.as_ptr()) }
+    unsafe { deregister(identifier.as_ptr()) }
 }
 
 /// Macro to wrap a keybind handler callback.

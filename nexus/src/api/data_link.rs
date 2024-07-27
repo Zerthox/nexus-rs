@@ -2,7 +2,7 @@
 //!
 //! Enable the `"mumble"` or `"mumble_json"` feature for Mumble link bindings.
 
-use crate::{addon_api, util::str_to_c, AddonApi};
+use crate::{util::str_to_c, AddonApi, DataLinkApi};
 use imgui::sys::ImFont;
 use std::{
     ffi::{c_char, c_void},
@@ -46,8 +46,8 @@ pub struct NexusLink {
 /// Returns a pointer to a shared resource.
 pub fn get_resource<T>(identifier: impl AsRef<str>) -> *const T {
     let identifier = str_to_c(identifier, "failed to convert data link identifier");
-    let AddonApi { get_resource, .. } = addon_api();
-    unsafe { get_resource(identifier.as_ptr()).cast() }
+    let DataLinkApi { get, .. } = AddonApi::get().data_link;
+    unsafe { get(identifier.as_ptr()).cast() }
 }
 
 /// Reads a shared resource.
@@ -63,9 +63,9 @@ pub unsafe fn read_resource<T>(identifier: impl AsRef<str>) -> Option<T> {
 /// Creates a new shared resource.
 pub fn share_resource<T>(identifier: impl AsRef<str>) -> *mut T {
     let identifier = str_to_c(identifier, "failed to convert data link identifier");
-    let AddonApi { share_resource, .. } = addon_api();
+    let DataLinkApi { share, .. } = AddonApi::get().data_link;
     let size = mem::size_of::<T>();
-    unsafe { share_resource(identifier.as_ptr(), size).cast() }
+    unsafe { share(identifier.as_ptr(), size).cast() }
 }
 
 /// Returns the shared [`NexusLink`] pointer.

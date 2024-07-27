@@ -1,6 +1,6 @@
 //! Windows [WNDPROC](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-wndproc).
 
-use crate::{addon_api, revertible::Revertible, AddonApi};
+use crate::{revertible::Revertible, AddonApi, WndProcApi};
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
 
 pub type RawWndProcCallback =
@@ -21,30 +21,26 @@ pub type RawWndProcSendToGame = unsafe extern "C-unwind" fn(
 pub fn register_wnd_proc(
     callback: RawWndProcCallback,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
-    let AddonApi {
-        register_wnd_proc,
-        deregister_wnd_proc,
+    let WndProcApi {
+        register,
+        deregister,
         ..
-    } = addon_api();
-    unsafe { register_wnd_proc(callback) };
-    let revert = move || unsafe { deregister_wnd_proc(callback) };
+    } = AddonApi::get().wnd_proc;
+    unsafe { register(callback) };
+    let revert = move || unsafe { deregister(callback) };
     revert.into()
 }
 
 /// Deregisters an already registered [WNDPROC](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-wndproc) callback.
 pub fn deregister_wnd_proc(callback: RawWndProcCallback) {
-    let AddonApi {
-        deregister_wnd_proc,
-        ..
-    } = addon_api();
-    unsafe { deregister_wnd_proc(callback) }
+    let WndProcApi { deregister, .. } = AddonApi::get().wnd_proc;
+    unsafe { deregister(callback) }
 }
 
 /// Sends a [WNDPROC](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nc-winuser-wndproc) directly to the game, bypassing other hooks.
 pub fn send_wnd_proc_to_game(h_wnd: HWND, u_msg: u32, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
-    let AddonApi {
-        send_wnd_proc_to_game_only,
-        ..
-    } = addon_api();
-    unsafe { send_wnd_proc_to_game_only(h_wnd, u_msg, w_param, l_param) }
+    let WndProcApi {
+        send_to_game_only, ..
+    } = AddonApi::get().wnd_proc;
+    unsafe { send_to_game_only(h_wnd, u_msg, w_param, l_param) }
 }

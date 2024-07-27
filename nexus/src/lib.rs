@@ -34,11 +34,20 @@ mod logger;
 pub use self::{
     addon::{AddonFlags, AddonLoad, AddonUnload, UpdateProvider},
     api::*,
-    globals::{addon_api, on_unload, ui},
+    globals::{on_unload, ui},
     revertible::Revertible,
 };
 pub use imgui;
 pub use nexus_codegen::export;
+
+/// Returns the Nexus [`AddonApi`] instance.
+///
+/// Panics if called before initialization.
+#[inline]
+#[deprecated = "use AddonApi::get() instead"]
+pub fn addon_api() -> &'static AddonApi {
+    AddonApi::get()
+}
 
 /// Fields supported by the [`export`] macro.
 pub struct SupportedFields {

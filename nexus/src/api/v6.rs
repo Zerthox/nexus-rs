@@ -103,7 +103,7 @@ unsafe impl Send for AddonApi {}
 
 impl AddonApi {
     /// Nexus Addon API version.
-    pub const VERSION: i32 = 4;
+    pub const VERSION: i32 = 6;
 
     /// Retrieves the DirectX 11 device associated with the swap chain.
     #[inline]
@@ -289,7 +289,7 @@ pub struct TextureApi {
     pub load_from_url: RawTextureLoadFromUrl,
 
     /// Creates a texture from the memory and passes it to the callback when finished.
-    pub load_rom_memory: RawTextureLoadFromMemory,
+    pub load_from_memory: RawTextureLoadFromMemory,
 }
 
 #[derive(Debug, Clone)]

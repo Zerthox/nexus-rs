@@ -23,7 +23,7 @@ pub mod arc;
 #[cfg(feature = "extras")]
 pub mod extras;
 
-use crate::{addon_api, revertible::Revertible, util::str_to_c, AddonApi};
+use crate::{revertible::Revertible, util::str_to_c, AddonApi};
 use std::{
     ffi::{c_char, c_void},
     marker::PhantomData,
@@ -91,13 +91,13 @@ pub fn event_subscribe_unknown(
     callback: RawEventConsumeUnknown,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
     let identifier = str_to_c(identifier, "failed to convert event identifier");
-    let AddonApi {
-        event_subscribe,
-        event_unsubscribe,
+    let EventApi {
+        subscribe,
+        unsubscribe,
         ..
-    } = addon_api();
-    unsafe { event_subscribe(identifier.as_ptr(), callback) };
-    let revert = move || unsafe { event_unsubscribe(identifier.as_ptr(), callback) };
+    } = AddonApi::get().event;
+    unsafe { subscribe(identifier.as_ptr(), callback) };
+    let revert = move || unsafe { unsubscribe(identifier.as_ptr(), callback) };
     revert.into()
 }
 
@@ -111,26 +111,16 @@ pub unsafe fn event_subscribe_typed<T>(
     identifier: impl AsRef<str>,
     callback: RawEventConsume<T>,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
-    let identifier = str_to_c(identifier, "failed to convert event identifier");
-    let AddonApi {
-        event_subscribe,
-        event_unsubscribe,
-        ..
-    } = addon_api();
     let callback =
         unsafe { mem::transmute::<RawEventConsume<T>, RawEventConsumeUnknown>(callback) };
-    unsafe { event_subscribe(identifier.as_ptr(), callback) };
-    let revert = move || unsafe { event_unsubscribe(identifier.as_ptr(), callback) };
-    revert.into()
+    event_subscribe_unknown(identifier, callback)
 }
 
 /// Unsubscribes a previously registered raw event callback.
 pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeUnknown) {
     let identifier = str_to_c(identifier, "failed to convert event identifier");
-    let AddonApi {
-        event_unsubscribe, ..
-    } = addon_api();
-    unsafe { event_unsubscribe(identifier.as_ptr(), callback) }
+    let EventApi { unsubscribe, .. } = AddonApi::get().event;
+    unsafe { unsubscribe(identifier.as_ptr(), callback) }
 }
 
 /// Macro to wrap an event callback.
@@ -236,6 +226,8 @@ macro_rules! event_subscribe {
 
 pub use event_subscribe;
 
+use super::EventApi;
+
 /// Raises an event to all subscribing addons.
 ///
 /// # Safety
@@ -243,18 +235,17 @@ pub use event_subscribe;
 pub unsafe fn event_raise<T>(identifier: impl AsRef<str>, event_data: &T) {
     let identifier = str_to_c(identifier, "failed to convert event identifier");
     let data: *const _ = event_data;
-    let AddonApi { event_raise, .. } = addon_api();
-    unsafe { event_raise(identifier.as_ptr(), data.cast()) }
+    let EventApi { raise, .. } = AddonApi::get().event;
+    unsafe { raise(identifier.as_ptr(), data.cast()) }
 }
 
 /// Raises an event without payload to all subscribing addons.
 pub fn event_raise_notification(identifier: impl AsRef<str>) {
     let identifier = str_to_c(identifier, "failed to convert event identifier");
-    let AddonApi {
-        event_raise_notification,
-        ..
-    } = addon_api();
-    unsafe { event_raise_notification(identifier.as_ptr()) }
+    let EventApi {
+        raise_notification, ..
+    } = AddonApi::get().event;
+    unsafe { raise_notification(identifier.as_ptr()) }
 }
 
 /// Raises an event for a specific subscribing addon.
@@ -264,19 +255,16 @@ pub fn event_raise_notification(identifier: impl AsRef<str>) {
 pub unsafe fn event_raise_targeted<T>(signature: i32, identifier: impl AsRef<str>, event_data: &T) {
     let identifier = str_to_c(identifier, "failed to convert event identifier");
     let data: *const _ = event_data;
-    let AddonApi {
-        event_raise_targeted,
-        ..
-    } = addon_api();
-    unsafe { event_raise_targeted(signature, identifier.as_ptr(), data.cast()) }
+    let EventApi { raise_targeted, .. } = AddonApi::get().event;
+    unsafe { raise_targeted(signature, identifier.as_ptr(), data.cast()) }
 }
 
 /// Raises an event without payload for a specific subscribing addon.
 pub fn event_raise_notification_targeted(signature: i32, identifier: impl AsRef<str>) {
     let identifier = str_to_c(identifier, "failed to convert event identifier");
-    let AddonApi {
-        event_raise_notification_targeted,
+    let EventApi {
+        raise_notification_targeted,
         ..
-    } = addon_api();
-    unsafe { event_raise_notification_targeted(signature, identifier.as_ptr()) }
+    } = AddonApi::get().event;
+    unsafe { raise_notification_targeted(signature, identifier.as_ptr()) }
 }

@@ -1,6 +1,6 @@
 //! [ImGui](https://github.com/ocornut/imgui) rendering via [`imgui-rs`](crate::imgui).
 
-use crate::{addon_api, AddonApi, Revertible};
+use crate::{AddonApi, RendererApi, Revertible};
 use std::ffi::{c_char, c_void};
 
 /// ImGui version.
@@ -68,23 +68,21 @@ pub fn register_render(
     render_type: RenderType,
     callback: RawGuiRender,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
-    let AddonApi {
-        register_render,
-        deregister_render,
+    let RendererApi {
+        register,
+        deregister,
         ..
-    } = addon_api();
-    unsafe { register_render(render_type, callback) };
-    let revert = move || unsafe { deregister_render(callback) };
+    } = AddonApi::get().renderer;
+    unsafe { register(render_type, callback) };
+    let revert = move || unsafe { deregister(callback) };
     revert.into()
 }
 
 /// Unregisters a previously registered ImGui render callback.
 #[inline]
 pub fn unregister_render(callback: RawGuiRender) {
-    let AddonApi {
-        deregister_render, ..
-    } = addon_api();
-    unsafe { deregister_render(callback) }
+    let RendererApi { deregister, .. } = AddonApi::get().renderer;
+    unsafe { deregister(callback) }
 }
 
 /// Macro to wrap an ImGui render callback.
