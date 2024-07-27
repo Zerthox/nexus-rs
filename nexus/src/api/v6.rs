@@ -302,8 +302,8 @@ pub struct TextureApi {
 #[derive(Debug, Clone)]
 #[repr(C)]
 pub struct QuickAccessApi {
-    /// Adds a new shortcut icon to the quick access with the given texture identifiers.
-    /// When clicked the given keybind identifier will be called.
+    /// Adds a new icon to the quick access with the given texture identifiers.
+    /// When clicked the given keybind identifier will be invoked.
     pub add: RawQuickAccessAddShortcut,
 
     /// Removes a shortcut with the given identifier from quick access.
@@ -312,10 +312,10 @@ pub struct QuickAccessApi {
     /// Sends a notification icon to the given shortcut.
     pub notify: RawQuickAccessGeneric,
 
-    /// Adds a new ImGui callback fired when right-clicking the Nexus icon.
+    /// Adds a new ImGui callback fired when right-clicking the shortcut icon.
     pub add_context_menu: RawQuickAccessAddContextMenu,
 
-    /// Removes a registered simple shortcut callback.
+    /// Removes a registered context menu from the quick access item with the given identifier.
     pub remove_context_menu: RawQuickAccessGeneric,
 }
 

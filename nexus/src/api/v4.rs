@@ -17,7 +17,9 @@ use super::{
     localization::{RawLocalizationTranslate, RawLocalizationTranslateTo},
     log::RawLog,
     paths::{RawGetAddonDir, RawGetCommonDir, RawGetGameDir},
-    quick_access::{RawQuickAccessAddShortcut, RawQuickAccessAddContextMenu, RawQuickAccessGeneric},
+    quick_access::{
+        RawQuickAccessAddContextMenu, RawQuickAccessAddShortcut, RawQuickAccessGeneric,
+    },
     texture::{
         RawTextureGet, RawTextureGetOrCreateFromFile, RawTextureGetOrCreateFromMemory,
         RawTextureGetOrCreateFromResource, RawTextureGetOrCreateFromUrl, RawTextureLoadFromFile,
