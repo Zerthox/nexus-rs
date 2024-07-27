@@ -79,6 +79,9 @@ bitflags! {
 
         /// Prevents unloading at runtime. Will require a restart if updated, etc.
         const DisableHotloading = 2;
+
+        /// Prevents loading the addon later than the initial character select.
+        const OnlyLoadDuringGameLaunchSequence = 4;
     }
 }
 
@@ -111,4 +114,9 @@ pub enum UpdateProvider {
 
     /// Direct file link.
     Direct = 3,
+
+    /// Manual updating.
+    ///
+    /// Addon has to check versions itself and request updates manually.
+    Manual = 4,
 }
