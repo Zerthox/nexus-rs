@@ -2,7 +2,7 @@
 
 use crate::{
     util::{path_to_c, str_to_c},
-    AddonApi, Revertible,
+    AddonApi, FontApi, Revertible,
 };
 use imgui::sys::{ImFont, ImFontConfig};
 use std::{
@@ -188,4 +188,9 @@ macro_rules! font_receive {
 
 pub use font_receive;
 
-use super::FontApi;
+/// Resizes an existing font, sending the update to registered callbacks.
+pub fn resize_font(identifier: impl AsRef<str>, font_size: f32) {
+    let FontApi { resize, .. } = AddonApi::get().font;
+    let identifier = str_to_c(identifier, "failed to convert font identifier");
+    unsafe { resize(identifier.as_ptr(), font_size) }
+}

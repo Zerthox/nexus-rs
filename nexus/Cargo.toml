@@ -24,9 +24,6 @@ strum = { version = "0.26.2", features = ["derive"], optional = true }
 version = "0.57.0"
 features = [
     "System",
-    "Win32_Foundation",
-    "Win32_UI_WindowsAndMessaging",
-    "Win32_System_LibraryLoader",
     "Win32_Graphics_Dxgi",
     "Win32_Graphics_Direct3D11",
 ]

@@ -42,7 +42,8 @@ impl Keybind {
 
 pub type RawKeybindHandler = extern "C-unwind" fn(identifier: *const c_char, is_release: bool);
 
-pub type RawKeybindInvoke = extern "C-unwind" fn(identifier: *const c_char, is_release: bool);
+pub type RawKeybindInvoke =
+    unsafe extern "C-unwind" fn(identifier: *const c_char, is_release: bool);
 
 pub type RawKeybindRegisterWithString = unsafe extern "C-unwind" fn(
     identifier: *const c_char,
@@ -71,6 +72,13 @@ pub type RawKeybindRegisterWithStructOld = unsafe extern "C-unwind" fn(
     keybind_handler: RawKeybindHandlerOld,
     keybind: Keybind,
 );
+
+/// Triggers a previously registered keybind programmatically.
+pub fn invoke_keybind(identifier: impl AsRef<str>, is_release: bool) {
+    let InputBindsApi { invoke, .. } = AddonApi::get().input_binds;
+    let identifier = str_to_c(identifier, "failed to convert keybind identifier");
+    unsafe { invoke(identifier.as_ptr(), is_release) }
+}
 
 /// Registers a new keybind using a keybind string like `"ALT+SHIFT+T"`.
 ///

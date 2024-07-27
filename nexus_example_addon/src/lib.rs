@@ -8,6 +8,7 @@ use nexus::{
     texture::{load_texture_from_file, texture_receive, Texture},
     AddonFlags, UpdateProvider,
 };
+use std::cell::Cell;
 
 nexus::export! {
     name: "Example Addon",
@@ -29,8 +30,9 @@ fn load() {
         render!(|ui| {
             Window::new("Test window").build(ui, || {
                 // this is fine since imgui is single threaded
-                static mut SHOW: bool = false;
-                let mut show = unsafe { SHOW };
+                thread_local! { static SHOW: Cell<bool> = Cell::new(false); }
+
+                let mut show = SHOW.get();
 
                 if show {
                     show = !ui.button("hide");
@@ -39,7 +41,7 @@ fn load() {
                     show = ui.button("show");
                 }
 
-                unsafe { SHOW = show };
+                SHOW.set(show);
             });
         }),
     )
@@ -67,9 +69,9 @@ fn load() {
         "keybind {id} {}",
         if is_release { "released" } else { "pressed" }
     ));
-    register_keybind_with_string("MY_KEYBIND", keybind_handler, "").revert_on_unload();
+    register_keybind_with_string("MY_KEYBIND", keybind_handler, "ALT+SHIFT+T").revert_on_unload();
 
-    unsafe { event_subscribe!("MY_EVENT" => i32, |data| println!("received event {data:?}")) }
+    unsafe { event_subscribe!("MY_EVENT" => i32, |data| log::info!("received event {data:?}")) }
         .revert_on_unload();
 }
 

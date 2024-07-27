@@ -11,7 +11,14 @@ use super::{
         RawFontAddFromFile, RawFontAddFromMemory, RawFontAddFromResource, RawFontGet,
         RawFontRelease, RawFontResize,
     },
-    gui::{ImguiFree, ImguiMalloc, RawGuiAddRender, RawGuiRegisterCloseOnEscape, RawGuiRemRender},
+    gamebind::{
+        RawGamebindInvokeAsync, RawGamebindIsBound, RawGamebindPress, RawGamebindPressAsync,
+        RawGamebindRelease, RawGamebindReleaseAsync,
+    },
+    gui::{
+        ImguiFree, ImguiMalloc, RawGuiAddRender, RawGuiDeregisterCloseOnEscape,
+        RawGuiRegisterCloseOnEscape, RawGuiRemRender,
+    },
     hook::{RawHookCreate, RawHookDisable, RawHookEnable, RawHookRemove},
     keybind::{
         RawKeybindDeregister, RawKeybindInvoke, RawKeybindRegisterWithString,
@@ -79,7 +86,7 @@ pub struct AddonApi {
     pub input_binds: InputBindsApi,
 
     /// Game keybinds API.
-    pub game_binds: GameBindsApi,
+    pub game_bind: GameBindApi,
 
     /// Data Link API.
     pub data_link: DataLinkApi,
@@ -132,7 +139,7 @@ pub struct UiApi {
     pub register_close_on_escape: RawGuiRegisterCloseOnEscape,
 
     /// Deregisters a window name to listen to on escape.
-    pub deregister_close_on_escape: RawGuiRegisterCloseOnEscape,
+    pub deregister_close_on_escape: RawGuiDeregisterCloseOnEscape,
 }
 
 #[derive(Debug, Clone)]
@@ -231,24 +238,24 @@ pub struct InputBindsApi {
 
 #[derive(Debug, Clone)]
 #[repr(C)]
-pub struct GameBindsApi {
+pub struct GameBindApi {
     /// Presses the keys of a given bind.
-    pub press_async: *mut (),
+    pub press_async: RawGamebindPressAsync,
 
     /// Releases the keypress of a given bind.
-    pub release_async: *mut (),
+    pub release_async: RawGamebindReleaseAsync,
 
     /// Sends the keys of a given bind and then releases them after a given duration.
-    pub invoke_async: *mut (),
+    pub invoke_async: RawGamebindInvokeAsync,
 
     /// TPresses the keys of a given bind.
-    pub press: *mut (),
+    pub press: RawGamebindPress,
 
     /// Releases the keypress of a given bind.
-    pub release: *mut (),
+    pub release: RawGamebindRelease,
 
     /// Returns if a given game bind is set.
-    pub is_bound: *mut (),
+    pub is_bound: RawGamebindIsBound,
 }
 
 #[derive(Debug, Clone)]

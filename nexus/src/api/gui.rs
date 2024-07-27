@@ -1,6 +1,6 @@
 //! [ImGui](https://github.com/ocornut/imgui) rendering via [`imgui-rs`](crate::imgui).
 
-use crate::{AddonApi, RendererApi, Revertible};
+use crate::{util::str_to_c, AddonApi, RendererApi, Revertible, UiApi};
 use std::ffi::{c_char, c_void};
 
 /// ImGui version.
@@ -109,3 +109,23 @@ macro_rules! render {
 }
 
 pub use render;
+
+/// Registers a window name to get its bool toggled when escape is pressed.
+pub fn register_close_on_escape(window_name: impl AsRef<str>, opened: &mut bool) {
+    let UiApi {
+        register_close_on_escape,
+        ..
+    } = AddonApi::get().ui;
+    let window_name = str_to_c(window_name, "failed to convert window name");
+    unsafe { register_close_on_escape(window_name.as_ptr(), opened) }
+}
+
+///  Deregisters a window name to listen to on escape.
+pub fn deregister_close_on_escape(window_name: impl AsRef<str>) {
+    let UiApi {
+        deregister_close_on_escape,
+        ..
+    } = AddonApi::get().ui;
+    let window_name = str_to_c(window_name, "failed to convert window name");
+    unsafe { deregister_close_on_escape(window_name.as_ptr()) }
+}

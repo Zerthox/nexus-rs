@@ -1,5 +1,8 @@
 //! Game keybinds.
 
+use crate::{AddonApi, GameBindApi};
+
+/// Game keybinds.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(
@@ -220,14 +223,56 @@ pub enum GameBind {
     GearLoadout8 = 189,
 }
 
-pub type GamebindPressAsync = unsafe extern "C-unwind" fn(game_bind: GameBind);
+pub type RawGamebindPressAsync = unsafe extern "C-unwind" fn(game_bind: GameBind);
 
-pub type GamebindReleaseAsync = unsafe extern "C-unwind" fn(game_bind: GameBind);
+pub type RawGamebindReleaseAsync = unsafe extern "C-unwind" fn(game_bind: GameBind);
 
-pub type GamebindInvokeAsync = unsafe extern "C-unwind" fn(game_bind: GameBind, duration: i32);
+pub type RawGamebindInvokeAsync = unsafe extern "C-unwind" fn(game_bind: GameBind, duration: i32);
 
-pub type GamebindPress = unsafe extern "C-unwind" fn(game_bind: GameBind);
+pub type RawGamebindPress = unsafe extern "C-unwind" fn(game_bind: GameBind);
 
-pub type GamebindRelease = unsafe extern "C-unwind" fn(game_bind: GameBind);
+pub type RawGamebindRelease = unsafe extern "C-unwind" fn(game_bind: GameBind);
 
-pub type GamebindIsBound = unsafe extern "C-unwind" fn(game_bind: GameBind) -> bool;
+pub type RawGamebindIsBound = unsafe extern "C-unwind" fn(game_bind: GameBind) -> bool;
+
+/// Presses the given [`GameBind`] asynchronously.
+#[inline]
+pub fn press_gamebind_async(bind: GameBind) {
+    let GameBindApi { press_async, .. } = AddonApi::get().game_bind;
+    unsafe { press_async(bind) }
+}
+
+/// Releases the given [`GameBind`] asynchronously.
+#[inline]
+pub fn release_gamebind_async(bind: GameBind) {
+    let GameBindApi { release_async, .. } = AddonApi::get().game_bind;
+    unsafe { release_async(bind) }
+}
+
+/// Presses the given [`GameBind`] asynchronously and release after the given duration.
+#[inline]
+pub fn invoke_gamebind_async(bind: GameBind, duration: i32) {
+    let GameBindApi { invoke_async, .. } = AddonApi::get().game_bind;
+    unsafe { invoke_async(bind, duration) }
+}
+
+/// Presses the given [`GameBind`].
+#[inline]
+pub fn press_gamebind(bind: GameBind) {
+    let GameBindApi { press, .. } = AddonApi::get().game_bind;
+    unsafe { press(bind) }
+}
+
+/// Releases the given [`GameBind`].
+#[inline]
+pub fn release_gamebind(bind: GameBind) {
+    let GameBindApi { release, .. } = AddonApi::get().game_bind;
+    unsafe { release(bind) }
+}
+
+/// Checks if the given [`GameBind`] is bound.
+#[inline]
+pub fn is_gamebind_bound(bind: GameBind) -> bool {
+    let GameBindApi { is_bound, .. } = AddonApi::get().game_bind;
+    unsafe { is_bound(bind) }
+}
