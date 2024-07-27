@@ -1,4 +1,4 @@
-//! Keybind creation.
+//! Addon keybinds.
 
 use crate::{addon_api, revertible::Revertible, util::str_to_c, AddonApi};
 use std::ffi::c_char;
@@ -40,21 +40,9 @@ impl Keybind {
     }
 }
 
-pub type RawKeybindHandlerOld = extern "C-unwind" fn(identifier: *const c_char);
-
-pub type RawKeybindRegisterWithStringOld = unsafe extern "C-unwind" fn(
-    identifier: *const c_char,
-    keybind_handler: RawKeybindHandlerOld,
-    keybind: *const c_char,
-);
-
-pub type RawKeybindRegisterWithStructOld = unsafe extern "C-unwind" fn(
-    identifier: *const c_char,
-    keybind_handler: RawKeybindHandlerOld,
-    keybind: Keybind,
-);
-
 pub type RawKeybindHandler = extern "C-unwind" fn(identifier: *const c_char, is_release: bool);
+
+pub type RawKeybindInvoke = extern "C-unwind" fn(identifier: *const c_char, is_release: bool);
 
 pub type RawKeybindRegisterWithString = unsafe extern "C-unwind" fn(
     identifier: *const c_char,
@@ -69,6 +57,20 @@ pub type RawKeybindRegisterWithStruct = unsafe extern "C-unwind" fn(
 );
 
 pub type RawKeybindDeregister = unsafe extern "C-unwind" fn(identifier: *const c_char);
+
+pub type RawKeybindHandlerOld = extern "C-unwind" fn(identifier: *const c_char);
+
+pub type RawKeybindRegisterWithStringOld = unsafe extern "C-unwind" fn(
+    identifier: *const c_char,
+    keybind_handler: RawKeybindHandlerOld,
+    keybind: *const c_char,
+);
+
+pub type RawKeybindRegisterWithStructOld = unsafe extern "C-unwind" fn(
+    identifier: *const c_char,
+    keybind_handler: RawKeybindHandlerOld,
+    keybind: Keybind,
+);
 
 /// Registers a new keybind using a keybind string like `"ALT+SHIFT+T"`.
 ///

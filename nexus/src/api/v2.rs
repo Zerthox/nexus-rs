@@ -11,7 +11,7 @@ use super::{
     localization::{RawLocalizationTranslate, RawLocalizationTranslateTo},
     log::RawLog,
     paths::{RawGetAddonDir, RawGetCommonDir, RawGetGameDir},
-    quick_access::{RawQuickAccessAddShortcut, RawQuickAccessAddSimple, RawQuickAccessGeneric},
+    quick_access::{RawQuickAccessAddShortcut, RawQuickAccessAddContextMenu, RawQuickAccessGeneric},
     texture::{
         RawTextureGet, RawTextureGetOrCreateFromFile, RawTextureGetOrCreateFromMemory,
         RawTextureGetOrCreateFromResource, RawTextureGetOrCreateFromUrl, RawTextureLoadFromFile,
@@ -155,7 +155,7 @@ pub struct AddonApi {
     pub notify_shortcut: RawQuickAccessGeneric,
 
     /// Adds a new ImGui callback fired when right-clicking the Nexus icon.
-    pub add_simple_shortcut: RawQuickAccessAddSimple,
+    pub add_simple_shortcut: RawQuickAccessAddContextMenu,
 
     /// Removes a registered simple shortcut callback.
     pub remove_simple_shortcut: RawQuickAccessGeneric,

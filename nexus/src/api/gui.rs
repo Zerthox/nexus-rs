@@ -1,7 +1,7 @@
 //! [ImGui](https://github.com/ocornut/imgui) rendering via [`imgui-rs`](crate::imgui).
 
 use crate::{addon_api, AddonApi, Revertible};
-use std::ffi::c_void;
+use std::ffi::{c_char, c_void};
 
 /// ImGui version.
 // TODO: is this still correct?
@@ -43,6 +43,11 @@ pub type RawGuiAddRender =
     unsafe extern "C-unwind" fn(render_type: RenderType, render_callback: RawGuiRender);
 
 pub type RawGuiRemRender = unsafe extern "C-unwind" fn(render_callback: RawGuiRender);
+
+pub type RawGuiRegisterCloseOnEscape =
+    unsafe extern "C-unwind" fn(window_name: *const c_char, is_visible: *mut bool);
+
+pub type RawGuiDeregisterCloseOnEscape = unsafe extern "C-unwind" fn(window_name: *const c_char);
 
 pub type ImguiMalloc = unsafe extern "C" fn(size: usize, user_data: *mut c_void) -> *mut c_void;
 

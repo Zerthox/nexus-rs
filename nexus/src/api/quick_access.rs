@@ -11,7 +11,7 @@ pub type RawQuickAccessAddShortcut = unsafe extern "C-unwind" fn(
     tooltip_text: *const c_char,
 );
 
-pub type RawQuickAccessAddSimple =
+pub type RawQuickAccessAddContextMenu =
     unsafe extern "C-unwind" fn(identifier: *const c_char, shortcut_render_callback: RawGuiRender);
 
 pub type RawQuickAccessGeneric = unsafe extern "C-unwind" fn(identifier: *const c_char);

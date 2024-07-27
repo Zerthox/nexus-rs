@@ -46,6 +46,8 @@ pub type RawFontAddFromMemory = unsafe extern "C-unwind" fn(
     config: *mut ImFontConfig,
 );
 
+pub type RawFontResize = unsafe extern "C-unwind" fn(identifier: *const c_char, font_size: f32);
+
 /// Registers a new callback to receive the font with the given identifier.
 pub fn get_font(
     identifier: impl AsRef<str>,

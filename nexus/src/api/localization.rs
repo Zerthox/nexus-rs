@@ -15,6 +15,12 @@ pub type RawLocalizationTranslateTo = unsafe extern "C-unwind" fn(
     language_identifier: *const c_char,
 ) -> *const c_char;
 
+pub type RawLocalizationSet = unsafe extern "C-unwind" fn(
+    identifier: *const c_char,
+    language_identifier: *const c_char,
+    string: *const c_char,
+);
+
 /// Attempts to translate the identifier into the current active language.
 /// Returns the same identifier if not available.
 #[inline]

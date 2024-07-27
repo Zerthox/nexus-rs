@@ -3,6 +3,7 @@
 //! Enable the `"mumble"` or `"mumble_json"` feature for Mumble link bindings.
 
 use crate::{addon_api, util::str_to_c, AddonApi};
+use imgui::sys::ImFont;
 use std::{
     ffi::{c_char, c_void},
     mem,
@@ -33,13 +34,13 @@ pub struct NexusLink {
     pub is_gameplay: bool,
 
     #[cfg_attr(feature = "serde", serde(skip))]
-    pub font: *const c_void,
+    pub font: *mut ImFont,
 
     #[cfg_attr(feature = "serde", serde(skip))]
-    pub font_big: *const c_void,
+    pub font_big: *mut ImFont,
 
     #[cfg_attr(feature = "serde", serde(skip))]
-    pub font_ui: *const c_void,
+    pub font_ui: *mut ImFont,
 }
 
 /// Returns a pointer to a shared resource.
