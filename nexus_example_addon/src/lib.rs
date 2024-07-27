@@ -30,7 +30,7 @@ fn load() {
         render!(|ui| {
             Window::new("Test window").build(ui, || {
                 // this is fine since imgui is single threaded
-                thread_local! { static SHOW: Cell<bool> = Cell::new(false); }
+                thread_local! { static SHOW: Cell<bool> = const { Cell::new(false) }; }
 
                 let mut show = SHOW.get();
 
