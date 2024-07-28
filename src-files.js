@@ -3,7 +3,7 @@ var srcIndex = new Map(JSON.parse('[\
 ["arcdps_imgui_sys",["",[],["bindings.rs","lib.rs"]]],\
 ["gw2_mumble",["",[["map_id",[],["activity.rs","fractal.rs","mod.rs","pvp.rs","raid.rs","strike.rs","wvw.rs"]]],["context.rs","error.rs","identity.rs","lib.rs","link_ptr.rs","linked_mem.rs","map_type.rs","util.rs"]]],\
 ["log",["",[],["__private_api.rs","lib.rs","macros.rs"]]],\
-["nexus",["",[["api",[["event",[],["arc.rs","extras.rs","mod.rs","nexus.rs"]]],["alert.rs","data_link.rs","font.rs","gui.rs","hook.rs","keybind.rs","localization.rs","log.rs","mod.rs","paths.rs","quick_access.rs","texture.rs","updater.rs","v2.rs","v3.rs","v4.rs","wnd_proc.rs"]]],["addon.rs","globals.rs","lib.rs","logger.rs","revertible.rs","util.rs"]]],\
+["nexus",["",[["api",[["event",[],["arc.rs","extras.rs","mod.rs","nexus.rs"]]],["alert.rs","data_link.rs","font.rs","gamebind.rs","gui.rs","hook.rs","keybind.rs","localization.rs","log.rs","mod.rs","paths.rs","quick_access.rs","texture.rs","updater.rs","v2.rs","v3.rs","v4.rs","v6.rs","wnd_proc.rs"]]],["addon.rs","globals.rs","lib.rs","logger.rs","revertible.rs","util.rs"]]],\
 ["retour",["",[["alloc",[],["mod.rs","proximity.rs","search.rs"]],["arch",[["x86",[["thunk",[],["mod.rs","x64.rs","x86.rs"]],["trampoline",[],["disasm.rs","mod.rs"]]],["meta.rs","mod.rs","patcher.rs"]]],["detour.rs","memory.rs","mod.rs"]],["detours",[],["generic.rs","mod.rs","raw.rs"]],["pic",[],["emitter.rs","mod.rs","thunk.rs"]]],["error.rs","lib.rs","macros.rs","traits.rs","util.rs"]]]\
 ]'));
 createSrcSidebar();

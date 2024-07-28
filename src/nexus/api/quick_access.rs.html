@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `nexus\src\api\quick_access.rs`."><title>quick_access.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-081576b923113409.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nexus" data-themes="" data-resource-suffix="" data-rustdoc-version="1.79.0 (129f3b996 2024-06-10)" data-channel="1.79.0" data-search-js="search-bf21c90c8c1d92b1.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-e32f0c247825364d.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-09095024cf37855e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../nexus/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Type ‘S’ or ‘/’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings">Settings</a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `nexus\src\api\quick_access.rs`."><title>quick_access.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nexus" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0 (051478957 2024-07-21)" data-channel="1.80.0" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -97,9 +97,54 @@
 <a href="#97" id="97">97</a>
 <a href="#98" id="98">98</a>
 <a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Quick access creation.
 
-</span><span class="kw">use crate</span>::{addon_api, gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi};
+</span><span class="kw">use crate</span>::{gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi, QuickAccessApi};
 <span class="kw">use </span>std::ffi::c_char;
 
 <span class="kw">pub type </span>RawQuickAccessAddShortcut = <span class="kw">unsafe extern </span><span class="string">"C-unwind" </span><span class="kw">fn</span>(
@@ -110,7 +155,7 @@
     tooltip_text: <span class="kw-2">*const </span>c_char,
 );
 
-<span class="kw">pub type </span>RawQuickAccessAddSimple =
+<span class="kw">pub type </span>RawQuickAccessAddContextMenu =
     <span class="kw">unsafe extern </span><span class="string">"C-unwind" </span><span class="kw">fn</span>(identifier: <span class="kw-2">*const </span>c_char, shortcut_render_callback: RawGuiRender);
 
 <span class="kw">pub type </span>RawQuickAccessGeneric = <span class="kw">unsafe extern </span><span class="string">"C-unwind" </span><span class="kw">fn</span>(identifier: <span class="kw-2">*const </span>c_char);
@@ -121,18 +166,14 @@
 /// When clicked the given keybind identifier is triggered.
 ///
 /// Returns a [`Revertible`] to remove the shortcut.
-</span><span class="kw">pub fn </span>add_shortcut(
+</span><span class="kw">pub fn </span>add_quick_access(
     identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
     texture_identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
     texture_hover_identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
     keybind_identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
     tooltip_text: <span class="kw">impl </span>AsRef&lt;str&gt;,
 ) -&gt; Revertible&lt;<span class="kw">impl </span>Fn() + Send + Sync + Clone + <span class="lifetime">'static</span>&gt; {
-    <span class="kw">let </span>AddonApi {
-        add_shortcut,
-        remove_shortcut,
-        ..
-    } = addon_api();
+    <span class="kw">let </span>QuickAccessApi { add, remove, .. } = AddonApi::get().quick_access;
     <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert shortcut identifier"</span>);
     <span class="kw">let </span>texture_identifier = str_to_c(
         texture_identifier,
@@ -148,7 +189,7 @@
     );
     <span class="kw">let </span>tooltip_text = str_to_c(tooltip_text, <span class="string">"failed to convert shortcut tooltip text"</span>);
     <span class="kw">unsafe </span>{
-        add_shortcut(
+        add(
             identifier.as_ptr(),
             texture_identifier.as_ptr(),
             texture_hover_identifier.as_ptr(),
@@ -156,44 +197,93 @@
             tooltip_text.as_ptr(),
         )
     };
-    <span class="kw">let </span>revert = <span class="kw">move </span>|| <span class="kw">unsafe </span>{ remove_shortcut(identifier.as_ptr()) };
+    <span class="kw">let </span>revert = <span class="kw">move </span>|| <span class="kw">unsafe </span>{ remove(identifier.as_ptr()) };
     revert.into()
 }
 
 <span class="doccomment">/// Removes a previously registered shortcut from the quick access.
-</span><span class="kw">pub fn </span>remove_shortcut(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;) {
-    <span class="kw">let </span>AddonApi {
-        remove_shortcut, ..
-    } = addon_api();
+</span><span class="kw">pub fn </span>remove_quick_access(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;) {
+    <span class="kw">let </span>QuickAccessApi { remove, .. } = AddonApi::get().quick_access;
     <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert shortcut identifier"</span>);
-    <span class="kw">unsafe </span>{ remove_shortcut(identifier.as_ptr()) }
+    <span class="kw">unsafe </span>{ remove(identifier.as_ptr()) }
+}
+
+<span class="doccomment">/// Sends a notification to the given quick access shortcut.
+</span><span class="kw">pub fn </span>notify_quick_access(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;) {
+    <span class="kw">let </span>QuickAccessApi { notify, .. } = AddonApi::get().quick_access;
+    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert shortcut identifier"</span>);
+    <span class="kw">unsafe </span>{ notify(identifier.as_ptr()) }
+}
+
+<span class="doccomment">/// Adds a new [`RawGuiRender`] callback for the shortcut context menu.
+///
+/// Returns a [`Revertible`] to remove the context menu.
+</span><span class="kw">pub fn </span>add_quick_access_context_menu(
+    identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
+    render_callback: RawGuiRender,
+) -&gt; Revertible&lt;<span class="kw">impl </span>Fn() + Send + Sync + Clone + <span class="lifetime">'static</span>&gt; {
+    <span class="kw">let </span>QuickAccessApi {
+        add_context_menu,
+        remove_context_menu,
+        ..
+    } = AddonApi::get().quick_access;
+    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert shortcut identifier"</span>);
+    <span class="kw">unsafe </span>{ add_context_menu(identifier.as_ptr(), render_callback) };
+    <span class="kw">let </span>revert = <span class="kw">move </span>|| <span class="kw">unsafe </span>{ remove_context_menu(identifier.as_ptr()) };
+    revert.into()
+}
+
+<span class="doccomment">/// Removes a previously registered shortcut context menu callback.
+</span><span class="kw">pub fn </span>remove_quick_access_context_menu(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;) {
+    <span class="kw">let </span>QuickAccessApi {
+        remove_context_menu,
+        ..
+    } = AddonApi::get().quick_access;
+    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert shortcut identifier"</span>);
+    <span class="kw">unsafe </span>{ remove_context_menu(identifier.as_ptr()) }
+}
+
+<span class="doccomment">/// Adds a new shortcut icon to the quick access with the given texture identifiers.
+/// When clicked the given keybind identifier is triggered.
+///
+/// Returns a [`Revertible`] to remove the shortcut.
+</span><span class="attr">#[deprecated = <span class="string">"use add_quick_access"</span>]
+</span><span class="kw">pub fn </span>add_shortcut(
+    identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
+    texture_identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
+    texture_hover_identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
+    keybind_identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
+    tooltip_text: <span class="kw">impl </span>AsRef&lt;str&gt;,
+) -&gt; Revertible&lt;<span class="kw">impl </span>Fn() + Send + Sync + Clone + <span class="lifetime">'static</span>&gt; {
+    add_quick_access(
+        identifier,
+        texture_identifier,
+        texture_hover_identifier,
+        keybind_identifier,
+        tooltip_text,
+    )
+}
+
+<span class="doccomment">/// Removes a previously registered shortcut from the quick access.
+</span><span class="attr">#[deprecated = <span class="string">"use remove_quick_access"</span>]
+</span><span class="kw">pub fn </span>remove_shortcut(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;) {
+    remove_quick_access(identifier)
 }
 
 <span class="doccomment">/// Adds a new [`RawGuiRender`] callback fired when the quick access is right-clicked.
 ///
 /// Returns a [`Revertible`] to remove the shortcut.
+</span><span class="attr">#[deprecated = <span class="string">"use add_quick_access_context_menu"</span>]
 </span><span class="kw">pub fn </span>add_simple_shortcut(
     identifier: <span class="kw">impl </span>AsRef&lt;str&gt;,
     render_callback: RawGuiRender,
 ) -&gt; Revertible&lt;<span class="kw">impl </span>Fn() + Send + Sync + Clone + <span class="lifetime">'static</span>&gt; {
-    <span class="kw">let </span>AddonApi {
-        add_simple_shortcut,
-        remove_simple_shortcut,
-        ..
-    } = addon_api();
-    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert simple shortcut identifier"</span>);
-    <span class="kw">unsafe </span>{ add_simple_shortcut(identifier.as_ptr(), render_callback) };
-    <span class="kw">let </span>revert = <span class="kw">move </span>|| <span class="kw">unsafe </span>{ remove_simple_shortcut(identifier.as_ptr()) };
-    revert.into()
+    add_quick_access_context_menu(identifier, render_callback)
 }
 
 <span class="doccomment">/// Removes a previously registered simple shortcut callback.
+</span><span class="attr">#[deprecated = <span class="string">"use remove_quick_access_context_menu"</span>]
 </span><span class="kw">pub fn </span>remove_simple_shortcut(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;) {
-    <span class="kw">let </span>AddonApi {
-        remove_simple_shortcut,
-        ..
-    } = addon_api();
-    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert simple shortcut identifier"</span>);
-    <span class="kw">unsafe </span>{ remove_simple_shortcut(identifier.as_ptr()) }
+    remove_quick_access_context_menu(identifier)
 }
 </code></pre></div></section></main></body></html>

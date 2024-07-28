@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["alert_notify"],"type":["RawAlertNotify"]};
+window.SIDEBAR_ITEMS = {"fn":["send_alert"],"type":["RawAlertNotify"]};
