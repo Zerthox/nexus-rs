@@ -23,7 +23,11 @@ static IMGUI_UI: OnceLock<UiWrapper> = OnceLock::new();
 ///
 /// # Safety
 /// The passed pointer must be a valid [`AddonApi`] with `'static` lifetime.
-pub unsafe fn init(api: *const AddonApi, addon_name: &'static str) {
+pub unsafe fn init(
+    api: *const AddonApi,
+    addon_name: &'static str,
+    log_filter: Option<&'static str>,
+) {
     let api = api.as_ref().expect("no addon api supplied");
     ADDON_API
         .set(api)
@@ -36,7 +40,10 @@ pub unsafe fn init(api: *const AddonApi, addon_name: &'static str) {
 
     // init logger
     #[cfg(feature = "log")]
-    NexusLogger::set_logger(addon_name);
+    NexusLogger::set_logger(
+        addon_name,
+        log_filter.map(|lf| env_filter::Builder::new().parse(lf).build()),
+    );
 
     // setup imgui
     imgui::sys::igSetCurrentContext(api.imgui_context);

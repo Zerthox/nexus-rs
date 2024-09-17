@@ -78,6 +78,15 @@ impl AddonInfo {
             .unwrap_or_else(|| quote! { ::std::ptr::null() })
     }
 
+    pub fn generate_log_filter(&self) -> TokenStream {
+        self.log_filter
+            .as_ref()
+            .map(|e| {
+                quote! { ::std::option::Option::Some(#e) }
+            })
+            .unwrap_or_else(|| quote! { ::std::option::Option::None })
+    }
+
     pub fn generate_export(&self) -> TokenStream {
         let signature = &self.signature;
         let name = self.generate_name();
@@ -85,6 +94,7 @@ impl AddonInfo {
         let author = as_char_ptr(env_var("CARGO_PKG_AUTHORS"));
         let description = as_char_ptr(env_var("CARGO_PKG_DESCRIPTION"));
         let version = self.generate_version();
+        let log_filter = self.generate_log_filter();
 
         let load = self.generate_load();
         let unload = self.generate_unload();
@@ -122,7 +132,7 @@ impl AddonInfo {
                 }
 
                 unsafe extern "C-unwind" fn __load_wrapper(api: *const ::nexus::AddonApi) {
-                    ::nexus::__macro::init(api, self::__ADDON_NAME);
+                    ::nexus::__macro::init(api, self::__ADDON_NAME, #log_filter);
                     #load
                 }
 

@@ -9,6 +9,7 @@ pub struct AddonInfo {
     pub flags: Option<Expr>,
     pub provider: Option<Expr>,
     pub update_link: Option<Expr>,
+    pub log_filter: Option<Expr>,
 }
 
 impl AddonInfo {
@@ -32,6 +33,7 @@ impl AddonInfo {
                     "flags" => self.flags = Some(field.expr),
                     "provider" => self.provider = Some(field.expr),
                     "update_link" => self.update_link = Some(field.expr),
+                    "log_filter" => self.log_filter = Some(field.expr),
                     _ => return Err(Error::new_spanned(ident, "unknown field {ident}")),
                 }
             } else {
@@ -57,6 +59,7 @@ impl Default for AddonInfo {
             flags: None,
             provider: None,
             update_link: None,
+            log_filter: None,
         }
     }
 }
