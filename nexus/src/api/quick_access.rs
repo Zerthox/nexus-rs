@@ -14,6 +14,12 @@ pub type RawQuickAccessAddShortcut = unsafe extern "C-unwind" fn(
 pub type RawQuickAccessAddContextMenu =
     unsafe extern "C-unwind" fn(identifier: *const c_char, shortcut_render_callback: RawGuiRender);
 
+pub type RawQuickAccessAddContextMenu2 = unsafe extern "C-unwind" fn(
+    identifier: *const c_char,
+    target_identifier: *const c_char,
+    shortcut_render_callback: RawGuiRender,
+);
+
 pub type RawQuickAccessGeneric = unsafe extern "C-unwind" fn(identifier: *const c_char);
 
 // TODO: combination with texture & keybind calls
@@ -76,6 +82,7 @@ pub fn notify_quick_access(identifier: impl AsRef<str>) {
 /// Returns a [`Revertible`] to remove the context menu.
 pub fn add_quick_access_context_menu(
     identifier: impl AsRef<str>,
+    target_identifier: Option<impl AsRef<str>>,
     render_callback: RawGuiRender,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
     let QuickAccessApi {
@@ -84,7 +91,15 @@ pub fn add_quick_access_context_menu(
         ..
     } = AddonApi::get().quick_access;
     let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
-    unsafe { add_context_menu(identifier.as_ptr(), render_callback) };
+    let target_identifier = match target_identifier {
+        Some(target_identifier) => str_to_c(
+            target_identifier,
+            "failed to convert shortcut target identifier",
+        )
+        .as_ptr(),
+        None => std::ptr::null(),
+    };
+    unsafe { add_context_menu(identifier.as_ptr(), target_identifier, render_callback) };
     let revert = move || unsafe { remove_context_menu(identifier.as_ptr()) };
     revert.into()
 }
@@ -134,7 +149,7 @@ pub fn add_simple_shortcut(
     identifier: impl AsRef<str>,
     render_callback: RawGuiRender,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
-    add_quick_access_context_menu(identifier, render_callback)
+    add_quick_access_context_menu(identifier, None::<&str>, render_callback)
 }
 
 /// Removes a previously registered simple shortcut callback.

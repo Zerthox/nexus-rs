@@ -28,7 +28,7 @@ use super::{
     log::RawLog,
     paths::{RawGetAddonDir, RawGetCommonDir, RawGetGameDir},
     quick_access::{
-        RawQuickAccessAddContextMenu, RawQuickAccessAddShortcut, RawQuickAccessGeneric,
+        RawQuickAccessAddContextMenu2, RawQuickAccessAddShortcut, RawQuickAccessGeneric,
     },
     texture::{
         RawTextureGet, RawTextureGetOrCreateFromFile, RawTextureGetOrCreateFromMemory,
@@ -313,7 +313,7 @@ pub struct QuickAccessApi {
     pub notify: RawQuickAccessGeneric,
 
     /// Adds a new ImGui callback fired when right-clicking the shortcut icon.
-    pub add_context_menu: RawQuickAccessAddContextMenu,
+    pub add_context_menu: RawQuickAccessAddContextMenu2,
 
     /// Removes a registered context menu from the quick access item with the given identifier.
     pub remove_context_menu: RawQuickAccessGeneric,
