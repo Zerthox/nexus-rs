@@ -9,10 +9,11 @@ pub struct NexusLogger {
 }
 
 impl NexusLogger {
-    pub fn set_logger(channel_name: &'static str, filter: Option<Filter>) {
+    pub fn set_logger(channel_name: &'static str, filter: Option<&'static str>) {
         let _ = log::set_boxed_logger(Box::new(NexusLogger {
             channel_name,
             filter: filter
+                .map(|f| Builder::new().parse(f).build())
                 .unwrap_or_else(|| Builder::new().filter_level(log::LevelFilter::Trace).build()),
         }));
         log::set_max_level(log::LevelFilter::Trace);

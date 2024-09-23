@@ -16,3 +16,7 @@ paste = "1.0.12"
 proc-macro2 = "1.0.56"
 quote = "1.0.26"
 syn = { version = "2.0.14", features = ["full"] }
+env_filter = { version = "0.1.2", optional = true }
+
+[features]
+env_filter = ["dep:env_filter"]

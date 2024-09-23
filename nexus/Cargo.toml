@@ -30,7 +30,7 @@ features = [
 ]
 
 [features]
-log = ["dep:log", "dep:env_filter"]
+log = ["dep:log", "dep:env_filter", "nexus_codegen/env_filter"]
 arc = ["dep:arcdps"]
 arcdps = ["arc"]
 evtc = ["arc"]

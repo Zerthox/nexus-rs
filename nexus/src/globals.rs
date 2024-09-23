@@ -26,7 +26,7 @@ static IMGUI_UI: OnceLock<UiWrapper> = OnceLock::new();
 pub unsafe fn init(
     api: *const AddonApi,
     addon_name: &'static str,
-    log_filter: Option<&'static str>,
+    #[cfg(feature = "log")] log_filter: Option<&'static str>,
 ) {
     let api = api.as_ref().expect("no addon api supplied");
     ADDON_API
@@ -40,10 +40,7 @@ pub unsafe fn init(
 
     // init logger
     #[cfg(feature = "log")]
-    NexusLogger::set_logger(
-        addon_name,
-        log_filter.map(|lf| env_filter::Builder::new().parse(lf).build()),
-    );
+    NexusLogger::set_logger(addon_name, log_filter);
 
     // setup imgui
     imgui::sys::igSetCurrentContext(api.imgui_context);

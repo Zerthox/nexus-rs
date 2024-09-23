@@ -1,8 +1,12 @@
 use crate::addon::AddonInfo;
 use proc_macro2::TokenStream;
+#[cfg(feature = "env_filter")]
+use quote::quote_spanned;
 use quote::{quote, ToTokens};
 use std::env;
 use syn::Expr;
+#[cfg(feature = "env_filter")]
+use syn::{spanned::Spanned, Lit};
 
 fn env_var(key: &str) -> String {
     env::var(key).unwrap_or_else(|_| panic!("{key} not set"))
@@ -78,13 +82,30 @@ impl AddonInfo {
             .unwrap_or_else(|| quote! { ::std::ptr::null() })
     }
 
+    #[cfg(feature = "env_filter")]
     pub fn generate_log_filter(&self) -> TokenStream {
-        self.log_filter
+        return self
+            .log_filter
             .as_ref()
             .map(|e| {
-                quote! { ::std::option::Option::Some(#e) }
+                if let Expr::Lit(lit) = e {
+                    if let Lit::Str(ref lit) = lit.lit {
+                        match env_filter::Builder::new().try_parse(&lit.value()) {
+                            Ok(_filter) => return quote! { ::std::option::Option::Some(#e) },
+                            Err(err) => {
+                                let err = format!("{}", err);
+                                return quote_spanned! {
+                                    e.span() => compile_error!(concat!("invalid log filter: ", #err)),
+                                };
+                            }
+                        }
+                    }
+                }
+                return quote_spanned! {
+                    e.span() => compile_error!("Only string literals allowed in log filter"),
+                };
             })
-            .unwrap_or_else(|| quote! { ::std::option::Option::None })
+            .unwrap_or_else(|| quote! { ::std::option::Option::None });
     }
 
     pub fn generate_export(&self) -> TokenStream {
@@ -94,7 +115,13 @@ impl AddonInfo {
         let author = as_char_ptr(env_var("CARGO_PKG_AUTHORS"));
         let description = as_char_ptr(env_var("CARGO_PKG_DESCRIPTION"));
         let version = self.generate_version();
-        let log_filter = self.generate_log_filter();
+        #[cfg(feature = "env_filter")]
+        let initfn = {
+            let log_filter = self.generate_log_filter();
+            quote! { ::nexus::__macro::init(api, self::__ADDON_NAME, #log_filter); }
+        };
+        #[cfg(not(feature = "env_filter"))]
+        let initfn = quote! { ::nexus::__macro::init(api, self::__ADDON_NAME);};
 
         let load = self.generate_load();
         let unload = self.generate_unload();
@@ -132,7 +159,7 @@ impl AddonInfo {
                 }
 
                 unsafe extern "C-unwind" fn __load_wrapper(api: *const ::nexus::AddonApi) {
-                    ::nexus::__macro::init(api, self::__ADDON_NAME, #log_filter);
+                    #initfn
                     #load
                 }
 

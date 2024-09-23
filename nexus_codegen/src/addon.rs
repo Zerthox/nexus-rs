@@ -9,6 +9,7 @@ pub struct AddonInfo {
     pub flags: Option<Expr>,
     pub provider: Option<Expr>,
     pub update_link: Option<Expr>,
+    #[cfg(feature = "env_filter")]
     pub log_filter: Option<Expr>,
 }
 
@@ -33,7 +34,15 @@ impl AddonInfo {
                     "flags" => self.flags = Some(field.expr),
                     "provider" => self.provider = Some(field.expr),
                     "update_link" => self.update_link = Some(field.expr),
+                    #[cfg(feature = "env_filter")]
                     "log_filter" => self.log_filter = Some(field.expr),
+                    #[cfg(not(feature = "env_filter"))]
+                    "log_filter" => {
+                        return Err(Error::new_spanned(
+                            ident,
+                            "log_filter requires feature \"log\"",
+                        ))
+                    }
                     _ => return Err(Error::new_spanned(ident, "unknown field {ident}")),
                 }
             } else {
@@ -59,6 +68,7 @@ impl Default for AddonInfo {
             flags: None,
             provider: None,
             update_link: None,
+            #[cfg(feature = "env_filter")]
             log_filter: None,
         }
     }
