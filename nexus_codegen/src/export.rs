@@ -101,9 +101,9 @@ impl AddonInfo {
                         }
                     }
                 }
-                return quote_spanned! {
+                quote_spanned! {
                     e.span() => compile_error!("Only string literals allowed in log filter"),
-                };
+                }
             })
             .unwrap_or_else(|| quote! { ::std::option::Option::None });
     }
