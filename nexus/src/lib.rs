@@ -71,6 +71,10 @@ pub struct SupportedFields {
 
     /// Link to the update resource.
     pub update_link: Option<&'static str>,
+
+    #[cfg(feature = "log")]
+    /// Filter for the log. Same syntax as [env_logger](https://docs.rs/env_logger/latest/env_logger/#enabling-logging).
+    pub log_filter: Option<&'static str>,
 }
 
 #[doc(hidden)]

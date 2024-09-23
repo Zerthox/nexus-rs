@@ -18,6 +18,7 @@ nexus::export! {
     flags: AddonFlags::None,
     provider: UpdateProvider::GitHub,
     update_link: "https://github.com/zerthox/nexus-rs",
+    log_filter: "debug"
 }
 
 fn load() {

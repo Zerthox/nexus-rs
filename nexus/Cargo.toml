@@ -1,6 +1,6 @@
 [package]
 name = "nexus"
-version = "0.6.0"
+version = "0.6.1"
 edition = "2021"
 authors = ["Zerthox"]
 description = "Rust bindings for Raidcore Nexus addons"
@@ -13,6 +13,7 @@ bitflags = "2.4.2"
 gw2_mumble = { git = "https://github.com/zerthox/gw2-mumble-rs", tag = "0.2.3", optional = true }
 imgui = { package = "arcdps-imgui", version = "0.8.0", features = [ "tables-api"] }
 log = { version = "0.4.21", features = ["std"], optional = true }
+env_filter = { version = "0.1.2", optional = true }
 nexus_codegen = { path = "../nexus_codegen" }
 num_enum = "0.7.2"
 paste = "1.0.14"
@@ -29,6 +30,7 @@ features = [
 ]
 
 [features]
+log = ["dep:log", "dep:env_filter", "nexus_codegen/env_filter"]
 arc = ["dep:arcdps"]
 arcdps = ["arc"]
 evtc = ["arc"]
