@@ -5,10 +5,11 @@
 //!     event::{ADDON_LOADED, event_consume},
 //!     log::{log, LogLevel}
 //! };
+//! use std::ptr::NonNull;
 //!
-//! let callback = event_consume!(|payload: Option<&i32>| {
+//! let callback = event_consume!(|payload: Option<NonNull<i32>>| {
 //!     if let Some(signature) = payload {
-//!         log(LogLevel::Info, "My Addon", format!("Addon {signature:?} loaded"));
+//!         log(LogLevel::Info, "My Addon", format!("Addon {signature} loaded"));
 //!     }
 //! });
 //!
@@ -23,6 +24,7 @@ pub mod arc;
 #[cfg(feature = "extras")]
 pub mod extras;
 
+use super::EventApi;
 use crate::{revertible::Revertible, util::str_to_c, AddonApi};
 use std::{
     ffi::{c_char, c_void},
@@ -44,6 +46,7 @@ impl<T> Event<T> {
     ///
     /// # Safety
     /// See [`event_subscribe_typed`].
+    #[inline]
     pub const unsafe fn new(identifier: &'static str) -> Self {
         Self {
             identifier,
@@ -52,11 +55,18 @@ impl<T> Event<T> {
     }
 
     /// Subscribes to the event.
+    #[inline]
     pub fn subscribe(
         &self,
         callback: RawEventConsume<T>,
     ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
         unsafe { event_subscribe_typed(self.identifier, callback) }
+    }
+
+    /// Raises the event.
+    #[inline]
+    pub fn raise(&self, event_data: &T) {
+        unsafe { event_raise(self.identifier, event_data) }
     }
 }
 
@@ -130,28 +140,31 @@ pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeU
 /// # Usage
 /// ```no_run
 /// # use nexus::event::*;
-/// let event_callback = event_consume!(|data: Option<&i32>| {
+/// # use std::ptr::NonNull;
+/// let event_callback = event_consume!(|data: Option<NonNull<i32>>| {
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("received event with data {data:?}"));
 /// });
-/// ```
 ///
-/// ```no_run
-/// # use nexus::event::*;
-/// fn event_callback(event_args: Option<&i32>) {
+/// let event_callback = event_consume!(<i32> |data| {
 ///     use nexus::log::{log, LogLevel};
-///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {event_args:?}"));
+///     log(LogLevel::Info, "My Addon", format!("received event with data {data:?}"));
+/// });
+///
+/// fn event_callback(data: Option<NonNull<i32>>) {
+///     use nexus::log::{log, LogLevel};
+///     log(LogLevel::Info, "My Addon", format!("Received event with data {data:?}"));
 /// }
 /// let event_callback = event_consume!(<i32> event_callback);
 /// ```
 #[macro_export]
 macro_rules! event_consume {
     ( < $ty:ty > $callback:expr $(,)? ) => {{
-        const __CALLBACK: fn(::std::option::Option<&$ty>) = $callback;
+        const __CALLBACK: fn(::std::option::Option<::std::ptr::NonNull<$ty>>) = ($callback);
 
         extern "C-unwind" fn __event_callback_wrapper(data: *const $ty) {
-            let data = unsafe { data.as_ref() };
-            __CALLBACK(data)
+            let _ = unsafe { ::std::mem::transmute::<*const $ty, *const ::std::ffi::c_void>(data) }; // size check
+            __CALLBACK(::std::ptr::NonNull::new(data.cast_mut()))
         }
 
         __event_callback_wrapper
@@ -159,8 +172,8 @@ macro_rules! event_consume {
     ( $ty:ty , $callback:expr $(,)? ) => {
         $crate::event::event_consume!(<$ty> $callback)
     };
-    ( | $arg:ident : Option< & $ty:ty > | $body:expr $(,)? ) => {
-        $crate::event::event_consume!(<$ty> |$arg: Option<&$ty>| $body)
+    ( | $arg:ident : Option<NonNull< $ty:ty >> | $body:expr $(,)? ) => {
+        $crate::event::event_consume!(<$ty> |$arg: Option<NonNull< $ty >>| $body)
     };
     ( $callback:expr $(,)? ) => {{
         $crate::event::event_consume!(<()> $callback)
@@ -190,8 +203,9 @@ pub use event_consume;
 /// The event identifier may be dynamic and the callback may be a function name.
 /// ```no_run
 /// # use nexus::event::*;
+/// # use std::ptr::NonNull;
 /// let event: &str = "MY_EVENT";
-/// fn event_callback(event_args: Option<&i32>) {
+/// fn event_callback(event_args: Option<NonNull<i32>>) {
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {event_args:?}"));
 /// }
@@ -202,7 +216,7 @@ pub use event_consume;
 /// The `unsafe` keyword may be moved into the macro call:
 /// ```no_run
 /// # use nexus::event::*;
-/// # fn event_callback(_: Option<&()>) {}
+/// # fn event_callback(_: Option<NonNull<()>>) {}
 /// event_subscribe!(unsafe "MY_EVENT" => (), event_callback);
 /// ```
 ///
@@ -225,8 +239,6 @@ macro_rules! event_subscribe {
 }
 
 pub use event_subscribe;
-
-use super::EventApi;
 
 /// Raises an event to all subscribing addons.
 ///

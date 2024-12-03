@@ -9,7 +9,7 @@ pub const ADDON_LOADED: Event<i32> = unsafe { Event::new("EV_ADDON_LOADED") };
 pub const ADDON_UNLOADED: Event<i32> = unsafe { Event::new("EV_ADDON_UNLOADED") };
 
 /// Nexus volatile addon disabled event.
-pub const VOLATILE_ADDON_DISABLED: Event<i32> = unsafe { Event::new("EV_ADDON_LOADED") };
+pub const VOLATILE_ADDON_DISABLED: Event<i32> = unsafe { Event::new("EV_VOLATILE_ADDON_DISABLED") };
 
 /// Window resized event.
 pub const WINDOW_RESIZED: Event<()> = unsafe { Event::new("EV_WINDOW_RESIZED") };
