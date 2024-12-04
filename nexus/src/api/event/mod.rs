@@ -7,9 +7,9 @@
 //! };
 //! use std::ptr::NonNull;
 //!
-//! let callback = event_consume!(|payload: Option<NonNull<i32>>| {
+//! let callback = event_consume!(|payload: Option<&i32>| {
 //!     if let Some(signature) = payload {
-//!         log(LogLevel::Info, "My Addon", format!("Addon {signature:?} loaded"));
+//!         log(LogLevel::Info, "My Addon", format!("Addon {signature} loaded"));
 //!     }
 //! });
 //!
@@ -140,8 +140,7 @@ pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeU
 /// # Usage
 /// ```no_run
 /// # use nexus::event::*;
-/// # use std::ptr::NonNull;
-/// let event_callback = event_consume!(|data: Option<NonNull<i32>>| {
+/// let event_callback = event_consume!(|data: Option<&i32>| {
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("received event with data {data:?}"));
 /// });
@@ -154,21 +153,34 @@ pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeU
 ///
 /// ```no_run
 /// # use nexus::event::*;
-/// # use std::ptr::NonNull;
-/// fn event_callback(data: Option<NonNull<i32>>) {
+/// fn event_callback(data: Option<&i32>) {
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("Received event with data {data:?}"));
 /// }
 /// let event_callback = event_consume!(<i32> event_callback);
 /// ```
+///
+/// Note that the payload type corresponds to the pointee in Nexus documentation.
+/// If you are interested in the pointer itself, you have to cast the obtained reference back to a pointer:
+/// ```no_run
+/// # use nexus::event::*;
+/// use std::ffi::{c_char, CStr};
+///
+/// let event_callback = event_consume!(<c_char> |data| {
+///     if let Some(data) = data {
+///         let ptr = data as *const c_char;
+///         let c_str = unsafe { CStr::from_ptr(ptr) };
+///     }
+/// });
+/// ```
 #[macro_export]
 macro_rules! event_consume {
     ( < $ty:ty > $callback:expr $(,)? ) => {{
-        const __CALLBACK: fn(::std::option::Option<::std::ptr::NonNull<$ty>>) = ($callback);
+        const __CALLBACK: fn(::std::option::Option<&$ty>) = ($callback);
 
         extern "C-unwind" fn __event_callback_wrapper(data: *const $ty) {
             let _ = unsafe { ::std::mem::transmute::<*const $ty, *const ::std::ffi::c_void>(data) }; // size check
-            __CALLBACK(::std::ptr::NonNull::new(data.cast_mut()))
+            __CALLBACK(unsafe { data.as_ref() })
         }
 
         __event_callback_wrapper
@@ -176,8 +188,8 @@ macro_rules! event_consume {
     ( $ty:ty , $callback:expr $(,)? ) => {
         $crate::event::event_consume!(<$ty> $callback)
     };
-    ( | $arg:ident : Option<NonNull< $ty:ty >> | $body:expr $(,)? ) => {
-        $crate::event::event_consume!(<$ty> |$arg: Option<NonNull< $ty >>| $body)
+    ( | $arg:ident : Option<& $ty:ty > | $body:expr $(,)? ) => {
+        $crate::event::event_consume!(<$ty> |$arg: Option<& $ty >| $body)
     };
     ( $callback:expr $(,)? ) => {{
         $crate::event::event_consume!(<()> $callback)
@@ -197,32 +209,43 @@ pub use event_consume;
 /// ```no_run
 /// # use nexus::event::*;
 /// unsafe {
-///     event_subscribe!("MY_EVENT" => i32, |args| {
+///     event_subscribe!("MY_EVENT" => i32, |data| {
 ///         use nexus::log::{log, LogLevel};
-///         log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {args:?}"));
+///         log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {data:?}"));
 ///     })
 /// }.revert_on_unload();
 /// ```
 ///
-/// The event identifier may be dynamic and the callback may be a function name.
+/// The event identifier may be dynamic and the callback can be a function name.
 /// ```no_run
 /// # use nexus::event::*;
-/// # use std::ptr::NonNull;
 /// let event: &str = "MY_EVENT";
-/// fn event_callback(event_args: Option<NonNull<i32>>) {
+/// fn event_callback(data: Option<&i32>) {
 ///     use nexus::log::{log, LogLevel};
-///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {event_args:?}"));
+///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {data:?}"));
 /// }
 /// let revertible = unsafe { event_subscribe!(event => i32, event_callback) };
 /// revertible.revert();
 /// ```
 ///
-/// The `unsafe` keyword may be moved into the macro call:
+/// The `unsafe` keyword can be moved into the macro call:
 /// ```no_run
 /// # use nexus::event::*;
-/// # use std::ptr::NonNull;
-/// # fn event_callback(_: Option<NonNull<()>>) {}
+/// # fn event_callback(_: Option<&()>) {}
 /// event_subscribe!(unsafe "MY_EVENT" => (), event_callback);
+/// ```
+/// Note that the payload type corresponds to the pointee in Nexus documentation.
+/// If you are interested in the pointer itself, you have to cast the obtained reference back to a pointer:
+/// ```no_run
+/// # use nexus::event::*;
+/// use std::ffi::{c_char, CStr};
+///
+/// event_subscribe!(unsafe "EV_ACCOUNT_NAME" => c_char, |data| {
+///     if let Some(data) = data {
+///         let ptr = data as *const c_char;
+///         let c_str = unsafe { CStr::from_ptr(ptr) };
+///     }
+/// });
 /// ```
 ///
 /// # Safety

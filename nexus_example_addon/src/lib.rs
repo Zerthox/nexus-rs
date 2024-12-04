@@ -1,14 +1,15 @@
 use nexus::{
-    event::event_subscribe,
+    event::{arc::ACCOUNT_NAME, event_subscribe},
+    event_consume,
     gui::{register_render, render, RenderType},
-    imgui::Window,
+    imgui::{sys::cty::c_char, Window},
     keybind::{keybind_handler, register_keybind_with_string},
     paths::get_addon_dir,
     quick_access::add_quick_access,
     texture::{load_texture_from_file, texture_receive, Texture},
     AddonFlags, UpdateProvider,
 };
-use std::cell::Cell;
+use std::{cell::Cell, ffi::CStr};
 
 nexus::export! {
     name: "Example Addon",
@@ -67,12 +68,21 @@ fn load() {
     );
 
     let keybind_handler = keybind_handler!(|id, is_release| log::info!(
-        "keybind {id} {}",
+        "Keybind {id} {}",
         if is_release { "released" } else { "pressed" }
     ));
     register_keybind_with_string("MY_KEYBIND", keybind_handler, "ALT+SHIFT+T").revert_on_unload();
 
-    unsafe { event_subscribe!("MY_EVENT" => i32, |data| log::info!("received event {data:?}")) }
+    unsafe { event_subscribe!("MY_EVENT" => i32, |data| log::info!("Received event {data:?}")) }
+        .revert_on_unload();
+
+    ACCOUNT_NAME
+        .subscribe(event_consume!(<c_char> |name| {
+            if let Some(name) = name {
+                let name = unsafe {CStr::from_ptr(name as *const c_char)};
+                log::info!("Received account name: {name:?}");
+            }
+        }))
         .revert_on_unload();
 }
 
