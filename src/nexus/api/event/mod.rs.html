@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `nexus\src\api\event\mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../..\../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../..\../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../..\../static.files/rustdoc-c5d6553a23f1e5a6.css"><meta name="rustdoc-vars" data-root-path="../../..\../" data-static-root-path="../../..\../static.files/" data-current-crate="nexus" data-themes="" data-resource-suffix="" data-rustdoc-version="1.81.0 (eeb90cda1 2024-09-04)" data-channel="1.81.0" data-search-js="search-d234aafac6c221dd.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../..\../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../..\../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../..\../src-files.js"></script><script defer src="../../..\../static.files/main-d2fab2bf619172d3.js"></script><noscript><link rel="stylesheet" href="../../..\../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../..\../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../..\../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `nexus\src\api\event\mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../..\../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../..\../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../..\../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../..\../" data-static-root-path="../../..\../static.files/" data-current-crate="nexus" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0 (90b35a623 2024-11-26)" data-channel="1.83.0" data-search-js="search-f0d225181b97f9a4.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../..\../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../..\../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../..\../src-files.js"></script><script defer src="../../..\../static.files/main-f070b9041d14864c.js"></script><noscript><link rel="stylesheet" href="../../..\../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../..\../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../..\../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">nexus\api\event/</div>mod.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
+<a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -268,17 +269,57 @@
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
-</pre></div><pre class="rust"><code><span class="doccomment">//! Event system.
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a></pre></div><pre class="rust"><code><span class="doccomment">//! Event system.
 //!
 //! ```no_run
 //! use nexus::{
 //!     event::{ADDON_LOADED, event_consume},
 //!     log::{log, LogLevel}
 //! };
+//! use std::ptr::NonNull;
 //!
 //! let callback = event_consume!(|payload: Option&lt;&amp;i32&gt;| {
 //!     if let Some(signature) = payload {
-//!         log(LogLevel::Info, "My Addon", format!("Addon {signature:?} loaded"));
+//!         log(LogLevel::Info, "My Addon", format!("Addon {signature} loaded"));
 //!     }
 //! });
 //!
@@ -293,6 +334,7 @@
 <span class="attr">#[cfg(feature = <span class="string">"extras"</span>)]
 </span><span class="kw">pub mod </span>extras;
 
+<span class="kw">use </span><span class="kw">super</span>::EventApi;
 <span class="kw">use crate</span>::{revertible::Revertible, util::str_to_c, AddonApi};
 <span class="kw">use </span>std::{
     ffi::{c_char, c_void},
@@ -314,6 +356,7 @@
     ///
     /// # Safety
     /// See [`event_subscribe_typed`].
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub const unsafe fn </span>new(identifier: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             identifier,
@@ -322,11 +365,18 @@
     }
 
     <span class="doccomment">/// Subscribes to the event.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>subscribe(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         callback: RawEventConsume&lt;T&gt;,
     ) -&gt; Revertible&lt;<span class="kw">impl </span>Fn() + Send + Sync + Clone + <span class="lifetime">'static</span>&gt; {
         <span class="kw">unsafe </span>{ event_subscribe_typed(<span class="self">self</span>.identifier, callback) }
+    }
+
+    <span class="doccomment">/// Raises the event.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>raise(<span class="kw-2">&amp;</span><span class="self">self</span>, event_data: <span class="kw-2">&amp;</span>T) {
+        <span class="kw">unsafe </span>{ event_raise(<span class="self">self</span>.identifier, event_data) }
     }
 }
 
@@ -404,24 +454,43 @@
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("received event with data {data:?}"));
 /// });
+///
+/// let event_callback = event_consume!(&lt;i32&gt; |data| {
+///     use nexus::log::{log, LogLevel};
+///     log(LogLevel::Info, "My Addon", format!("received event with data {data:?}"));
+/// });
 /// ```
 ///
 /// ```no_run
 /// # use nexus::event::*;
-/// fn event_callback(event_args: Option&lt;&amp;i32&gt;) {
+/// fn event_callback(data: Option&lt;&amp;i32&gt;) {
 ///     use nexus::log::{log, LogLevel};
-///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {event_args:?}"));
+///     log(LogLevel::Info, "My Addon", format!("Received event with data {data:?}"));
 /// }
 /// let event_callback = event_consume!(&lt;i32&gt; event_callback);
+/// ```
+///
+/// Note that the payload type corresponds to the pointee in Nexus documentation.
+/// If you are interested in the pointer itself, you have to cast the obtained reference back to a pointer:
+/// ```no_run
+/// # use nexus::event::*;
+/// use std::ffi::{c_char, CStr};
+///
+/// let event_callback = event_consume!(&lt;c_char&gt; |data| {
+///     if let Some(data) = data {
+///         let ptr = data as *const c_char;
+///         let c_str = unsafe { CStr::from_ptr(ptr) };
+///     }
+/// });
 /// ```
 </span><span class="attr">#[macro_export]
 </span><span class="macro">macro_rules!</span> event_consume {
     ( &lt; <span class="macro-nonterminal">$ty</span>:ty &gt; <span class="macro-nonterminal">$callback</span>:expr $(,)<span class="question-mark">? </span>) =&gt; {{
-        <span class="kw">const </span>__CALLBACK: <span class="kw">fn</span>(::std::option::Option&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$ty</span>&gt;) = <span class="macro-nonterminal">$callback</span>;
+        <span class="kw">const </span>__CALLBACK: <span class="kw">fn</span>(::std::option::Option&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$ty</span>&gt;) = (<span class="macro-nonterminal">$callback</span>);
 
         <span class="kw">extern </span><span class="string">"C-unwind" </span><span class="kw">fn </span>__event_callback_wrapper(data: <span class="kw-2">*const </span><span class="macro-nonterminal">$ty</span>) {
-            <span class="kw">let </span>data = <span class="kw">unsafe </span>{ data.as_ref() };
-            __CALLBACK(data)
+            <span class="kw">let _ </span>= <span class="kw">unsafe </span>{ ::std::mem::transmute::&lt;<span class="kw-2">*const </span><span class="macro-nonterminal">$ty</span>, <span class="kw-2">*const </span>::std::ffi::c_void&gt;(data) }; <span class="comment">// size check
+            </span>__CALLBACK(<span class="kw">unsafe </span>{ data.as_ref() })
         }
 
         __event_callback_wrapper
@@ -429,8 +498,8 @@
     ( <span class="macro-nonterminal">$ty</span>:ty , <span class="macro-nonterminal">$callback</span>:expr $(,)<span class="question-mark">? </span>) =&gt; {
         <span class="macro-nonterminal">$</span><span class="macro">crate::event::event_consume!</span>(&lt;<span class="macro-nonterminal">$ty</span>&gt; <span class="macro-nonterminal">$callback</span>)
     };
-    ( | <span class="macro-nonterminal">$arg</span>:ident : <span class="prelude-ty">Option</span>&lt; &amp; <span class="macro-nonterminal">$ty</span>:ty &gt; | <span class="macro-nonterminal">$body</span>:expr $(,)<span class="question-mark">? </span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::event::event_consume!</span>(&lt;<span class="macro-nonterminal">$ty</span>&gt; |<span class="macro-nonterminal">$arg</span>: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$ty</span>&gt;| <span class="macro-nonterminal">$body</span>)
+    ( | <span class="macro-nonterminal">$arg</span>:ident : <span class="prelude-ty">Option</span>&lt;&amp; <span class="macro-nonterminal">$ty</span>:ty &gt; | <span class="macro-nonterminal">$body</span>:expr $(,)<span class="question-mark">? </span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::event::event_consume!</span>(&lt;<span class="macro-nonterminal">$ty</span>&gt; |<span class="macro-nonterminal">$arg</span>: <span class="prelude-ty">Option</span>&lt;&amp; <span class="macro-nonterminal">$ty </span>&gt;| <span class="macro-nonterminal">$body</span>)
     };
     ( <span class="macro-nonterminal">$callback</span>:expr $(,)<span class="question-mark">? </span>) =&gt; {{
         <span class="macro-nonterminal">$</span><span class="macro">crate::event::event_consume!</span>(&lt;()&gt; <span class="macro-nonterminal">$callback</span>)
@@ -450,30 +519,43 @@
 /// ```no_run
 /// # use nexus::event::*;
 /// unsafe {
-///     event_subscribe!("MY_EVENT" =&gt; i32, |args| {
+///     event_subscribe!("MY_EVENT" =&gt; i32, |data| {
 ///         use nexus::log::{log, LogLevel};
-///         log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {args:?}"));
+///         log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {data:?}"));
 ///     })
 /// }.revert_on_unload();
 /// ```
 ///
-/// The event identifier may be dynamic and the callback may be a function name.
+/// The event identifier may be dynamic and the callback can be a function name.
 /// ```no_run
 /// # use nexus::event::*;
 /// let event: &amp;str = "MY_EVENT";
-/// fn event_callback(event_args: Option&lt;&amp;i32&gt;) {
+/// fn event_callback(data: Option&lt;&amp;i32&gt;) {
 ///     use nexus::log::{log, LogLevel};
-///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {event_args:?}"));
+///     log(LogLevel::Info, "My Addon", format!("Received MY_EVENT with {data:?}"));
 /// }
 /// let revertible = unsafe { event_subscribe!(event =&gt; i32, event_callback) };
 /// revertible.revert();
 /// ```
 ///
-/// The `unsafe` keyword may be moved into the macro call:
+/// The `unsafe` keyword can be moved into the macro call:
 /// ```no_run
 /// # use nexus::event::*;
 /// # fn event_callback(_: Option&lt;&amp;()&gt;) {}
 /// event_subscribe!(unsafe "MY_EVENT" =&gt; (), event_callback);
+/// ```
+/// Note that the payload type corresponds to the pointee in Nexus documentation.
+/// If you are interested in the pointer itself, you have to cast the obtained reference back to a pointer:
+/// ```no_run
+/// # use nexus::event::*;
+/// use std::ffi::{c_char, CStr};
+///
+/// event_subscribe!(unsafe "EV_ACCOUNT_NAME" =&gt; c_char, |data| {
+///     if let Some(data) = data {
+///         let ptr = data as *const c_char;
+///         let c_str = unsafe { CStr::from_ptr(ptr) };
+///     }
+/// });
 /// ```
 ///
 /// # Safety
@@ -495,8 +577,6 @@
 }
 
 <span class="kw">pub use </span>event_subscribe;
-
-<span class="kw">use </span><span class="kw">super</span>::EventApi;
 
 <span class="doccomment">/// Raises an event to all subscribing addons.
 ///

@@ -1,3 +1,9 @@
-(function() {var implementors = {
-"gw2_mumble":[["impl TryFromPrimitive for <a class=\"enum\" href=\"gw2_mumble/enum.Mount.html\" title=\"enum gw2_mumble::Mount\">Mount</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"gw2_mumble/enum.Profession.html\" title=\"enum gw2_mumble::Profession\">Profession</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"gw2_mumble/enum.Race.html\" title=\"enum gw2_mumble::Race\">Race</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"gw2_mumble/enum.UIScaling.html\" title=\"enum gw2_mumble::UIScaling\">UIScaling</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {
+    var implementors = Object.fromEntries([["gw2_mumble",[["impl TryFromPrimitive for <a class=\"enum\" href=\"gw2_mumble/enum.Mount.html\" title=\"enum gw2_mumble::Mount\">Mount</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"gw2_mumble/enum.Profession.html\" title=\"enum gw2_mumble::Profession\">Profession</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"gw2_mumble/enum.Race.html\" title=\"enum gw2_mumble::Race\">Race</a>"],["impl TryFromPrimitive for <a class=\"enum\" href=\"gw2_mumble/enum.UIScaling.html\" title=\"enum gw2_mumble::UIScaling\">UIScaling</a>"]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":57,"fragment_lengths":[548]}
