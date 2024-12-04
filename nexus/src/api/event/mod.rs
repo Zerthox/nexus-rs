@@ -9,7 +9,7 @@
 //!
 //! let callback = event_consume!(|payload: Option<NonNull<i32>>| {
 //!     if let Some(signature) = payload {
-//!         log(LogLevel::Info, "My Addon", format!("Addon {signature} loaded"));
+//!         log(LogLevel::Info, "My Addon", format!("Addon {signature:?} loaded"));
 //!     }
 //! });
 //!
@@ -150,7 +150,11 @@ pub fn event_unsubscribe(identifier: impl AsRef<str>, callback: RawEventConsumeU
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("received event with data {data:?}"));
 /// });
+/// ```
 ///
+/// ```no_run
+/// # use nexus::event::*;
+/// # use std::ptr::NonNull;
 /// fn event_callback(data: Option<NonNull<i32>>) {
 ///     use nexus::log::{log, LogLevel};
 ///     log(LogLevel::Info, "My Addon", format!("Received event with data {data:?}"));
@@ -216,6 +220,7 @@ pub use event_consume;
 /// The `unsafe` keyword may be moved into the macro call:
 /// ```no_run
 /// # use nexus::event::*;
+/// # use std::ptr::NonNull;
 /// # fn event_callback(_: Option<NonNull<()>>) {}
 /// event_subscribe!(unsafe "MY_EVENT" => (), event_callback);
 /// ```

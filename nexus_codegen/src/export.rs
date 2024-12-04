@@ -84,28 +84,24 @@ impl AddonInfo {
 
     #[cfg(feature = "env_filter")]
     pub fn generate_log_filter(&self) -> TokenStream {
-        return self
+        self
             .log_filter
             .as_ref()
-            .map(|e| {
-                if let Expr::Lit(lit) = e {
+            .map(|expr| {
+                if let Expr::Lit(lit) = expr {
                     if let Lit::Str(ref lit) = lit.lit {
-                        match env_filter::Builder::new().try_parse(&lit.value()) {
-                            Ok(_filter) => return quote! { ::std::option::Option::Some(#e) },
+                        return match env_filter::Builder::new().try_parse(&lit.value()) {
+                            Ok(_filter) => quote! { ::std::option::Option::Some(#expr) },
                             Err(err) => {
-                                let err = format!("{}", err);
-                                return quote_spanned! {
-                                    e.span() => compile_error!(concat!("invalid log filter: ", #err)),
-                                };
+                                let err = err.to_string();
+                                quote_spanned! { expr.span()=> ::std::compile_error!(#err) }
                             }
-                        }
+                        };
                     }
                 }
-                quote_spanned! {
-                    e.span() => compile_error!("Only string literals allowed in log filter"),
-                }
+                quote_spanned! { expr.span()=> ::std::compile_error!("only string literals allowed in log filter") }
             })
-            .unwrap_or_else(|| quote! { ::std::option::Option::None });
+            .unwrap_or_else(|| quote! { ::std::option::Option::None })
     }
 
     pub fn generate_export(&self) -> TokenStream {
