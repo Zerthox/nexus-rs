@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `nexus\src\logger.rs`."><title>logger.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="nexus" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0 (90b35a623 2024-11-26)" data-channel="1.83.0" data-search-js="search-f0d225181b97f9a4.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-f070b9041d14864c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">nexus/</div>logger.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `nexus\src\logger.rs`."><title>logger.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-46132b98.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="nexus" data-themes="" data-resource-suffix="" data-rustdoc-version="1.85.0 (4d91de4e4 2025-02-17)" data-channel="1.85.0" data-search-js="search-75f5ac3e.js" data-settings-js="settings-0f613d39.js" ><script src="../../static.files/storage-59e33391.js"></script><script defer src="../../static.files/src-script-56102188.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-5f194d8c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">nexus/</div>logger.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers">
 <a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
@@ -47,42 +47,45 @@
 <a href="#46" id="46">46</a>
 <a href="#47" id="47">47</a>
 <a href="#48" id="48">48</a>
-<a href="#49" id="49">49</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::log::{log <span class="kw">as </span>nexus_log, LogLevel};
-<span class="kw">use </span>env_filter::{Builder, Filter};
+<a href="#49" id="49">49</a>
+<a href="#50" id="50">50</a>
+<a href="#51" id="51">51</a>
+<a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a></pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::log::{log <span class="kw">as </span>nexus_log, LogLevel};
 <span class="kw">use </span>log::Log;
-
-<span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>NexusLogger {
-    channel_name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
-    filter: Filter,
-}
-
-<span class="kw">impl </span>NexusLogger {
-    <span class="kw">pub fn </span>set_logger(channel_name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, filter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str&gt;) {
-        <span class="kw">let _ </span>= log::set_boxed_logger(Box::new(NexusLogger {
-            channel_name,
-            filter: filter
-                .map(|f| Builder::new().parse(f).build())
-                .unwrap_or_else(|| Builder::new().filter_level(log::LevelFilter::Trace).build()),
-        }));
-        log::set_max_level(log::LevelFilter::Trace);
-    }
-}
-
-<span class="kw">impl </span>Log <span class="kw">for </span>NexusLogger {
-    <span class="kw">fn </span>enabled(<span class="kw-2">&amp;</span><span class="self">self</span>, metadata: <span class="kw-2">&amp;</span>log::Metadata) -&gt; bool {
-        <span class="self">self</span>.filter.enabled(metadata)
-    }
-
-    <span class="kw">fn </span>log(<span class="kw-2">&amp;</span><span class="self">self</span>, record: <span class="kw-2">&amp;</span>log::Record) {
-        <span class="kw">if </span><span class="self">self</span>.filter.matches(record) {
-            <span class="kw">let </span>message = <span class="macro">format!</span>(<span class="string">"{}"</span>, record.args());
-            nexus_log(record.level().into(), <span class="self">self</span>.channel_name, message)
-        }
-    }
-
-    <span class="kw">fn </span>flush(<span class="kw-2">&amp;</span><span class="self">self</span>) {}
-}
 
 <span class="kw">impl </span>From&lt;log::Level&gt; <span class="kw">for </span>LogLevel {
     <span class="attr">#[inline]
@@ -94,6 +97,77 @@
             log::Level::Debug =&gt; <span class="self">Self</span>::Debug,
             log::Level::Trace =&gt; <span class="self">Self</span>::Trace,
         }
+    }
+}
+
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>NexusLogger {
+    channel_name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
+}
+
+<span class="kw">impl </span>NexusLogger {
+    <span class="kw">pub fn </span>set_logger(channel_name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, filter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str&gt;) {
+        <span class="attr">#[cfg(not(feature = <span class="string">"log_filter"</span>))]
+        </span><span class="kw">let </span>logger = <span class="self">Self </span>{ channel_name };
+
+        <span class="attr">#[cfg(feature = <span class="string">"log_filter"</span>)]
+        </span><span class="kw">let </span>logger = filter::NexusLoggerFiltered::new(channel_name, filter);
+
+        <span class="kw">let _ </span>= log::set_boxed_logger(Box::new(logger));
+        log::set_max_level(log::LevelFilter::Trace);
+    }
+}
+
+<span class="kw">impl </span>Log <span class="kw">for </span>NexusLogger {
+    <span class="kw">fn </span>enabled(<span class="kw-2">&amp;</span><span class="self">self</span>, _metadata: <span class="kw-2">&amp;</span>log::Metadata) -&gt; bool {
+        <span class="bool-val">true
+    </span>}
+
+    <span class="kw">fn </span>log(<span class="kw-2">&amp;</span><span class="self">self</span>, record: <span class="kw-2">&amp;</span>log::Record) {
+        <span class="kw">let </span>message = <span class="macro">format!</span>(<span class="string">"{}"</span>, record.args());
+        nexus_log(record.level().into(), <span class="self">self</span>.channel_name, message)
+    }
+
+    <span class="kw">fn </span>flush(<span class="kw-2">&amp;</span><span class="self">self</span>) {}
+}
+
+<span class="attr">#[cfg(feature = <span class="string">"log_filter"</span>)]
+</span><span class="kw">mod </span>filter {
+    <span class="kw">use </span><span class="kw">super</span>::NexusLogger;
+    <span class="kw">use </span>env_filter::{Builder, Filter};
+    <span class="kw">use </span>log::Log;
+
+    <span class="attr">#[derive(Debug)]
+    </span><span class="kw">pub struct </span>NexusLoggerFiltered {
+        logger: NexusLogger,
+        filter: Filter,
+    }
+
+    <span class="kw">impl </span>NexusLoggerFiltered {
+        <span class="kw">pub fn </span>new(channel_name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, filter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str&gt;) -&gt; <span class="self">Self </span>{
+            <span class="self">Self </span>{
+                logger: NexusLogger { channel_name },
+                filter: filter
+                    .map(|f| Builder::new().parse(f).build())
+                    .unwrap_or_else(|| {
+                        Builder::new().filter_level(log::LevelFilter::Trace).build()
+                    }),
+            }
+        }
+    }
+
+    <span class="kw">impl </span>Log <span class="kw">for </span>NexusLoggerFiltered {
+        <span class="kw">fn </span>enabled(<span class="kw-2">&amp;</span><span class="self">self</span>, metadata: <span class="kw-2">&amp;</span>log::Metadata) -&gt; bool {
+            <span class="self">self</span>.filter.enabled(metadata)
+        }
+
+        <span class="kw">fn </span>log(<span class="kw-2">&amp;</span><span class="self">self</span>, record: <span class="kw-2">&amp;</span>log::Record) {
+            <span class="kw">if </span><span class="self">self</span>.filter.matches(record) {
+                <span class="self">self</span>.logger.log(record);
+            }
+        }
+
+        <span class="kw">fn </span>flush(<span class="kw-2">&amp;</span><span class="self">self</span>) {}
     }
 }
 </code></pre></div></section></main></body></html>
