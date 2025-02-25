@@ -1,12 +1,8 @@
 use crate::addon::AddonInfo;
 use proc_macro2::TokenStream;
-#[cfg(feature = "env_filter")]
-use quote::quote_spanned;
 use quote::{quote, ToTokens};
 use std::env;
 use syn::Expr;
-#[cfg(feature = "env_filter")]
-use syn::{spanned::Spanned, Lit};
 
 fn env_var(key: &str) -> String {
     env::var(key).unwrap_or_else(|_| panic!("{key} not set"))
@@ -82,28 +78,6 @@ impl AddonInfo {
             .unwrap_or_else(|| quote! { ::std::ptr::null() })
     }
 
-    #[cfg(feature = "env_filter")]
-    pub fn generate_log_filter(&self) -> TokenStream {
-        self
-            .log_filter
-            .as_ref()
-            .map(|expr| {
-                if let Expr::Lit(lit) = expr {
-                    if let Lit::Str(ref lit) = lit.lit {
-                        return match env_filter::Builder::new().try_parse(&lit.value()) {
-                            Ok(_filter) => quote! { ::std::option::Option::Some(#expr) },
-                            Err(err) => {
-                                let err = err.to_string();
-                                quote_spanned! { expr.span()=> ::std::compile_error!(#err) }
-                            }
-                        };
-                    }
-                }
-                quote_spanned! { expr.span()=> ::std::compile_error!("only string literals allowed in log filter") }
-            })
-            .unwrap_or_else(|| quote! { ::std::option::Option::None })
-    }
-
     pub fn generate_export(&self) -> TokenStream {
         let signature = &self.signature;
         let name = self.generate_name();
@@ -111,13 +85,16 @@ impl AddonInfo {
         let author = as_char_ptr(env_var("CARGO_PKG_AUTHORS"));
         let description = as_char_ptr(env_var("CARGO_PKG_DESCRIPTION"));
         let version = self.generate_version();
-        #[cfg(feature = "env_filter")]
+
+        #[cfg(feature = "log_filter")]
+        let log_filter = self.generate_log_filter();
+
+        #[cfg(not(feature = "log_filter"))]
+        let log_filter = quote! { ::std::option::Option::None };
+
         let initfn = {
-            let log_filter = self.generate_log_filter();
             quote! { ::nexus::__macro::init(api, self::__ADDON_NAME, #log_filter); }
         };
-        #[cfg(not(feature = "env_filter"))]
-        let initfn = quote! { ::nexus::__macro::init(api, self::__ADDON_NAME);};
 
         let load = self.generate_load();
         let unload = self.generate_unload();

@@ -1,7 +1,7 @@
 //! Quick access creation.
 
 use crate::{gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi, QuickAccessApi};
-use std::ffi::c_char;
+use std::{ffi::c_char, ptr};
 
 pub type RawQuickAccessAddShortcut = unsafe extern "C-unwind" fn(
     identifier: *const c_char,
@@ -91,15 +91,17 @@ pub fn add_quick_access_context_menu(
         ..
     } = AddonApi::get().quick_access;
     let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
-    let target_identifier = match target_identifier {
-        Some(target_identifier) => str_to_c(
-            target_identifier,
-            "failed to convert shortcut target identifier",
+    let target_identifier = target_identifier
+        .map(|string| str_to_c(string, "failed to convert shortcut target identifier"));
+    unsafe {
+        add_context_menu(
+            identifier.as_ptr(),
+            target_identifier
+                .map(|string| string.as_ptr())
+                .unwrap_or(ptr::null()),
+            render_callback,
         )
-        .as_ptr(),
-        None => std::ptr::null(),
     };
-    unsafe { add_context_menu(identifier.as_ptr(), target_identifier, render_callback) };
     let revert = move || unsafe { remove_context_menu(identifier.as_ptr()) };
     revert.into()
 }

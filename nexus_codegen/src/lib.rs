@@ -1,6 +1,9 @@
 mod addon;
 mod export;
 
+#[cfg(feature = "log_filter")]
+mod log_filter;
+
 use self::addon::AddonInfo;
 use proc_macro::TokenStream;
 use syn::parse_macro_input;

@@ -1,6 +1,6 @@
 [package]
 name = "nexus"
-version = "0.6.2"
+version = "0.7.0"
 edition = "2021"
 authors = ["Zerthox"]
 description = "Rust bindings for Raidcore Nexus addons"
@@ -19,10 +19,10 @@ num_enum = "0.7.2"
 paste = "1.0.14"
 retour = { version = "0.3.1", optional = true }
 serde = { version = "1.0.197", features = ["derive"], optional = true }
-strum = { version = "0.26.2", features = ["derive"], optional = true }
+strum = { version = "0.27.1", features = ["derive"], optional = true }
 
 [dependencies.windows]
-version = "0.58.0"
+version = "0.60.0"
 features = [
     "System",
     "Win32_Graphics_Dxgi",
@@ -30,7 +30,8 @@ features = [
 ]
 
 [features]
-log = ["dep:log", "dep:env_filter", "nexus_codegen/env_filter"]
+log = ["dep:log"]
+log_filter = ["log", "dep:env_filter", "nexus_codegen/log_filter"]
 arc = ["dep:arcdps"]
 arcdps = ["arc"]
 evtc = ["arc"]

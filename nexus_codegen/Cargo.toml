@@ -1,6 +1,6 @@
 [package]
 name = "nexus_codegen"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["Zerthox"]
 description = "Helper macro to generate code for Raidcore Nexus addons"
@@ -19,4 +19,4 @@ syn = { version = "2.0.14", features = ["full"] }
 env_filter = { version = "0.1.2", optional = true }
 
 [features]
-env_filter = ["dep:env_filter"]
+log_filter = ["dep:env_filter"]

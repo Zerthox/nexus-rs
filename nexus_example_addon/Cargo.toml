@@ -8,7 +8,7 @@ repository = "https://github.com/zerthox/nexus-rs"
 
 [dependencies]
 log = "0.4.21"
-nexus = { path = "../nexus", features = ["log", "arc"] }
+nexus = { path = "../nexus", features = ["log", "log_filter", "arc"] }
 
 [lib]
 crate-type = ["cdylib"] # nexus addons are dynamic system libraries (dll)
