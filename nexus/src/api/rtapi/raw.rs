@@ -2,6 +2,27 @@
 use bitfields::bitfield;
 use std::ffi::c_char;
 
+#[cfg(feature = "serde")]
+mod serde_helpers {
+    use serde::ser::SerializeTuple;
+    use serde::{Serialize, Serializer};
+
+    pub(crate) fn serialize<const N: usize, S, T>(
+        t: &[T; N],
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+        T: Serialize,
+    {
+        let mut ser_tuple = serializer.serialize_tuple(N)?;
+        for elem in t {
+            ser_tuple.serialize_element(elem)?;
+        }
+        ser_tuple.end()
+    }
+}
+
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
@@ -99,9 +120,11 @@ pub struct GroupMemberFlags {
 #[derive(Debug, Copy, Clone)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 pub struct GroupMember {
-    pub account_name: [c_char; 140],   // Account name of the group member
+    #[cfg_attr(feature = "serde", serde(serialize_with = "serde_helpers::serialize"))]
+    pub account_name: [c_char; 140], // Account name of the group member
+    #[cfg_attr(feature = "serde", serde(serialize_with = "serde_helpers::serialize"))]
     pub character_name: [c_char; 140], // Character name of the group member
-    pub subgroup: i32,                 // 0 for parties, 1-15 according to the squad's subgroup
+    pub subgroup: i32,   // 0 for parties, 1-15 according to the squad's subgroup
     pub profession: i32, // 0-9 = Profession; -1 Unknown -> e.g. on loading screen or logged out
     pub elite_specialization: i32, // Third Spec ID, not necessarily elite; or -1 Unknown -> e.g. on loading screen or logged out
     pub flags: GroupMemberFlags,
@@ -138,14 +161,16 @@ pub struct RealTimeData {
     _reserved2: u32,                  // Reserved for future use
 
     /* Player Data */
-    _reserved1: u32,                     // Reserved for future use
-    pub account_name: [c_char; 140],     // Player's account name
-    pub character_name: [c_char; 140],   // Player's character name
-    pub character_position: [f32; 3],    // Player's character position
-    pub character_facing: [f32; 3],      // Player's character facing direction
-    pub profession: i32,                 // Player's profession
-    pub elite_specialization: i32,       // Player's elite specialization
-    pub mount_index: i32,                // Index of the mount, if applicable
+    _reserved1: u32, // Reserved for future use
+    #[cfg_attr(feature = "serde", serde(serialize_with = "serde_helpers::serialize"))]
+    pub account_name: [c_char; 140], // Player's account name
+    #[cfg_attr(feature = "serde", serde(serialize_with = "serde_helpers::serialize"))]
+    pub character_name: [c_char; 140], // Player's character name
+    pub character_position: [f32; 3], // Player's character position
+    pub character_facing: [f32; 3], // Player's character facing direction
+    pub profession: i32, // Player's profession
+    pub elite_specialization: i32, // Player's elite specialization
+    pub mount_index: i32, // Index of the mount, if applicable
     pub character_state: CharacterState, // Current state of the character
 
     /* Camera Data */
@@ -156,7 +181,7 @@ pub struct RealTimeData {
 }
 
 // Constants
-pub const RTAPI_SIG: u32 = 0x2501A02C;
+pub const RTAPI_SIG: i32 = 0x2501A02C;
 pub const DL_RTAPI: &str = "RTAPI";
 pub const EV_RTAPI_GROUP_MEMBER_JOINED: &str = "RTAPI_GROUP_MEMBER_JOINED";
 pub const EV_RTAPI_GROUP_MEMBER_LEFT: &str = "RTAPI_GROUP_MEMBER_LEFT";
