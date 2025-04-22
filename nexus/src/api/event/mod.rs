@@ -24,6 +24,9 @@ pub mod arc;
 #[cfg(feature = "extras")]
 pub mod extras;
 
+#[cfg(feature = "rtapi")]
+pub mod rtapi;
+
 use super::EventApi;
 use crate::{revertible::Revertible, util::str_to_c, AddonApi};
 use std::{

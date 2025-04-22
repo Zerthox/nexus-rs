@@ -110,20 +110,20 @@ pub mod mumble {
 #[cfg(feature = "mumble")]
 pub use self::mumble::{get_mumble_link, get_mumble_link_ptr, read_mumble_link, MumbleLink};
 
-// meh
-#[cfg(feature = "rtapi")]
-pub mod rtapi_raw;
 #[cfg(feature = "rtapi")]
 pub mod rtapi {
-    pub use super::rtapi_raw as raw;
-    use super::*;
     #[inline]
-    pub fn get_rtapi() -> *const rtapi_raw::RealTimeData {
-        get_resource(rtapi_raw::DL_RTAPI)
+    pub fn get_rtapi_ptr() -> *const crate::rtapi::raw::RealTimeData {
+        super::get_resource(crate::rtapi::raw::DL_RTAPI)
     }
 
     #[inline]
-    pub fn read_rtapi() -> Option<rtapi_raw::RealTimeData> {
-        unsafe { read_resource(rtapi_raw::DL_RTAPI) }
+    pub fn read_rtapi() -> Option<crate::rtapi::raw::RealTimeData> {
+        unsafe { super::read_resource(crate::rtapi::raw::DL_RTAPI) }
+    }
+
+    #[inline]
+    pub fn read_rtapi_owned() -> Option<crate::rtapi::RealTimeData> {
+        read_rtapi().map(|rtd: crate::rtapi::raw::RealTimeData| rtd.into())
     }
 }

@@ -22,13 +22,14 @@ paste = "1.0.14"
 retour = { version = "0.3.1", optional = true }
 serde = { version = "1.0.197", features = ["derive"], optional = true }
 strum = { version = "0.27.1", features = ["derive"], optional = true }
+bitfields = { version = "0.13.1", optional = true }
 
 [dependencies.windows]
 version = "0.60.0"
 features = ["System", "Win32_Graphics_Dxgi", "Win32_Graphics_Direct3D11"]
 
 [features]
-rtapi = []
+rtapi = ["dep:bitfields"]
 log = ["dep:log"]
 log_filter = ["log", "dep:env_filter", "nexus_codegen/log_filter"]
 arc = ["dep:arcdps"]
