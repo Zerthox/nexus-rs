@@ -11,7 +11,9 @@ rust-version = "1.71.0"
 arcdps = { git = "https://github.com/zerthox/arcdps-rs", tag = "0.15.1", optional = true }
 bitflags = "2.4.2"
 gw2_mumble = { git = "https://github.com/zerthox/gw2-mumble-rs", tag = "0.2.4", optional = true }
-imgui = { package = "arcdps-imgui", version = "0.8.0", features = [ "tables-api"] }
+imgui = { package = "arcdps-imgui", version = "0.8.0", features = [
+    "tables-api",
+] }
 log = { version = "0.4.21", features = ["std"], optional = true }
 env_filter = { version = "0.1.2", optional = true }
 nexus_codegen = { path = "../nexus_codegen" }
@@ -20,16 +22,14 @@ paste = "1.0.14"
 retour = { version = "0.3.1", optional = true }
 serde = { version = "1.0.197", features = ["derive"], optional = true }
 strum = { version = "0.27.1", features = ["derive"], optional = true }
+bitfields = { version = "0.13.1", optional = true }
 
 [dependencies.windows]
 version = "0.60.0"
-features = [
-    "System",
-    "Win32_Graphics_Dxgi",
-    "Win32_Graphics_Direct3D11",
-]
+features = ["System", "Win32_Graphics_Dxgi", "Win32_Graphics_Direct3D11"]
 
 [features]
+rtapi = ["dep:bitfields"]
 log = ["dep:log"]
 log_filter = ["log", "dep:env_filter", "nexus_codegen/log_filter"]
 arc = ["dep:arcdps"]

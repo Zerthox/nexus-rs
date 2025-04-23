@@ -18,6 +18,9 @@ pub mod v4;
 pub mod v6;
 pub mod wnd_proc;
 
+#[cfg(feature = "rtapi")]
+pub mod rtapi;
+
 // export current supported version
 pub use v6::*;
 
