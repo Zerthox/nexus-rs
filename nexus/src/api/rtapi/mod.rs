@@ -1,4 +1,15 @@
 //! Bindings for Nexus RealTime API.
+//!
+//! # Usage
+//! ```no_run
+//! use nexus::rtapi::{RealTimeApi, GroupType};
+//!
+//! if let Some(rtapi) = RealTimeApi::get() {
+//!     if let Some(group) = rtapi.read_group() {
+//!         let is_squad = matches!(group.group_type, Ok(GroupType::Squad | GroupType::RaidSquad));
+//!     }
+//! }
+//! ```
 
 mod camera;
 pub mod data;
@@ -13,16 +24,16 @@ pub use self::{camera::*, game::*, group::*, player::*, world::*};
 use self::data::RealTimeData;
 use std::ptr::NonNull;
 
-/// Interface for RealTime API data link.
+/// Interface for RealTime API.
 #[derive(Debug, Clone, Copy)]
 #[repr(transparent)]
-pub struct RealTimePtr(NonNull<RealTimeData>);
+pub struct RealTimeApi(NonNull<RealTimeData>);
 
-impl RealTimePtr {
+impl RealTimeApi {
     /// Signature of the RealTime API addon.
     pub const SIG: i32 = RealTimeData::SIG;
 
-    /// Retrieves the interface for the data link.
+    /// Retrieves the RealTime API interface.
     #[inline]
     pub fn get() -> Option<Self> {
         NonNull::new(RealTimeData::get_ptr().cast_mut()).map(Self)
