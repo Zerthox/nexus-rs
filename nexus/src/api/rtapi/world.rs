@@ -22,6 +22,10 @@ pub struct WorldData {
 }
 
 impl WorldData {
+    /// Reads world data from the given data pointer.
+    ///
+    /// # Safety
+    /// The pointer must be safe to read from.
     pub unsafe fn read(data: *const RealTimeData) -> Self {
         Self {
             time_of_day: (*data).time_of_day.try_into(),

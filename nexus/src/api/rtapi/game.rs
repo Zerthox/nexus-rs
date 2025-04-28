@@ -15,6 +15,10 @@ pub struct GameData {
 }
 
 impl GameData {
+    /// Reads game data from the given data pointer.
+    ///
+    /// # Safety
+    /// The pointer must be safe to read from.
     pub unsafe fn read(data: *const RealTimeData) -> Self {
         Self {
             game_build: (*data).game_build,

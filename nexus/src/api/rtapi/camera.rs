@@ -17,6 +17,10 @@ pub struct CameraData {
 }
 
 impl CameraData {
+    /// Reads camera data from the given data pointer.
+    ///
+    /// # Safety
+    /// The pointer must be safe to read from.
     pub unsafe fn read(data: *const RealTimeData) -> Self {
         Self {
             camera_position: (*data).camera_position,

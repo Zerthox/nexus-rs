@@ -17,6 +17,10 @@ pub struct GroupData {
 }
 
 impl GroupData {
+    /// Reads group data from the given data pointer.
+    ///
+    /// # Safety
+    /// The pointer must be safe to read from.
     pub unsafe fn read(data: *const RealTimeData) -> Self {
         Self {
             squad_markers: (*data).squad_markers,
