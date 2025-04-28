@@ -1,6 +1,6 @@
 [package]
 name = "nexus"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 authors = ["Zerthox"]
 description = "Rust bindings for Raidcore Nexus addons"
@@ -25,11 +25,10 @@ strum = { version = "0.27.1", features = ["derive"], optional = true }
 bitfields = { version = "0.13.1", optional = true }
 
 [dependencies.windows]
-version = "0.60.0"
+version = "0.61.0"
 features = ["System", "Win32_Graphics_Dxgi", "Win32_Graphics_Direct3D11"]
 
 [features]
-rtapi = ["dep:bitfields"]
 log = ["dep:log"]
 log_filter = ["log", "dep:env_filter", "nexus_codegen/log_filter"]
 arc = ["dep:arcdps"]
@@ -38,5 +37,6 @@ evtc = ["arc"]
 extras = ["dep:arcdps", "arcdps/extras"]
 mumble = ["dep:gw2_mumble"]
 mumble_json = ["mumble", "gw2_mumble/json"]
+rtapi = ["dep:bitfields"]
 hook = ["dep:retour"]
 serde = ["dep:serde", "bitflags/serde", "gw2_mumble/serde"]
