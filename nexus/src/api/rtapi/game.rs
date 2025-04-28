@@ -33,6 +33,18 @@ impl GameData {
 )]
 #[num_enum(error_type(name = u32, constructor = From::from))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "strum",
+    derive(
+        strum::AsRefStr,
+        strum::Display,
+        strum::EnumCount,
+        strum::EnumIter,
+        strum::IntoStaticStr,
+        strum::VariantArray,
+        strum::VariantNames
+    )
+)]
 #[repr(u32)]
 pub enum GameState {
     CharacterSelection,
@@ -47,6 +59,18 @@ pub enum GameState {
 )]
 #[num_enum(error_type(name = u32, constructor = From::from))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "strum",
+    derive(
+        strum::AsRefStr,
+        strum::Display,
+        strum::EnumCount,
+        strum::EnumIter,
+        strum::IntoStaticStr,
+        strum::VariantArray,
+        strum::VariantNames
+    )
+)]
 #[repr(u32)]
 pub enum GameLanguage {
     English,
