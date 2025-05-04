@@ -97,6 +97,7 @@ pub fn add_quick_access_context_menu(
         add_context_menu(
             identifier.as_ptr(),
             target_identifier
+                .as_ref()
                 .map(|string| string.as_ptr())
                 .unwrap_or(ptr::null()),
             render_callback,

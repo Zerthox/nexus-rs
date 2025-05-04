@@ -1,4 +1,4 @@
-//! Addon API version 4.
+//! Addon API version 6.
 
 use super::{
     alert::RawAlertNotify,

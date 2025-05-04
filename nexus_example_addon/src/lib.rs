@@ -5,7 +5,7 @@ use nexus::{
     imgui::{sys::cty::c_char, Window},
     keybind::{keybind_handler, register_keybind_with_string},
     paths::get_addon_dir,
-    quick_access::add_quick_access,
+    quick_access::{add_quick_access, add_quick_access_context_menu},
     texture::{load_texture_from_file, texture_receive, Texture},
     AddonFlags, UpdateProvider,
 };
@@ -55,6 +55,15 @@ fn load() {
         "MY_ICON_HOVER",
         "MY_KEYBIND",
         "This is my tooltip text",
+    )
+    .revert_on_unload();
+
+    add_quick_access_context_menu(
+        "MY_SHORTCUT_MENU",
+        Some("MY_SHORTCUT"),
+        render!(|ui| {
+            ui.text("This is my menu text");
+        }),
     )
     .revert_on_unload();
 
