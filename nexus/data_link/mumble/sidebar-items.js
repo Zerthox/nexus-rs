@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error","Mount","Profession","Race","UIScaling"],"fn":["get_mumble_link","get_mumble_link_ptr","read_mumble_link"],"mod":["map_id","map_type"],"struct":["Context","Identity","LinkedMem","MumbleLink","MumblePtr","Position","UiState"]};
+window.SIDEBAR_ITEMS = {"constant":["MUMBLE_LINK"],"enum":["Error","Mount","Profession","Race","UIScaling"],"fn":["get_mumble_link","get_mumble_link_ptr","read_mumble_link"],"mod":["map_id","map_type"],"struct":["Context","Identity","LinkedMem","MumbleLink","MumblePtr","Position","UiState"]};

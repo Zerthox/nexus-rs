@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["GameLanguage","GameState","GroupType","MapType","TimeOfDay"],"mod":["data","event"],"struct":["CameraData","CharacterState","GameData","GameLanguageIter","GameStateIter","GroupData","GroupMember","GroupMemberFlags","GroupMemberFlagsBuilder","GroupMemberOwned","GroupTypeIter","MapTypeIter","PlayerData","RealTimeApi","TimeOfDayIter","WorldData"]};
