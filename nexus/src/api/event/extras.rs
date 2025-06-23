@@ -3,7 +3,7 @@
 use super::Event;
 use arcdps::{
     extras::{
-        keybinds::RawKeybindChange, message::RawChatMessageInfo, user::to_user_info_iter, UserInfo,
+        keybinds::RawKeybindChange, message::SquadMessage, user::to_user_info_iter, UserInfo,
         UserInfoIter,
     },
     Language,
@@ -37,5 +37,5 @@ pub const KEYBIND_CHANGED: Event<RawKeybindChange> =
     unsafe { Event::new("EV_UNOFFICIAL_EXTRAS_KEYBIND_CHANGED") };
 
 /// Unofficial Extras chat message event.
-pub const CHAT_MESSAGE: Event<RawChatMessageInfo> =
+pub const CHAT_MESSAGE: Event<SquadMessage> =
     unsafe { Event::new("EV_UNOFFICIAL_EXTRAS_CHAT_MESSAGE") };
