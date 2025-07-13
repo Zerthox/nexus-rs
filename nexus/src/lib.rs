@@ -34,7 +34,7 @@ mod logger;
 pub use self::{
     addon::{AddonFlags, AddonLoad, AddonUnload, UpdateProvider},
     api::*,
-    globals::{on_unload, ui},
+    globals::{on_unload, with_ui},
     revertible::Revertible,
 };
 pub use imgui;
@@ -80,7 +80,7 @@ pub struct SupportedFields {
 #[doc(hidden)]
 pub mod __macro {
     pub use crate::{
-        globals::{deinit, init},
+        globals::{deinit, init, with_ui},
         util::str_from_c,
     };
 }

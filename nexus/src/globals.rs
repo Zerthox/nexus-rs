@@ -1,5 +1,6 @@
 use crate::{
     api::AddonApi,
+    imgui,
     log::{log, LogLevel},
 };
 use std::{
@@ -14,7 +15,7 @@ static ADDON_API: OnceLock<&'static AddonApi> = OnceLock::new();
 
 static IMGUI_CTX: OnceLock<ContextWrapper> = OnceLock::new();
 
-static IMGUI_UI: OnceLock<UiWrapper> = OnceLock::new();
+thread_local! { static IMGUI_UI: imgui::Ui<'static> = imgui::Ui::from_ctx(&IMGUI_CTX.get().expect("imgui context not initialized").0); }
 
 /// Initializes globals.
 ///
@@ -48,10 +49,6 @@ pub unsafe fn init(
     IMGUI_CTX
         .set(imgui::Context::current().into())
         .expect("imgui context initialized multiple times");
-    let ctx = &IMGUI_CTX.get().unwrap_unchecked().0;
-    IMGUI_UI
-        .set(imgui::Ui::from_ctx(ctx).into())
-        .expect("imgui ui initialized multiple times");
 }
 
 /// Actions to be performed on addon unload.
@@ -86,36 +83,14 @@ pub fn addon_api() -> &'static AddonApi {
     ADDON_API.get().expect("addon api not initialized")
 }
 
-/// Returns an [`imgui::Ui`] for rendering a frame.
+/// Retrieves the [`imgui::Ui`] for rendering a frame.
 ///
 /// # Safety
-/// It is not safe to share [`imgui::Ui`] between threads.
+/// The [`imgui::Ui`] should only be accessed in render thread.
 #[inline]
-pub unsafe fn ui() -> &'static imgui::Ui<'static> {
-    &IMGUI_UI.get().expect("imgui not initialized").0
+pub unsafe fn with_ui<R>(body: impl FnOnce(&imgui::Ui<'static>) -> R) -> R {
+    IMGUI_UI.with(body)
 }
-
-/// Helper to store [`imgui::Ui`] as a global
-#[repr(transparent)]
-struct UiWrapper(pub imgui::Ui<'static>);
-
-impl From<imgui::Ui<'static>> for UiWrapper {
-    #[inline]
-    fn from(ui: imgui::Ui<'static>) -> Self {
-        Self(ui)
-    }
-}
-
-impl fmt::Debug for UiWrapper {
-    #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.0.fmt(f)
-    }
-}
-
-unsafe impl Send for UiWrapper {}
-
-unsafe impl Sync for UiWrapper {}
 
 /// Helper to store [`imgui::Context`] as a global.
 #[repr(transparent)]

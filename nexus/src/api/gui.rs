@@ -100,8 +100,7 @@ macro_rules! render {
         const __CALLBACK: fn(&$crate::imgui::Ui) = $callback;
 
         extern "C-unwind" fn __render_callback_wrapper() {
-            let ui = unsafe { $crate::ui() };
-            __CALLBACK(&ui)
+            unsafe { $crate::__macro::with_ui(__CALLBACK) }
         }
 
         __render_callback_wrapper
