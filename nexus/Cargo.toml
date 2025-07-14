@@ -8,12 +8,9 @@ repository = "https://github.com/zerthox/nexus-rs"
 rust-version = "1.71.0"
 
 [dependencies]
-bitfields = { version = "0.13.1", optional = true }
+bitfields = { version = "1.0.0", optional = true }
 bitflags = "2.4.2"
 gw2_mumble = { git = "https://github.com/zerthox/gw2-mumble-rs", tag = "0.3.0", optional = true }
-imgui = { package = "arcdps-imgui", version = "0.8.0", features = [
-    "tables-api",
-] }
 log = { version = "0.4.21", features = ["std"], optional = true }
 env_filter = { version = "0.1.2", optional = true }
 nexus_codegen = { path = "../nexus_codegen" }
@@ -25,10 +22,15 @@ strum = { version = "0.27.1", features = ["derive"], optional = true }
 
 [dependencies.arcdps]
 git = "https://github.com/zerthox/arcdps-rs"
-tag = "0.18.0"
+tag = "0.19.0"
 default-features = false
 features = ["unwind"]
 optional = true
+
+[dependencies.imgui]
+package = "arcdps-imgui"
+version = "0.8.0"
+features = ["tables-api"]
 
 [dependencies.windows]
 version = "0.61.0"
