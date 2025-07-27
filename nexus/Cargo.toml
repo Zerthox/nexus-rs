@@ -37,7 +37,7 @@ version = "0.61.0"
 features = ["System", "Win32_Graphics_Dxgi", "Win32_Graphics_Direct3D11"]
 
 [features]
-default = ["panic"]
+default = ["panic", "panic_trace", "panic_msgbox"]
 arc = ["dep:arcdps"]
 arcdps = ["arc"]
 evtc = ["arc"]
