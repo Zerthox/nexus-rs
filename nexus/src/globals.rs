@@ -1,12 +1,11 @@
-use crate::{
-    api::AddonApi,
-    imgui,
-    log::{log, LogLevel},
-};
+use crate::{api::AddonApi, imgui};
 use std::{
-    fmt, mem, panic, ptr,
+    fmt, mem, ptr,
     sync::{Mutex, OnceLock},
 };
+
+#[cfg(feature = "panic")]
+use crate::panic::init_panic_hook;
 
 #[cfg(feature = "log")]
 use crate::logger::NexusLogger;
@@ -35,9 +34,8 @@ pub unsafe fn init(
         .expect("addon api initialized multiple times");
 
     // panic hook
-    panic::set_hook(Box::new(move |info| {
-        log(LogLevel::Critical, addon_name, info.to_string())
-    }));
+    #[cfg(feature = "panic")]
+    init_panic_hook(addon_name);
 
     // init logger
     #[cfg(feature = "log")]

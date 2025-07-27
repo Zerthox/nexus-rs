@@ -46,6 +46,9 @@ nexus::export! {
 | log_filter | Enable log filter (large binary size!) |
 | mumble | Enable Mumble link support |
 | mumble_json | Enable Mumble identity JSON parsing |
+| panic | Enable panic hook to log panics to arcdps.log *(enabled by default)* |
+| panic_trace | Enable capturing backtrace in panic hook *(enabled by default)* |
+| panic_msgbox| Enable showing message box in panic hook *(enabled by default)* |
 | rtapi | Enable [RealTime API](https://github.com/RaidcoreGG/GW2-RealTime-API-Releases) support |
 | serde | Enable [serde](https://serde.rs) support |
 | strum | Enable [strum](https://github.com/Peternator7/strum) support |

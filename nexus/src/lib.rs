@@ -28,6 +28,9 @@ mod globals;
 mod revertible;
 mod util;
 
+#[cfg(feature = "panic")]
+mod panic;
+
 #[cfg(feature = "log")]
 mod logger;
 
