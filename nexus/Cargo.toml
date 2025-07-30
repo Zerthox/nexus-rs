@@ -22,7 +22,7 @@ strum = { version = "0.27.1", features = ["derive"], optional = true }
 
 [dependencies.arcdps]
 git = "https://github.com/zerthox/arcdps-rs"
-tag = "0.19.0"
+tag = "0.20.0"
 default-features = false
 features = ["unwind"]
 optional = true
