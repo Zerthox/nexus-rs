@@ -88,17 +88,17 @@ impl HookStatus {
     }
 }
 
-pub type RawHookCreate = unsafe extern "stdcall-unwind" fn(
+pub type RawHookCreate = unsafe extern "system-unwind" fn(
     target: *const c_void,
     detour: *const c_void,
     trampoline: *mut *const c_void,
 ) -> HookStatus;
 
-pub type RawHookRemove = unsafe extern "stdcall-unwind" fn(target: *const c_void) -> HookStatus;
+pub type RawHookRemove = unsafe extern "system-unwind" fn(target: *const c_void) -> HookStatus;
 
-pub type RawHookEnable = unsafe extern "stdcall-unwind" fn(target: *const c_void) -> HookStatus;
+pub type RawHookEnable = unsafe extern "system-unwind" fn(target: *const c_void) -> HookStatus;
 
-pub type RawHookDisable = unsafe extern "stdcall-unwind" fn(target: *const c_void) -> HookStatus;
+pub type RawHookDisable = unsafe extern "system-unwind" fn(target: *const c_void) -> HookStatus;
 
 /// Creates a hook for the specified target function in **disabled** state.
 ///

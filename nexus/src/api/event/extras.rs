@@ -23,7 +23,7 @@ pub struct SquadUpdate {
 
 impl SquadUpdate {
     #[inline]
-    pub fn iter(&self) -> UserInfoIter {
+    pub fn iter(&self) -> UserInfoIter<'_> {
         unsafe { to_user_info_iter(self.users, self.count) }
     }
 }
