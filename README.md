@@ -1,5 +1,5 @@
 # Raidcore Nexus bindings
-Rust bindings for [Raidcore Nexus](https://raidcore.gg/Nexus) addons.
+Rust bindings for [Raidcore Nexus](https://github.com/RaidcoreGG/Nexus) addons ([website](https://raidcore.gg/Nexus)).
 Documentation available at [zerthox.github.io/nexus-rs/nexus](https://zerthox.github.io/nexus-rs/nexus).
 
 - Rust abstractions for the [Nexus Addon API](https://github.com/RaidcoreGG/RCGG-lib-nexus-api)
