@@ -1,5 +1,5 @@
 (function() {
-    var implementors = Object.fromEntries([["arcdps_imgui",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.88.0/alloc/borrow/trait.ToOwned.html\" title=\"trait alloc::borrow::ToOwned\">ToOwned</a> for <a class=\"struct\" href=\"arcdps_imgui/struct.ImStr.html\" title=\"struct arcdps_imgui::ImStr\">ImStr</a>"]]]]);
+    var implementors = Object.fromEntries([["arcdps_imgui",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.89.0/alloc/borrow/trait.ToOwned.html\" title=\"trait alloc::borrow::ToOwned\">ToOwned</a> for <a class=\"struct\" href=\"arcdps_imgui/struct.ImStr.html\" title=\"struct arcdps_imgui::ImStr\">ImStr</a>"]]]]);
     if (window.register_implementors) {
         window.register_implementors(implementors);
     } else {
