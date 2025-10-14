@@ -1,11 +1,11 @@
 [package]
 name = "nexus"
-version = "0.10.1"
+version = "0.10.2"
 edition = "2021"
 authors = ["Zerthox"]
 description = "Rust bindings for Raidcore Nexus addons"
 repository = "https://github.com/zerthox/nexus-rs"
-rust-version = "1.71.0"
+rust-version = "1.81.0"
 
 [dependencies]
 bitfields = { version = "1.0.0", optional = true }
@@ -33,7 +33,7 @@ version = "0.8.0"
 features = ["tables-api"]
 
 [dependencies.windows]
-version = "0.61.0"
+version = "0.62.2"
 features = ["System", "Win32_Graphics_Dxgi", "Win32_Graphics_Direct3D11"]
 
 [features]
