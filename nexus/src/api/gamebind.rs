@@ -211,6 +211,7 @@ pub enum GameBind {
     Loadout6 = 176,
     Loadout7 = 177,
     Loadout8 = 178,
+    Loadout9 = 179,
 
     // Equipment Templates
     GearLoadout1 = 182,
@@ -221,6 +222,7 @@ pub enum GameBind {
     GearLoadout6 = 187,
     GearLoadout7 = 188,
     GearLoadout8 = 189,
+    GearLoadout9 = 190,
 }
 
 pub type RawGamebindPressAsync = unsafe extern "C-unwind" fn(game_bind: GameBind);
