@@ -183,6 +183,7 @@ pub enum GameBind {
     MasteryAccessJadeBotWaypoint = 206,
     MasteryAccessRiftScan = 207,
     MasteryAccessSkyscale = 208,
+    MasteryAccessHomesteadDoorway = 211,
 
     // Miscellaneous Binds
     MiscAoELoot = 74,
@@ -193,6 +194,7 @@ pub enum GameBind {
     MiscToggleLanguage = 69,
     MiscTogglePetCombat = 76,
     MiscToggleFullScreen = 160,
+    MiscToggleDecorationMode = 210,
 
     // Toys/Novelties
     ToyUseDefault = 162,
