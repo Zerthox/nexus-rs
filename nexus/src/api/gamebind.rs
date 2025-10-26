@@ -56,24 +56,24 @@ pub enum GameBind {
     SkillSpecialAction = 82,
 
     // Targeting
-    TargetAlert = 131,
-    TargetCall = 32,
-    TargetTake = 33,
-    TargetCallLocal = 199,
-    TargetTakeLocal = 200,
-    TargetEnemyNearest = 34,
-    TargetEnemyNext = 35,
-    TargetEnemyPrev = 36,
-    TargetAllyNearest = 37,
-    TargetAllyNext = 38,
-    TargetAllyPrev = 39,
-    TargetLock = 40,
-    TargetSnapGroundTarget = 80,
-    TargetSnapGroundTargetToggle = 115,
-    TargetAutoTargetingDisable = 116,
-    TargetAutoTargetingToggle = 117,
-    TargetAllyTargetingMode = 197,
-    TargetAllyTargetingModeToggle = 198,
+	TargetAlert = 131,
+	TargetCall = 32,
+	TargetTake = 33,
+	TargetCallLocal = 199,
+	TargetTakeLocal = 200,
+	TargetEnemyNearest = 34,
+	TargetEnemyNext = 35,
+	TargetEnemyPrev = 36,
+	TargetAllyNearest = 37,
+	TargetAllyNext = 38,
+	TargetAllyPrev = 39,
+	TargetLock = 40,
+	TargetSnapGroundTarget = 80,
+	TargetSnapGroundTargetToggle = 115,
+	TargetAutoTargetingDisable = 116,
+	TargetAutoTargetingToggle = 117,
+	TargetAllyTargetingMode = 197,
+	TargetAllyTargetingModeToggle = 198,
 
     // UI Binds
     UiTradingPost = 41,
@@ -101,24 +101,24 @@ pub enum GameBind {
     UiSquadBroadcastChatFocus = 84,
 
     // Camera
-    CameraFree = 13,
-    CameraZoomIn = 14,
-    CameraZoomOut = 15,
-    CameraReverse = 16,
-    CameraActionMode = 78,
-    CameraActionModeDisable = 114,
+	CameraFree = 13,
+	CameraZoomIn = 14,
+	CameraZoomOut = 15,
+	CameraReverse = 16,
+	CameraActionMode = 78,
+	CameraActionModeDisable = 114,
 
     // Screenshots
     ScreenshotNormal = 56,
     ScreenshotStereoscopic = 57,
 
     // Map
-    MapToggle = 59,
-    MapFocusPlayer = 60,
-    MapFloorDown = 61,
-    MapFloorUp = 62,
-    MapZoomIn = 63,
-    MapZoomOut = 64,
+	MapToggle = 59,
+	MapFocusPlayer = 60,
+	MapFloorDown = 61,
+	MapFloorUp = 62,
+	MapZoomIn = 63,
+	MapZoomOut = 64,
 
     // Mounts
     MountToggle = 152,
@@ -183,6 +183,7 @@ pub enum GameBind {
     MasteryAccessJadeBotWaypoint = 206,
     MasteryAccessRiftScan = 207,
     MasteryAccessSkyscale = 208,
+    MasteryAccessHomesteadDoorway = 211,
 
     // Miscellaneous Binds
     MiscAoELoot = 74,
@@ -193,6 +194,7 @@ pub enum GameBind {
     MiscToggleLanguage = 69,
     MiscTogglePetCombat = 76,
     MiscToggleFullScreen = 160,
+    MiscToggleDecorationMode = 210,
 
     // Toys/Novelties
     ToyUseDefault = 162,
