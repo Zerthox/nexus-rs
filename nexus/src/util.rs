@@ -42,6 +42,20 @@ pub fn path_to_c(path: impl AsRef<Path>, err_msg: &str) -> CString {
     str_to_c(path.as_ref().to_str().expect(err_msg), err_msg)
 }
 
+/// Helper trait to handle `Option<&T>`.
+pub trait OptionRefExt<T> {
+    /// Returns the string as [`T`] pointer or `null`.
+    #[allow(dead_code)]
+    fn as_ptr_opt(&self) -> *const T;
+}
+
+impl<T> OptionRefExt<T> for Option<&T> {
+    #[inline]
+    fn as_ptr_opt(&self) -> *const T {
+        self.map(|string| string as *const _).unwrap_or(ptr::null())
+    }
+}
+
 /// Helper trait to handle `Option<&CStr>` and  `Option<CString>`.
 pub trait OptionCStrExt {
     /// Returns the string as [`c_char`] pointer or `null`.

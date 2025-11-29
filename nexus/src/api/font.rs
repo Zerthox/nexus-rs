@@ -1,7 +1,7 @@
 //! Font loading.
 
 use crate::{
-    util::{path_to_c, str_to_c},
+    util::{path_to_c, str_to_c, OptionRefExt},
     AddonApi, FontApi, Revertible,
 };
 use imgui::sys::{ImFont, ImFontConfig};
@@ -24,7 +24,7 @@ pub type RawFontAddFromFile = unsafe extern "C-unwind" fn(
     font_size: f32,
     filename: *const c_char,
     callback: RawFontReceive,
-    config: *mut ImFontConfig,
+    config: *const ImFontConfig,
 );
 
 pub type RawFontAddFromResource = unsafe extern "C-unwind" fn(
@@ -33,7 +33,7 @@ pub type RawFontAddFromResource = unsafe extern "C-unwind" fn(
     resource_id: u32,
     module: HMODULE,
     callback: RawFontReceive,
-    config: *mut ImFontConfig,
+    config: *const ImFontConfig,
 );
 
 pub type RawFontAddFromMemory = unsafe extern "C-unwind" fn(
@@ -42,7 +42,7 @@ pub type RawFontAddFromMemory = unsafe extern "C-unwind" fn(
     data: *const c_void,
     size: usize,
     callback: RawFontReceive,
-    config: *mut ImFontConfig,
+    config: *const ImFontConfig,
 );
 
 pub type RawFontResize = unsafe extern "C-unwind" fn(identifier: *const c_char, font_size: f32);
@@ -71,7 +71,7 @@ pub fn add_font_from_file(
     identifier: impl AsRef<str>,
     file: impl AsRef<Path>,
     font_size: f32,
-    config: &mut ImFontConfig,
+    config: Option<&ImFontConfig>,
     callback: RawFontReceive,
 ) -> Revertible<impl Fn() + Send + Sync + 'static> {
     let FontApi {
@@ -87,7 +87,7 @@ pub fn add_font_from_file(
             font_size,
             file.as_ptr(),
             callback,
-            config,
+            config.as_ptr_opt(),
         )
     };
     let revert = move || unsafe { release(identifier.as_ptr(), callback) };
@@ -100,7 +100,7 @@ pub fn add_font_from_resource(
     handle: HMODULE,
     resource: u32,
     font_size: f32,
-    config: &mut ImFontConfig,
+    config: Option<&ImFontConfig>,
     callback: RawFontReceive,
 ) -> Revertible<impl Fn() + Send + Sync + 'static> {
     let FontApi {
@@ -116,7 +116,7 @@ pub fn add_font_from_resource(
             resource,
             handle,
             callback,
-            config,
+            config.as_ptr_opt(),
         )
     };
     let revert = move || unsafe { release(identifier.as_ptr(), callback) };
@@ -128,7 +128,7 @@ pub fn add_font_from_memory(
     identifier: impl AsRef<str>,
     data: impl AsRef<[u8]>,
     font_size: f32,
-    config: &mut ImFontConfig,
+    config: Option<&ImFontConfig>,
     callback: RawFontReceive,
 ) -> Revertible<impl Fn() + Send + Sync + 'static> {
     let FontApi {
@@ -145,7 +145,7 @@ pub fn add_font_from_memory(
             data.as_ptr().cast(),
             data.len(),
             callback,
-            config,
+            config.as_ptr_opt(),
         )
     };
     let revert = move || unsafe { release(identifier.as_ptr(), callback) };

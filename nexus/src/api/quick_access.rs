@@ -1,7 +1,12 @@
 //! Quick access creation.
 
-use crate::{gui::RawGuiRender, revertible::Revertible, util::str_to_c, AddonApi, QuickAccessApi};
-use std::{ffi::c_char, ptr};
+use crate::{
+    gui::RawGuiRender,
+    revertible::Revertible,
+    util::{str_to_c, OptionCStrExt},
+    AddonApi, QuickAccessApi,
+};
+use std::ffi::c_char;
 
 pub type RawQuickAccessAddShortcut = unsafe extern "C-unwind" fn(
     identifier: *const c_char,
@@ -96,10 +101,7 @@ pub fn add_quick_access_context_menu(
     unsafe {
         add_context_menu(
             identifier.as_ptr(),
-            target_identifier
-                .as_ref()
-                .map(|string| string.as_ptr())
-                .unwrap_or(ptr::null()),
+            target_identifier.as_ptr_opt(),
             render_callback,
         )
     };
