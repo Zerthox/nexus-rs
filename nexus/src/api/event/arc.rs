@@ -139,7 +139,7 @@ impl AgentUpdate {
 }
 
 /// ArcDPS EVTC combat event data.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 #[repr(C)]
 pub struct CombatData {
     event: *const evtc::Event,
