@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["effect45","effect51"],"struct":["AgentEffect","AgentEffectRemove","Effect45","Effect51","GroundEffect","GroundEffectRemove"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["UserRole"],"fn":["to_user_info_iter"],"struct":["UserInfo","UserInfoOwned"],"type":["UserInfoIter"]};

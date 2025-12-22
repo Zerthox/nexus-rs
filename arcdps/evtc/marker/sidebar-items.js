@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SquadMarker"],"struct":["AgentMarkerEvent","SquadMarkerEvent"]};

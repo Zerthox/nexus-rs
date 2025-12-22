@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["EffectLocation"],"struct":["Effect51","EffectOrientation"]};

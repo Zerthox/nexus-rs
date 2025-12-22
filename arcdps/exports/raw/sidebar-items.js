@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["add_extension","e0_config_path","e10_add_event_combat","e3_log_file","e5_colors","e6_ui_settings","e7_modifiers","e8_log_window","e9_add_event","free_extension","handle","list_extension"],"type":["Export0","Export10","Export3","Export5","Export6","Export7","Export8","Export9","ExportAddExtension","ExportFreeExtension","ExportListExtension"]};

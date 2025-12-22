@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ChannelType","Message","MessageType"],"struct":["NpcMessage","NpcMessageOwned","SquadMessage","SquadMessageFlags","SquadMessageOwned"],"union":["RawMessage"]};
