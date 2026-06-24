@@ -41,7 +41,7 @@ impl PlayerData {
                 account_name: CStr::from_ptr((*data).account_name.as_ptr())
                     .to_string_lossy()
                     .into_owned(),
-                character_name: CStr::from_ptr((*data).account_name.as_ptr())
+                character_name: CStr::from_ptr((*data).character_name.as_ptr())
                     .to_string_lossy()
                     .into_owned(),
                 character_position: (*data).character_position,
