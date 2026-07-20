@@ -1,17 +1,25 @@
+//! FFI helpers.
+
 #![allow(clippy::missing_safety_doc)]
 
 use std::{
     ffi::{CStr, CString, NulError, OsString, c_char},
-    os::windows::ffi::OsStringExt,
+    os::windows::ffi::{OsStrExt, OsStringExt},
     path::{Path, PathBuf},
     ptr,
 };
-use windows::Win32::{
-    Globalization::{CP_ACP, CP_OEMCP, MULTI_BYTE_TO_WIDE_CHAR_FLAGS, MultiByteToWideChar},
-    Storage::FileSystem::AreFileApisANSI,
+use windows::{
+    Win32::{
+        Globalization::{
+            CP_ACP, CP_OEMCP, CP_UTF8, GetACP, MULTI_BYTE_TO_WIDE_CHAR_FLAGS, MultiByteToWideChar,
+            WideCharToMultiByte,
+        },
+        Storage::FileSystem::AreFileApisANSI,
+    },
+    core::PCSTR,
 };
 
-/// Helper to convert a C string pointer to a [`prim@str`].
+/// Attempts to convert a C string pointer to a [`prim@str`].
 #[inline]
 pub unsafe fn str_from_c<'a>(ptr: *const c_char) -> Option<&'a str> {
     if !ptr.is_null() {
@@ -21,24 +29,42 @@ pub unsafe fn str_from_c<'a>(ptr: *const c_char) -> Option<&'a str> {
     }
 }
 
-/// Helper to convert a C string pointer to a [`String`].
+/// Attempts to convert a C string pointer to a [`String`].
 #[inline]
 pub unsafe fn string_from_c(ptr: *const c_char) -> Option<String> {
     unsafe { str_from_c(ptr) }.map(ToOwned::to_owned)
 }
 
-/// Helper to convert an ANSI path string pointer to a [`PathBuf`].
+/// Attempts to convert a string to a [`CString`].
 #[inline]
-pub unsafe fn path_from_ansi(ptr: *const c_char) -> Option<PathBuf> {
+pub fn str_to_c(string: impl AsRef<str>) -> Result<CString, NulError> {
+    CString::new(string.as_ref())
+}
+
+/// Resolves the codepage to use for conversions.
+pub fn get_codepage() -> u32 {
+    if unsafe { GetACP() } == CP_UTF8 {
+        CP_UTF8
+    } else if !unsafe { AreFileApisANSI() }.as_bool() {
+        CP_OEMCP
+    } else {
+        CP_ACP
+    }
+}
+
+/// Attempts to convert an ANSI path string pointer to a [`PathBuf`].
+#[inline]
+pub fn path_from_ansi(ptr: *const c_char) -> Option<PathBuf> {
+    path_from_ansi_with(ptr, get_codepage())
+}
+
+/// Attempts to convert an ANSI path string pointer to a [`PathBuf`] with the given codepage.
+#[inline]
+pub fn path_from_ansi_with(ptr: *const c_char, codepage: u32) -> Option<PathBuf> {
     if !ptr.is_null() {
         let narrow = unsafe { CStr::from_ptr(ptr) }.to_bytes();
 
         // attempt to convert to WTF-8
-        let codepage = if !unsafe { AreFileApisANSI() }.as_bool() {
-            CP_OEMCP
-        } else {
-            CP_ACP
-        };
         let flags = MULTI_BYTE_TO_WIDE_CHAR_FLAGS(0);
         let size = unsafe { MultiByteToWideChar(codepage, flags, narrow, None) };
         let mut wide = vec![0; size as usize];
@@ -51,14 +77,31 @@ pub unsafe fn path_from_ansi(ptr: *const c_char) -> Option<PathBuf> {
 
 /// Attempts to convert a string to a [`CString`].
 #[inline]
-pub fn str_to_c(string: impl AsRef<str>) -> Result<CString, NulError> {
-    CString::new(string.as_ref())
+pub fn path_to_ansi(path: impl AsRef<Path>) -> Option<CString> {
+    path_to_ansi_with(path, get_codepage())
 }
 
-/// Attempts to convert a string to a [`CString`].
+/// Attempts to convert a string to a [`CString`] with the given codepage.
 #[inline]
-pub fn path_to_c(path: impl AsRef<Path>) -> Option<CString> {
-    str_to_c(path.as_ref().to_str()?).ok()
+pub fn path_to_ansi_with(path: impl AsRef<Path>, codepage: u32) -> Option<CString> {
+    let path = path.as_ref();
+    let wide = path.as_os_str().encode_wide().collect::<Vec<_>>();
+
+    // attempt to convert to ANSI
+    let flags = 0;
+    let size = unsafe { WideCharToMultiByte(codepage, flags, &wide, None, PCSTR::null(), None) };
+    let mut narrow = vec![0; size as usize];
+    let written = unsafe {
+        WideCharToMultiByte(
+            codepage,
+            flags,
+            &wide,
+            Some(&mut narrow),
+            PCSTR::null(),
+            None,
+        )
+    };
+    (written == size).then(|| unsafe { CString::from_vec_unchecked(narrow) })
 }
 
 /// Helper trait to handle `Option<&T>`.
