@@ -138,3 +138,53 @@ impl OptionCStrExt for Option<CString> {
             .unwrap_or(ptr::null())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const CP_OEM_LATIN1: u32 = 850; // OEM Multilingual Latin 1; Western European (DOS)
+    const CP_OEM_GREEK: u32 = 869; // OEM Modern Greek; Greek, Modern (DOS)
+    const CP_ANSI_LATIN1: u32 = 1252; // ANSI Latin 1; Western European (Windows)
+    const CP_ANSI_GREEK: u32 = 1253; // ANSI Greek; Greek (Windows)
+
+    #[test]
+    fn roundtrip_delta() {
+        let path = Path::new(".\\δ.txt");
+
+        let codepage = CP_OEM_GREEK;
+        let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
+        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        assert_eq!(wide, path);
+
+        let codepage = CP_ANSI_GREEK;
+        let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
+        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        assert_eq!(wide, path);
+    }
+
+    #[test]
+    fn roundtrip_umlaut() {
+        let path = Path::new(".\\ä.txt");
+
+        let codepage = CP_OEM_LATIN1;
+        let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
+        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        assert_eq!(wide, path);
+
+        let codepage = CP_ANSI_LATIN1;
+        let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
+        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        assert_eq!(wide, path);
+    }
+
+    #[test]
+    fn roundtrip_utf8() {
+        let path = Path::new(".\\♻️.txt");
+
+        let codepage = CP_UTF8;
+        let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
+        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        assert_eq!(wide, path);
+    }
+}
