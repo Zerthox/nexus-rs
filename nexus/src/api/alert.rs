@@ -1,6 +1,6 @@
 //! Alert notifications displayed to the user.
 
-use crate::{AddonApi, UiApi, util::str_to_c};
+use crate::{AddonApi, UiApi, ffi::str_to_c};
 use std::ffi::c_char;
 
 pub type RawAlertNotify = unsafe extern "C-unwind" fn(message: *const c_char);

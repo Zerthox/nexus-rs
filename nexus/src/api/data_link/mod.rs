@@ -17,7 +17,7 @@ pub use self::nexus::*;
 #[cfg(feature = "mumble")]
 pub use self::mumble::{MumbleLink, get_mumble_link, get_mumble_link_ptr, read_mumble_link};
 
-use crate::{AddonApi, DataLinkApi, util::str_to_c};
+use crate::{AddonApi, DataLinkApi, ffi::str_to_c};
 use std::{
     ffi::{c_char, c_void},
     mem,

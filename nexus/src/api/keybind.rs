@@ -1,6 +1,6 @@
 //! Addon keybinds.
 
-use crate::{AddonApi, InputBindsApi, revertible::Revertible, util::str_to_c};
+use crate::{AddonApi, InputBindsApi, ffi::str_to_c, revertible::Revertible};
 use std::ffi::c_char;
 
 /// A keybind.

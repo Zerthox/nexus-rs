@@ -1,6 +1,6 @@
 //! Logging.
 
-use crate::{AddonApi, util::str_to_c};
+use crate::{AddonApi, ffi::str_to_c};
 use std::ffi::c_char;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

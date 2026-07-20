@@ -24,9 +24,9 @@
 
 pub mod addon;
 mod api;
+mod ffi;
 mod globals;
 mod revertible;
-mod util;
 
 #[cfg(feature = "panic")]
 mod panic;
@@ -83,8 +83,8 @@ pub struct SupportedFields {
 #[doc(hidden)]
 pub mod __macro {
     pub use crate::{
+        ffi::str_from_c,
         globals::{deinit, init, with_ui},
-        util::str_from_c,
     };
 
     use crate::UpdateProvider;

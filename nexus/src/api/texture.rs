@@ -2,7 +2,7 @@
 
 use crate::{
     AddonApi, TextureApi,
-    util::{path_to_ansi, str_to_c},
+    ffi::{path_to_ansi, str_to_c},
 };
 use std::{
     ffi::{c_char, c_void},

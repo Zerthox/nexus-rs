@@ -2,7 +2,7 @@
 
 use crate::{
     AddonApi, LocalizationApi,
-    util::{str_to_c, string_from_c},
+    ffi::{str_to_c, string_from_c},
 };
 use std::ffi::c_char;
 

@@ -2,7 +2,7 @@
 
 use crate::{
     AddonApi, PathApi,
-    util::{path_from_ansi, str_to_c},
+    ffi::{path_from_ansi, str_to_c},
 };
 use std::{ffi::c_char, path::PathBuf};
 

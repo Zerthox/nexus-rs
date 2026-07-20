@@ -2,7 +2,7 @@
 
 use crate::{
     AddonApi, FontApi, Revertible,
-    util::{OptionRefExt, path_to_ansi, str_to_c},
+    ffi::{OptionRefExt, path_to_ansi, str_to_c},
 };
 use imgui::sys::{ImFont, ImFontConfig};
 use std::{

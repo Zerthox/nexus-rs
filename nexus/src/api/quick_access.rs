@@ -2,9 +2,9 @@
 
 use crate::{
     AddonApi, QuickAccessApi,
+    ffi::{OptionCStrExt, str_to_c},
     gui::RawGuiRender,
     revertible::Revertible,
-    util::{OptionCStrExt, str_to_c},
 };
 use std::ffi::c_char;
 
