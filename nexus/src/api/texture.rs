@@ -120,6 +120,9 @@ pub fn get_texture(identifier: impl AsRef<str>) -> Option<Texture> {
 }
 
 /// Attempts to retrieve a texture or creates it from the given file path.
+///
+/// A conversion of the file path has to be performed every call.
+/// To avoid the conversion when the path is known to be ASCII, use [`get_texture_or_create_from_file_ascii`].
 pub fn get_texture_or_create_from_file(
     identifier: impl AsRef<str>,
     file: impl AsRef<Path>,
@@ -130,6 +133,30 @@ pub fn get_texture_or_create_from_file(
     } = AddonApi::get().texture;
     let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
     let file = path_to_ansi(file).expect("failed to convert texture file");
+    unsafe {
+        get_or_create_from_file(identifier.as_ptr(), file.as_ptr())
+            .as_ref()
+            .cloned()
+    }
+}
+
+/// Attempts to retrieve a texture or creates it from the given ASCII file path.
+///
+/// # Safety
+/// The file path must only contain valid ASCII characters.
+pub unsafe fn get_texture_or_create_from_file_ascii(
+    identifier: impl AsRef<str>,
+    file: impl AsRef<str>,
+) -> Option<Texture> {
+    let file = file.as_ref();
+    debug_assert!(file.is_ascii());
+
+    let TextureApi {
+        get_or_create_from_file,
+        ..
+    } = AddonApi::get().texture;
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
+    let file = str_to_c(file).expect("failed to convert texture file");
     unsafe {
         get_or_create_from_file(identifier.as_ptr(), file.as_ptr())
             .as_ref()
@@ -196,6 +223,9 @@ pub fn get_texture_or_create_from_memory(
 /// Loads a texture from the given file path.
 ///
 /// You can create a [`RawTextureReceiveCallback`] using the [`texture_receive`] macro.
+///
+/// A conversion of the file path has to be performed every call.
+/// To avoid the conversion when the path is known to be ASCII, use [`load_texture_from_file_ascii`].
 pub fn load_texture_from_file(
     identifier: impl AsRef<str>,
     file: impl AsRef<Path>,
@@ -204,6 +234,32 @@ pub fn load_texture_from_file(
     let TextureApi { load_from_file, .. } = AddonApi::get().texture;
     let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
     let file = path_to_ansi(file).expect("failed to convert texture file");
+    unsafe {
+        load_from_file(
+            identifier.as_ptr(),
+            file.as_ptr(),
+            callback.unwrap_or(dummy_receive_texture),
+        )
+    }
+}
+
+/// Loads a texture from the given file path.
+///
+/// You can create a [`RawTextureReceiveCallback`] using the [`texture_receive`] macro.
+///
+/// # Safety
+/// The file path must only contain valid ASCII characters.
+pub unsafe fn load_texture_from_file_ascii(
+    identifier: impl AsRef<str>,
+    file: impl AsRef<str>,
+    callback: Option<RawTextureReceiveCallback>,
+) {
+    let file = file.as_ref();
+    debug_assert!(file.is_ascii());
+
+    let TextureApi { load_from_file, .. } = AddonApi::get().texture;
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
+    let file = str_to_c(file).expect("failed to convert texture file");
     unsafe {
         load_from_file(
             identifier.as_ptr(),

@@ -54,13 +54,13 @@ pub fn get_codepage() -> u32 {
 
 /// Attempts to convert an ANSI path string pointer to a [`PathBuf`].
 #[inline]
-pub fn path_from_ansi(ptr: *const c_char) -> Option<PathBuf> {
-    path_from_ansi_with(ptr, get_codepage())
+pub unsafe fn path_from_ansi(ptr: *const c_char) -> Option<PathBuf> {
+    unsafe { path_from_ansi_with(ptr, get_codepage()) }
 }
 
 /// Attempts to convert an ANSI path string pointer to a [`PathBuf`] with the given codepage.
 #[inline]
-pub fn path_from_ansi_with(ptr: *const c_char, codepage: u32) -> Option<PathBuf> {
+pub unsafe fn path_from_ansi_with(ptr: *const c_char, codepage: u32) -> Option<PathBuf> {
     if !ptr.is_null() {
         let narrow = unsafe { CStr::from_ptr(ptr) }.to_bytes();
 
@@ -75,13 +75,13 @@ pub fn path_from_ansi_with(ptr: *const c_char, codepage: u32) -> Option<PathBuf>
     }
 }
 
-/// Attempts to convert a string to a [`CString`].
+/// Attempts to convert a string to an ANSI [`CString`].
 #[inline]
 pub fn path_to_ansi(path: impl AsRef<Path>) -> Option<CString> {
     path_to_ansi_with(path, get_codepage())
 }
 
-/// Attempts to convert a string to a [`CString`] with the given codepage.
+/// Attempts to convert a string to an ANSI [`CString`] with the given codepage.
 #[inline]
 pub fn path_to_ansi_with(path: impl AsRef<Path>, codepage: u32) -> Option<CString> {
     let path = path.as_ref();
@@ -154,12 +154,14 @@ mod tests {
 
         let codepage = CP_OEM_GREEK;
         let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
-        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        let wide =
+            unsafe { path_from_ansi_with(narrow.as_ptr(), codepage) }.expect("invalid wtf8 path");
         assert_eq!(wide, path);
 
         let codepage = CP_ANSI_GREEK;
         let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
-        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        let wide =
+            unsafe { path_from_ansi_with(narrow.as_ptr(), codepage) }.expect("invalid wtf8 path");
         assert_eq!(wide, path);
     }
 
@@ -169,12 +171,14 @@ mod tests {
 
         let codepage = CP_OEM_LATIN1;
         let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
-        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        let wide =
+            unsafe { path_from_ansi_with(narrow.as_ptr(), codepage) }.expect("invalid wtf8 path");
         assert_eq!(wide, path);
 
         let codepage = CP_ANSI_LATIN1;
         let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
-        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        let wide =
+            unsafe { path_from_ansi_with(narrow.as_ptr(), codepage) }.expect("invalid wtf8 path");
         assert_eq!(wide, path);
     }
 
@@ -184,7 +188,8 @@ mod tests {
 
         let codepage = CP_UTF8;
         let narrow = path_to_ansi_with(path, codepage).expect("invalid ansi path");
-        let wide = path_from_ansi_with(narrow.as_ptr(), codepage).expect("invalid wtf8 path");
+        let wide =
+            unsafe { path_from_ansi_with(narrow.as_ptr(), codepage) }.expect("invalid wtf8 path");
         assert_eq!(wide, path);
     }
 }
