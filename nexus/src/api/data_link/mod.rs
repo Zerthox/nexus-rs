@@ -31,7 +31,7 @@ pub type RawDataShareResource =
 
 /// Returns a pointer to a shared resource.
 pub fn get_resource<T>(identifier: impl AsRef<str>) -> *const T {
-    let identifier = str_to_c(identifier, "failed to convert data link identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert data link identifier");
     let DataLinkApi { get, .. } = AddonApi::get().data_link;
     unsafe { get(identifier.as_ptr()).cast() }
 }
@@ -48,7 +48,7 @@ pub unsafe fn read_resource<T>(identifier: impl AsRef<str>) -> Option<T> {
 
 /// Creates a new shared resource.
 pub fn share_resource<T>(identifier: impl AsRef<str>) -> *mut T {
-    let identifier = str_to_c(identifier, "failed to convert data link identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert data link identifier");
     let DataLinkApi { share, .. } = AddonApi::get().data_link;
     let size = mem::size_of::<T>();
     unsafe { share(identifier.as_ptr(), size).cast() }

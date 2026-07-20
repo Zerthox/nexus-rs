@@ -76,7 +76,7 @@ pub type RawKeybindRegisterWithStructOld = unsafe extern "C-unwind" fn(
 /// Triggers a previously registered keybind programmatically.
 pub fn invoke_keybind(identifier: impl AsRef<str>, is_release: bool) {
     let InputBindsApi { invoke, .. } = AddonApi::get().input_binds;
-    let identifier = str_to_c(identifier, "failed to convert keybind identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert keybind identifier");
     unsafe { invoke(identifier.as_ptr(), is_release) }
 }
 
@@ -107,8 +107,8 @@ pub fn register_keybind_with_string(
         deregister,
         ..
     } = AddonApi::get().input_binds;
-    let identifier = str_to_c(identifier, "failed to convert keybind identifier");
-    let keybind = str_to_c(keybind, "failed to convert keybind string");
+    let identifier = str_to_c(identifier).expect("failed to convert keybind identifier");
+    let keybind = str_to_c(keybind).expect("failed to convert keybind string");
     unsafe { register_with_string(identifier.as_ptr(), handler, keybind.as_ptr()) };
     let revert = move || unsafe { deregister(identifier.as_ptr()) };
     revert.into()
@@ -147,7 +147,7 @@ pub fn register_keybind_with_struct(
         deregister,
         ..
     } = AddonApi::get().input_binds;
-    let identifier = str_to_c(identifier, "failed to convert keybind identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert keybind identifier");
     unsafe { register_with_struct(identifier.as_ptr(), handler, keybind) };
     let revert = move || unsafe { deregister(identifier.as_ptr()) };
     revert.into()
@@ -156,7 +156,7 @@ pub fn register_keybind_with_struct(
 /// Unregisters a previously registered keybind.
 pub fn unregister_keybind(identifier: impl AsRef<str>) {
     let InputBindsApi { deregister, .. } = AddonApi::get().input_binds;
-    let identifier = str_to_c(identifier, "failed to convert keybind identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert keybind identifier");
     unsafe { deregister(identifier.as_ptr()) }
 }
 

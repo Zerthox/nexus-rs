@@ -40,7 +40,7 @@ pub type RawLog =
 #[inline]
 pub fn log(level: LogLevel, channel_name: impl AsRef<str>, message: impl AsRef<str>) {
     let AddonApi { log, .. } = AddonApi::get();
-    let channel = str_to_c(channel_name, "failed to convert log channel");
-    let message = str_to_c(message, "failed to convert log message");
+    let channel = str_to_c(channel_name).expect("failed to convert log channel");
+    let message = str_to_c(message).expect("failed to convert log message");
     unsafe { log(level, channel.as_ptr(), message.as_ptr()) }
 }

@@ -41,20 +41,14 @@ pub fn add_quick_access(
     tooltip_text: impl AsRef<str>,
 ) -> Revertible<impl Fn() + Send + Sync + Clone + 'static> {
     let QuickAccessApi { add, remove, .. } = AddonApi::get().quick_access;
-    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
-    let texture_identifier = str_to_c(
-        texture_identifier,
-        "failed to convert shortcut texture identifier",
-    );
-    let texture_hover_identifier = str_to_c(
-        texture_hover_identifier,
-        "failed to convert shortcut hover texture identifier",
-    );
-    let keybind_identifier = str_to_c(
-        keybind_identifier,
-        "failed to convert shortcut keybind identifier",
-    );
-    let tooltip_text = str_to_c(tooltip_text, "failed to convert shortcut tooltip text");
+    let identifier = str_to_c(identifier).expect("failed to convert shortcut identifier");
+    let texture_identifier =
+        str_to_c(texture_identifier).expect("failed to convert shortcut texture identifier");
+    let texture_hover_identifier = str_to_c(texture_hover_identifier)
+        .expect("failed to convert shortcut hover texture identifier");
+    let keybind_identifier =
+        str_to_c(keybind_identifier).expect("failed to convert shortcut keybind identifier");
+    let tooltip_text = str_to_c(tooltip_text).expect("failed to convert shortcut tooltip text");
     unsafe {
         add(
             identifier.as_ptr(),
@@ -71,14 +65,14 @@ pub fn add_quick_access(
 /// Removes a previously registered shortcut from the quick access.
 pub fn remove_quick_access(identifier: impl AsRef<str>) {
     let QuickAccessApi { remove, .. } = AddonApi::get().quick_access;
-    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert shortcut identifier");
     unsafe { remove(identifier.as_ptr()) }
 }
 
 /// Sends a notification to the given quick access shortcut.
 pub fn notify_quick_access(identifier: impl AsRef<str>) {
     let QuickAccessApi { notify, .. } = AddonApi::get().quick_access;
-    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert shortcut identifier");
     unsafe { notify(identifier.as_ptr()) }
 }
 
@@ -95,9 +89,9 @@ pub fn add_quick_access_context_menu(
         remove_context_menu,
         ..
     } = AddonApi::get().quick_access;
-    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert shortcut identifier");
     let target_identifier = target_identifier
-        .map(|string| str_to_c(string, "failed to convert shortcut target identifier"));
+        .map(|string| str_to_c(string).expect("failed to convert shortcut target identifier"));
     unsafe {
         add_context_menu(
             identifier.as_ptr(),
@@ -115,7 +109,7 @@ pub fn remove_quick_access_context_menu(identifier: impl AsRef<str>) {
         remove_context_menu,
         ..
     } = AddonApi::get().quick_access;
-    let identifier = str_to_c(identifier, "failed to convert shortcut identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert shortcut identifier");
     unsafe { remove_context_menu(identifier.as_ptr()) }
 }
 

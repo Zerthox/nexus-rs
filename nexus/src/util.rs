@@ -1,7 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use std::{
-    ffi::{CStr, CString, OsString, c_char},
+    ffi::{CStr, CString, NulError, OsString, c_char},
     os::windows::ffi::OsStringExt,
     path::{Path, PathBuf},
     ptr,
@@ -50,17 +50,15 @@ pub unsafe fn path_from_ansi(ptr: *const c_char) -> Option<PathBuf> {
 }
 
 /// Attempts to convert a string to a [`CString`].
-/// Panics with the given error message if the string contains an internal nul byte.
 #[inline]
-pub fn str_to_c(string: impl AsRef<str>, err_msg: &str) -> CString {
-    CString::new(string.as_ref()).expect(err_msg)
+pub fn str_to_c(string: impl AsRef<str>) -> Result<CString, NulError> {
+    CString::new(string.as_ref())
 }
 
 /// Attempts to convert a string to a [`CString`].
-/// Panics with the given error message if the string contains an internal nul byte.
 #[inline]
-pub fn path_to_c(path: impl AsRef<Path>, err_msg: &str) -> CString {
-    str_to_c(path.as_ref().to_str().expect(err_msg), err_msg)
+pub fn path_to_c(path: impl AsRef<Path>) -> Option<CString> {
+    str_to_c(path.as_ref().to_str()?).ok()
 }
 
 /// Helper trait to handle `Option<&T>`.

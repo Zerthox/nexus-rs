@@ -25,7 +25,7 @@ pub type RawLocalizationSet = unsafe extern "C-unwind" fn(
 #[inline]
 pub fn translate(identifier: impl AsRef<str>) -> Option<String> {
     let LocalizationApi { translate, .. } = AddonApi::get().localization;
-    let identifier = str_to_c(identifier, "failed to convert translation identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert translation identifier");
     unsafe { string_from_c(translate(identifier.as_ptr())) }
 }
 
@@ -37,11 +37,9 @@ pub fn translate_to(
     language_identifier: impl AsRef<str>,
 ) -> Option<String> {
     let LocalizationApi { translate_to, .. } = AddonApi::get().localization;
-    let identifier = str_to_c(identifier, "failed to convert translation identifier");
-    let language = str_to_c(
-        language_identifier,
-        "failed to convert translation language identifier",
-    );
+    let identifier = str_to_c(identifier).expect("failed to convert translation identifier");
+    let language =
+        str_to_c(language_identifier).expect("failed to convert translation language identifier");
     unsafe { string_from_c(translate_to(identifier.as_ptr(), language.as_ptr())) }
 }
 
@@ -53,11 +51,9 @@ pub fn set_translation(
     string: impl AsRef<str>,
 ) {
     let LocalizationApi { set, .. } = AddonApi::get().localization;
-    let identifier = str_to_c(identifier, "failed to convert translation identifier");
-    let language = str_to_c(
-        language_identifier,
-        "failed to convert translation language identifier",
-    );
-    let string = str_to_c(string, "failed to convert translation string");
+    let identifier = str_to_c(identifier).expect("failed to convert translation identifier");
+    let language =
+        str_to_c(language_identifier).expect("failed to convert translation language identifier");
+    let string = str_to_c(string).expect("failed to convert translation string");
     unsafe { set(identifier.as_ptr(), language.as_ptr(), string.as_ptr()) }
 }

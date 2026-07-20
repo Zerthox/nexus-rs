@@ -2,7 +2,7 @@
 
 use crate::{
     AddonApi, FontApi, Revertible,
-    util::{OptionRefExt, path_to_c, str_to_c},
+    util::{OptionRefExt, path_to_ansi, str_to_c},
 };
 use imgui::sys::{ImFont, ImFontConfig};
 use std::{
@@ -53,7 +53,7 @@ pub fn get_font(
     callback: RawFontReceive,
 ) -> Revertible<impl Fn() + Send + Sync + 'static> {
     let FontApi { get, release, .. } = AddonApi::get().font;
-    let identifier = str_to_c(identifier, "failed to convert font identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert font identifier");
     unsafe { get(identifier.as_ptr(), callback) };
     let revert = move || unsafe { release(identifier.as_ptr(), callback) };
     revert.into()
@@ -62,7 +62,7 @@ pub fn get_font(
 /// Releases a previously registered callback for the font with the given identifier.
 pub fn release_font(identifier: impl AsRef<str>, callback: RawFontReceive) {
     let FontApi { release, .. } = AddonApi::get().font;
-    let identifier = str_to_c(identifier, "failed to convert font identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert font identifier");
     unsafe { release(identifier.as_ptr(), callback) }
 }
 
@@ -79,8 +79,8 @@ pub fn add_font_from_file(
         release,
         ..
     } = AddonApi::get().font;
-    let identifier = str_to_c(identifier, "failed to convert font identifier");
-    let file = path_to_c(file, "failed to convert font file path");
+    let identifier = str_to_c(identifier).expect("failed to convert font identifier");
+    let file = path_to_ansi(file).expect("failed to convert font file path");
     unsafe {
         add_from_file(
             identifier.as_ptr(),
@@ -108,7 +108,7 @@ pub fn add_font_from_resource(
         release,
         ..
     } = AddonApi::get().font;
-    let identifier = str_to_c(identifier, "failed to convert font identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert font identifier");
     unsafe {
         add_from_resource(
             identifier.as_ptr(),
@@ -136,7 +136,7 @@ pub fn add_font_from_memory(
         release,
         ..
     } = AddonApi::get().font;
-    let identifier = str_to_c(identifier, "failed to convert font identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert font identifier");
     let data = data.as_ref();
     unsafe {
         add_from_memory(
@@ -191,6 +191,6 @@ pub use font_receive;
 /// Resizes an existing font, sending the update to registered callbacks.
 pub fn resize_font(identifier: impl AsRef<str>, font_size: f32) {
     let FontApi { resize, .. } = AddonApi::get().font;
-    let identifier = str_to_c(identifier, "failed to convert font identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert font identifier");
     unsafe { resize(identifier.as_ptr(), font_size) }
 }

@@ -115,7 +115,7 @@ pub fn register_close_on_escape(window_name: impl AsRef<str>, opened: &mut bool)
         register_close_on_escape,
         ..
     } = AddonApi::get().ui;
-    let window_name = str_to_c(window_name, "failed to convert window name");
+    let window_name = str_to_c(window_name).expect("failed to convert window name");
     unsafe { register_close_on_escape(window_name.as_ptr(), opened) }
 }
 
@@ -125,6 +125,6 @@ pub fn deregister_close_on_escape(window_name: impl AsRef<str>) {
         deregister_close_on_escape,
         ..
     } = AddonApi::get().ui;
-    let window_name = str_to_c(window_name, "failed to convert window name");
+    let window_name = str_to_c(window_name).expect("failed to convert window name");
     unsafe { deregister_close_on_escape(window_name.as_ptr()) }
 }

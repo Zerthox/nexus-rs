@@ -23,7 +23,7 @@ pub fn get_game_dir() -> Option<PathBuf> {
 #[inline]
 pub fn get_addon_dir(name: impl AsRef<str>) -> Option<PathBuf> {
     let PathApi { get_addon_dir, .. } = AddonApi::get().path;
-    let name = str_to_c(name, "failed to convert addon dir name");
+    let name = str_to_c(name).expect("failed to convert addon dir name");
     unsafe { path_from_ansi(get_addon_dir(name.as_ptr())) }
 }
 

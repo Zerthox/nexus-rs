@@ -2,7 +2,7 @@
 
 use crate::{
     AddonApi, TextureApi,
-    util::{path_to_c, str_to_c},
+    util::{path_to_ansi, str_to_c},
 };
 use std::{
     ffi::{c_char, c_void},
@@ -115,7 +115,7 @@ pub type RawTextureLoadFromMemory = unsafe extern "C-unwind" fn(
 /// Attempts to retrieve a texture by its identifier.
 pub fn get_texture(identifier: impl AsRef<str>) -> Option<Texture> {
     let TextureApi { get, .. } = AddonApi::get().texture;
-    let identifier = str_to_c(identifier, "failed to convert texture identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
     unsafe { get(identifier.as_ptr()).as_ref().cloned() }
 }
 
@@ -128,8 +128,8 @@ pub fn get_texture_or_create_from_file(
         get_or_create_from_file,
         ..
     } = AddonApi::get().texture;
-    let identifier = str_to_c(identifier, "failed to convert texture identifier");
-    let file = path_to_c(file, "failed to convert texture file");
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
+    let file = path_to_ansi(file).expect("failed to convert texture file");
     unsafe {
         get_or_create_from_file(identifier.as_ptr(), file.as_ptr())
             .as_ref()
@@ -147,7 +147,7 @@ pub fn get_texture_or_create_from_resource(
         get_or_create_from_resource,
         ..
     } = AddonApi::get().texture;
-    let identifier = str_to_c(identifier, "failed to convert texture identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
     unsafe {
         get_or_create_from_resource(identifier.as_ptr(), resource_id, module)
             .as_ref()
@@ -165,9 +165,9 @@ pub fn get_texture_or_create_from_url(
         get_or_create_from_url,
         ..
     } = AddonApi::get().texture;
-    let identifier = str_to_c(identifier, "failed to convert texture identifier");
-    let remote = str_to_c(remote, "failed to convert texture url remote");
-    let endpoint = str_to_c(endpoint, "failed to convert texture url endpoint");
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
+    let remote = str_to_c(remote).expect("failed to convert texture url remote");
+    let endpoint = str_to_c(endpoint).expect("failed to convert texture url endpoint");
     unsafe {
         get_or_create_from_url(identifier.as_ptr(), remote.as_ptr(), endpoint.as_ptr())
             .as_ref()
@@ -184,7 +184,7 @@ pub fn get_texture_or_create_from_memory(
         get_or_create_from_memory,
         ..
     } = AddonApi::get().texture;
-    let identifier = str_to_c(identifier, "failed to convert texture identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
     let memory = memory.as_ref();
     unsafe {
         get_or_create_from_memory(identifier.as_ptr(), memory.as_ptr().cast(), memory.len())
@@ -202,8 +202,8 @@ pub fn load_texture_from_file(
     callback: Option<RawTextureReceiveCallback>,
 ) {
     let TextureApi { load_from_file, .. } = AddonApi::get().texture;
-    let identifier = str_to_c(identifier, "failed to convert texture identifier");
-    let file = path_to_c(file, "foo");
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
+    let file = path_to_ansi(file).expect("failed to convert texture file");
     unsafe {
         load_from_file(
             identifier.as_ptr(),
@@ -225,7 +225,7 @@ pub fn load_texture_from_resource(
     let TextureApi {
         load_from_resource, ..
     } = AddonApi::get().texture;
-    let identifier = str_to_c(identifier, "failed to convert texture identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
     unsafe {
         load_from_resource(
             identifier.as_ptr(),
@@ -258,9 +258,9 @@ pub fn load_texture_from_url(
     callback: Option<RawTextureReceiveCallback>,
 ) {
     let TextureApi { load_from_url, .. } = AddonApi::get().texture;
-    let identifier = str_to_c(identifier, "failed to convert texture identifier");
-    let remote = str_to_c(remote, "failed to convert texture url remote");
-    let endpoint = str_to_c(endpoint, "failed to convert texture url endpoint");
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
+    let remote = str_to_c(remote).expect("failed to convert texture url remote");
+    let endpoint = str_to_c(endpoint).expect("failed to convert texture url endpoint");
     unsafe {
         load_from_url(
             identifier.as_ptr(),
@@ -282,7 +282,7 @@ pub fn load_texture_from_memory(
     let TextureApi {
         load_from_memory, ..
     } = AddonApi::get().texture;
-    let identifier = str_to_c(identifier, "failed to convert texture identifier");
+    let identifier = str_to_c(identifier).expect("failed to convert texture identifier");
     let data = data.as_ref();
     unsafe {
         load_from_memory(
