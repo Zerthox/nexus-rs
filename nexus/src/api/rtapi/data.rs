@@ -101,7 +101,7 @@ impl RealTimeData {
 
 // This only has a single bit, so maybe just using u32 is enough, since this is only read I assume
 #[bitfield(u32)]
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct IsActionCam {
     pub is_action_camera: bool,

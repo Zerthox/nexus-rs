@@ -165,7 +165,7 @@ impl GroupMember {
 }
 
 #[bitfield(u32)]
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct GroupMemberFlags {
     pub is_self: bool,
