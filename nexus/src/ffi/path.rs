@@ -1,13 +1,8 @@
-//! FFI helpers.
-
-#![allow(clippy::missing_safety_doc)]
-
 use std::{
-    ffi::{CStr, CString, NulError, OsString, c_char},
+    ffi::{CStr, CString, OsString, c_char},
     io,
     os::windows::ffi::{OsStrExt, OsStringExt},
     path::{Path, PathBuf},
-    ptr,
 };
 use windows::{
     Win32::{
@@ -19,28 +14,6 @@ use windows::{
     },
     core::{BOOL, PCSTR},
 };
-
-/// Attempts to convert a C string pointer to a [`prim@str`].
-#[inline]
-pub unsafe fn str_from_c<'a>(ptr: *const c_char) -> Option<&'a str> {
-    if !ptr.is_null() {
-        unsafe { CStr::from_ptr(ptr) }.to_str().ok()
-    } else {
-        None
-    }
-}
-
-/// Attempts to convert a C string pointer to a [`String`].
-#[inline]
-pub unsafe fn string_from_c(ptr: *const c_char) -> Option<String> {
-    unsafe { str_from_c(ptr) }.map(ToOwned::to_owned)
-}
-
-/// Attempts to convert a string to a [`CString`].
-#[inline]
-pub fn str_to_c(string: impl AsRef<str>) -> Result<CString, NulError> {
-    CString::new(string.as_ref())
-}
 
 /// Resolves the codepage to use for conversions.
 pub fn get_codepage() -> u32 {
@@ -153,41 +126,6 @@ pub fn path_to_ansi_with(path: impl AsRef<Path>, codepage: u32) -> io::Result<CS
         Ok(unsafe { CString::from_vec_unchecked(narrow) })
     } else {
         Err(io::Error::last_os_error())
-    }
-}
-
-/// Helper trait to handle `Option<&T>`.
-pub trait OptionRefExt<T> {
-    /// Returns the string as [`T`] pointer or `null`.
-    fn as_ptr_opt(&self) -> *const T;
-}
-
-impl<T> OptionRefExt<T> for Option<&T> {
-    #[inline]
-    fn as_ptr_opt(&self) -> *const T {
-        self.map(|string| string as *const _).unwrap_or(ptr::null())
-    }
-}
-
-/// Helper trait to handle `Option<&CStr>` and  `Option<CString>`.
-pub trait OptionCStrExt {
-    /// Returns the string as [`c_char`] pointer or `null`.
-    fn as_ptr_opt(&self) -> *const c_char;
-}
-
-impl OptionCStrExt for Option<&CStr> {
-    #[inline]
-    fn as_ptr_opt(&self) -> *const c_char {
-        self.map(|string| string.as_ptr()).unwrap_or(ptr::null())
-    }
-}
-
-impl OptionCStrExt for Option<CString> {
-    #[inline]
-    fn as_ptr_opt(&self) -> *const c_char {
-        self.as_ref()
-            .map(|string| string.as_ptr())
-            .unwrap_or(ptr::null())
     }
 }
 
