@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["EffectDuration","EffectLocation"],"struct":["Effect45"]};

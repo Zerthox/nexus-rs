@@ -1,0 +1,411 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `C:\Users\runneradmin\.cargo\git\checkouts\arcdps-rs-8822f3547b07ed34\e6ba582\evtc\src\event\event_kind.rs`."><title>event_kind.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="evtc" data-themes="" data-resource-suffix="" data-rustdoc-version="1.97.1 (8bab26f4f 2026-07-14)" data-channel="1.97.1" data-search-js="search-fd9372ac.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-fcd733ba.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">evtc\event/</div>event_kind.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use crate</span>::{
+<a href=#2 id=2 data-nosnippet>2</a>    Event, Language, StateChange,
+<a href=#3 id=3 data-nosnippet>3</a>    agent::{
+<a href=#4 id=4 data-nosnippet>4</a>        AgentStatusEvent, AttackTargetEvent, BarrierUpdateEvent, BreakbarPercentEvent,
+<a href=#5 id=5 data-nosnippet>5</a>        BreakbarStateEvent, DownContributionEvent, EnterCombatEvent, GadgetAnimation, GadgetName,
+<a href=#6 id=6 data-nosnippet>6</a>        GliderEvent, HealthUpdateEvent, MaxHealthEvent, StealthEvent, StunbreakEvent,
+<a href=#7 id=7 data-nosnippet>7</a>        TargetableEvent, TeamChangeEvent,
+<a href=#8 id=8 data-nosnippet>8</a>    },
+<a href=#9 id=9 data-nosnippet>9</a>    animation::{AnimationStart, AnimationStop},
+<a href=#10 id=10 data-nosnippet>10</a>    buff::{
+<a href=#11 id=11 data-nosnippet>11</a>        BuffApply, BuffChange, BuffFormula, BuffInfo, BuffInitialEvent, BuffRemoveAll,
+<a href=#12 id=12 data-nosnippet>12</a>        BuffRemoveSingle, StackActiveEvent, StackResetEvent,
+<a href=#13 id=13 data-nosnippet>13</a>    },
+<a href=#14 id=14 data-nosnippet>14</a>    combat::CombatEvent,
+<a href=#15 id=15 data-nosnippet>15</a>    content::ContentInfo,
+<a href=#16 id=16 data-nosnippet>16</a>    effect::{
+<a href=#17 id=17 data-nosnippet>17</a>        AgentEffect, AgentEffectRemove, Effect45, Effect51, GroundEffect, GroundEffectRemove,
+<a href=#18 id=18 data-nosnippet>18</a>    },
+<a href=#19 id=19 data-nosnippet>19</a>    log::{ArcBuildEvent, ErrorEvent, LogEvent},
+<a href=#20 id=20 data-nosnippet>20</a>    marker::{AgentMarkerEvent, SquadMarkerEvent},
+<a href=#21 id=21 data-nosnippet>21</a>    missile::{MissileCreate, MissileLaunch, MissileRemove},
+<a href=#22 id=22 data-nosnippet>22</a>    player::{GuildEvent, RewardEvent},
+<a href=#23 id=23 data-nosnippet>23</a>    position::PositionEvent,
+<a href=#24 id=24 data-nosnippet>24</a>    ruleset::Ruleset,
+<a href=#25 id=25 data-nosnippet>25</a>    skill::{SkillInfo, SkillTiming},
+<a href=#26 id=26 data-nosnippet>26</a>    transformation::TransformationEvent,
+<a href=#27 id=27 data-nosnippet>27</a>    weapon::WeaponSwapEvent,
+<a href=#28 id=28 data-nosnippet>28</a>    wvw::{WvwObjectiveStatus, WvwTeams},
+<a href=#29 id=29 data-nosnippet>29</a>};
+<a href=#30 id=30 data-nosnippet>30</a>
+<a href=#31 id=31 data-nosnippet>31</a><span class="attr">#[cfg(feature = <span class="string">"serde"</span>)]
+<a href=#32 id=32 data-nosnippet>32</a></span><span class="kw">use </span>serde::{Deserialize, Serialize};
+<a href=#33 id=33 data-nosnippet>33</a>
+<a href=#34 id=34 data-nosnippet>34</a><span class="doccomment">/// Possible [`Event`] kinds.
+<a href=#35 id=35 data-nosnippet>35</a></span><span class="attr">#[derive(Debug, Clone)]
+<a href=#36 id=36 data-nosnippet>36</a>#[cfg_attr(feature = <span class="string">"serde"</span>, derive(Serialize, Deserialize))]
+<a href=#37 id=37 data-nosnippet>37</a>#[cfg_attr(feature = <span class="string">"serde"</span>, serde(tag = <span class="string">"kind"</span>))]
+<a href=#38 id=38 data-nosnippet>38</a></span><span class="kw">pub enum </span>EventKind {
+<a href=#39 id=39 data-nosnippet>39</a>    <span class="doccomment">/// Combat event.
+<a href=#40 id=40 data-nosnippet>40</a>    </span>Combat(CombatEvent),
+<a href=#41 id=41 data-nosnippet>41</a>
+<a href=#42 id=42 data-nosnippet>42</a>    <span class="doccomment">/// Agent entered combat.
+<a href=#43 id=43 data-nosnippet>43</a>    </span>EnterCombat(EnterCombatEvent),
+<a href=#44 id=44 data-nosnippet>44</a>
+<a href=#45 id=45 data-nosnippet>45</a>    <span class="doccomment">/// Agent left combat.
+<a href=#46 id=46 data-nosnippet>46</a>    </span>ExitCombat(AgentStatusEvent),
+<a href=#47 id=47 data-nosnippet>47</a>
+<a href=#48 id=48 data-nosnippet>48</a>    <span class="doccomment">/// Agent is now alive.
+<a href=#49 id=49 data-nosnippet>49</a>    </span>ChangeUp(AgentStatusEvent),
+<a href=#50 id=50 data-nosnippet>50</a>
+<a href=#51 id=51 data-nosnippet>51</a>    <span class="doccomment">/// Agent is now dead.
+<a href=#52 id=52 data-nosnippet>52</a>    </span>ChangeDead(AgentStatusEvent),
+<a href=#53 id=53 data-nosnippet>53</a>
+<a href=#54 id=54 data-nosnippet>54</a>    <span class="doccomment">/// Agent is now downed.
+<a href=#55 id=55 data-nosnippet>55</a>    </span>ChangeDown(AgentStatusEvent),
+<a href=#56 id=56 data-nosnippet>56</a>
+<a href=#57 id=57 data-nosnippet>57</a>    <span class="doccomment">/// Agent is now in game tracking range.
+<a href=#58 id=58 data-nosnippet>58</a>    </span>Spawn(AgentStatusEvent),
+<a href=#59 id=59 data-nosnippet>59</a>
+<a href=#60 id=60 data-nosnippet>60</a>    <span class="doccomment">/// Agent is no longer being tracked or out of game tracking range.
+<a href=#61 id=61 data-nosnippet>61</a>    </span>Despawn(AgentStatusEvent),
+<a href=#62 id=62 data-nosnippet>62</a>
+<a href=#63 id=63 data-nosnippet>63</a>    <span class="doccomment">/// Agent health change.
+<a href=#64 id=64 data-nosnippet>64</a>    </span>HealthUpdate(HealthUpdateEvent),
+<a href=#65 id=65 data-nosnippet>65</a>
+<a href=#66 id=66 data-nosnippet>66</a>    <span class="doccomment">/// Log started.
+<a href=#67 id=67 data-nosnippet>67</a>    </span>SquadCombatStart(LogEvent),
+<a href=#68 id=68 data-nosnippet>68</a>
+<a href=#69 id=69 data-nosnippet>69</a>    <span class="doccomment">/// Log ended.
+<a href=#70 id=70 data-nosnippet>70</a>    </span>SquadCombatEnd(LogEvent),
+<a href=#71 id=71 data-nosnippet>71</a>
+<a href=#72 id=72 data-nosnippet>72</a>    <span class="doccomment">/// Agent swapped weapon set.
+<a href=#73 id=73 data-nosnippet>73</a>    </span>WeaponSwap(WeaponSwapEvent),
+<a href=#74 id=74 data-nosnippet>74</a>
+<a href=#75 id=75 data-nosnippet>75</a>    <span class="doccomment">/// Agent maximum health change.
+<a href=#76 id=76 data-nosnippet>76</a>    </span>MaxHealthUpdate(MaxHealthEvent),
+<a href=#77 id=77 data-nosnippet>77</a>
+<a href=#78 id=78 data-nosnippet>78</a>    <span class="doccomment">/// Agent is "recording" player.
+<a href=#79 id=79 data-nosnippet>79</a>    </span>PointOfView(AgentStatusEvent),
+<a href=#80 id=80 data-nosnippet>80</a>
+<a href=#81 id=81 data-nosnippet>81</a>    <span class="doccomment">/// Game text language.
+<a href=#82 id=82 data-nosnippet>82</a>    </span>Language {
+<a href=#83 id=83 data-nosnippet>83</a>        time: u64,
+<a href=#84 id=84 data-nosnippet>84</a>        language: <span class="prelude-ty">Result</span>&lt;Language, u64&gt;,
+<a href=#85 id=85 data-nosnippet>85</a>    },
+<a href=#86 id=86 data-nosnippet>86</a>
+<a href=#87 id=87 data-nosnippet>87</a>    <span class="doccomment">/// Game build.
+<a href=#88 id=88 data-nosnippet>88</a>    </span>GWBuild { time: u64, build: u64 },
+<a href=#89 id=89 data-nosnippet>89</a>
+<a href=#90 id=90 data-nosnippet>90</a>    <span class="doccomment">/// Sever shard id.
+<a href=#91 id=91 data-nosnippet>91</a>    </span>ShardId { time: u64, shard: u64 },
+<a href=#92 id=92 data-nosnippet>92</a>
+<a href=#93 id=93 data-nosnippet>93</a>    <span class="doccomment">/// Agent got a reward chest.
+<a href=#94 id=94 data-nosnippet>94</a>    </span>Reward(RewardEvent),
+<a href=#95 id=95 data-nosnippet>95</a>
+<a href=#96 id=96 data-nosnippet>96</a>    <span class="doccomment">/// Appears once per buff per agent on logging start.
+<a href=#97 id=97 data-nosnippet>97</a>    </span>BuffInitial(BuffInitialEvent),
+<a href=#98 id=98 data-nosnippet>98</a>
+<a href=#99 id=99 data-nosnippet>99</a>    <span class="doccomment">/// Agent position change.
+<a href=#100 id=100 data-nosnippet>100</a>    </span>Position(PositionEvent),
+<a href=#101 id=101 data-nosnippet>101</a>
+<a href=#102 id=102 data-nosnippet>102</a>    <span class="doccomment">/// Agent velocity change.
+<a href=#103 id=103 data-nosnippet>103</a>    </span>Velocity(PositionEvent),
+<a href=#104 id=104 data-nosnippet>104</a>
+<a href=#105 id=105 data-nosnippet>105</a>    <span class="doccomment">/// Agent facing change.
+<a href=#106 id=106 data-nosnippet>106</a>    </span>Facing(PositionEvent),
+<a href=#107 id=107 data-nosnippet>107</a>
+<a href=#108 id=108 data-nosnippet>108</a>    <span class="doccomment">/// Agent team change.
+<a href=#109 id=109 data-nosnippet>109</a>    </span>TeamChange(TeamChangeEvent),
+<a href=#110 id=110 data-nosnippet>110</a>
+<a href=#111 id=111 data-nosnippet>111</a>    <span class="doccomment">/// Agent is now an attack target.
+<a href=#112 id=112 data-nosnippet>112</a>    </span>AttackTarget(AttackTargetEvent),
+<a href=#113 id=113 data-nosnippet>113</a>
+<a href=#114 id=114 data-nosnippet>114</a>    <span class="doccomment">/// Agent targetability change.
+<a href=#115 id=115 data-nosnippet>115</a>    </span>Targetable(TargetableEvent),
+<a href=#116 id=116 data-nosnippet>116</a>
+<a href=#117 id=117 data-nosnippet>117</a>    <span class="doccomment">/// Map id.
+<a href=#118 id=118 data-nosnippet>118</a>    </span>MapId { time: u64, map: u64 },
+<a href=#119 id=119 data-nosnippet>119</a>
+<a href=#120 id=120 data-nosnippet>120</a>    <span class="doccomment">/// Agent with active buff.
+<a href=#121 id=121 data-nosnippet>121</a>    </span>StackActive(StackActiveEvent),
+<a href=#122 id=122 data-nosnippet>122</a>
+<a href=#123 id=123 data-nosnippet>123</a>    <span class="doccomment">/// Agent with reset buff.
+<a href=#124 id=124 data-nosnippet>124</a>    </span>StackReset(StackResetEvent),
+<a href=#125 id=125 data-nosnippet>125</a>
+<a href=#126 id=126 data-nosnippet>126</a>    <span class="doccomment">/// Agent is in guild.
+<a href=#127 id=127 data-nosnippet>127</a>    </span>Guild(GuildEvent),
+<a href=#128 id=128 data-nosnippet>128</a>
+<a href=#129 id=129 data-nosnippet>129</a>    <span class="doccomment">/// Buff information.
+<a href=#130 id=130 data-nosnippet>130</a>    </span>BuffInfo(BuffInfo),
+<a href=#131 id=131 data-nosnippet>131</a>
+<a href=#132 id=132 data-nosnippet>132</a>    <span class="doccomment">/// Buff formula.
+<a href=#133 id=133 data-nosnippet>133</a>    </span>BuffFormula(BuffFormula),
+<a href=#134 id=134 data-nosnippet>134</a>
+<a href=#135 id=135 data-nosnippet>135</a>    <span class="doccomment">/// Skill information.
+<a href=#136 id=136 data-nosnippet>136</a>    </span>SkillInfo(SkillInfo),
+<a href=#137 id=137 data-nosnippet>137</a>
+<a href=#138 id=138 data-nosnippet>138</a>    <span class="doccomment">/// Skill action.
+<a href=#139 id=139 data-nosnippet>139</a>    </span>SkillTiming(SkillTiming),
+<a href=#140 id=140 data-nosnippet>140</a>
+<a href=#141 id=141 data-nosnippet>141</a>    <span class="doccomment">/// Agent breakbar state change.
+<a href=#142 id=142 data-nosnippet>142</a>    </span>BreakbarState(BreakbarStateEvent),
+<a href=#143 id=143 data-nosnippet>143</a>
+<a href=#144 id=144 data-nosnippet>144</a>    <span class="doccomment">/// Breakbar percentage.
+<a href=#145 id=145 data-nosnippet>145</a>    </span>BreakbarPercent(BreakbarPercentEvent),
+<a href=#146 id=146 data-nosnippet>146</a>
+<a href=#147 id=147 data-nosnippet>147</a>    <span class="doccomment">/// Error.
+<a href=#148 id=148 data-nosnippet>148</a>    </span>Integrity(ErrorEvent),
+<a href=#149 id=149 data-nosnippet>149</a>
+<a href=#150 id=150 data-nosnippet>150</a>    <span class="doccomment">/// Agent has marker.
+<a href=#151 id=151 data-nosnippet>151</a>    </span>AgentMarker(AgentMarkerEvent),
+<a href=#152 id=152 data-nosnippet>152</a>
+<a href=#153 id=153 data-nosnippet>153</a>    <span class="doccomment">/// Agent barrier change.
+<a href=#154 id=154 data-nosnippet>154</a>    </span>BarrierUpdate(BarrierUpdateEvent),
+<a href=#155 id=155 data-nosnippet>155</a>
+<a href=#156 id=156 data-nosnippet>156</a>    <span class="doccomment">/// Arc UI stats reset.
+<a href=#157 id=157 data-nosnippet>157</a>    </span>StatReset { time: u64, target: u64 },
+<a href=#158 id=158 data-nosnippet>158</a>
+<a href=#159 id=159 data-nosnippet>159</a>    <span class="doccomment">/// A custom event created by an extension (addon/plugin).
+<a href=#160 id=160 data-nosnippet>160</a>    </span>Extension { sig: u32, event: Event },
+<a href=#161 id=161 data-nosnippet>161</a>
+<a href=#162 id=162 data-nosnippet>162</a>    <span class="doccomment">/// Delayed combat event.
+<a href=#163 id=163 data-nosnippet>163</a>    </span>ApiDelayed { event: Box&lt;EventKind&gt; },
+<a href=#164 id=164 data-nosnippet>164</a>
+<a href=#165 id=165 data-nosnippet>165</a>    <span class="doccomment">/// Instance started.
+<a href=#166 id=166 data-nosnippet>166</a>    </span>InstanceStart { time: u64, start: u64 },
+<a href=#167 id=167 data-nosnippet>167</a>
+<a href=#168 id=168 data-nosnippet>168</a>    <span class="doccomment">/// Tick rate.
+<a href=#169 id=169 data-nosnippet>169</a>    </span>RateHealth { time: u64, rate: u64 },
+<a href=#170 id=170 data-nosnippet>170</a>
+<a href=#171 id=171 data-nosnippet>171</a>    <span class="doccomment">/// Last 90% before down for downs contribution.
+<a href=#172 id=172 data-nosnippet>172</a>    </span>Last90BeforeDown(DownContributionEvent),
+<a href=#173 id=173 data-nosnippet>173</a>
+<a href=#174 id=174 data-nosnippet>174</a>    <span class="doccomment">/// Effect created or ended.
+<a href=#175 id=175 data-nosnippet>175</a>    </span>Effect45(Effect45),
+<a href=#176 id=176 data-nosnippet>176</a>
+<a href=#177 id=177 data-nosnippet>177</a>    <span class="doccomment">/// Content id to GUID.
+<a href=#178 id=178 data-nosnippet>178</a>    ///
+<a href=#179 id=179 data-nosnippet>179</a>    /// This maps a volatile content id to a stable GUID.
+<a href=#180 id=180 data-nosnippet>180</a>    </span>IdToGUID(ContentInfo),
+<a href=#181 id=181 data-nosnippet>181</a>
+<a href=#182 id=182 data-nosnippet>182</a>    <span class="doccomment">/// Log NPC changed.
+<a href=#183 id=183 data-nosnippet>183</a>    </span>LogNPCUpdate(LogEvent),
+<a href=#184 id=184 data-nosnippet>184</a>
+<a href=#185 id=185 data-nosnippet>185</a>    <span class="doccomment">/// A custom combat event created by an extension (addon/plugin).
+<a href=#186 id=186 data-nosnippet>186</a>    </span>ExtensionCombat { sig: u32, event: Event },
+<a href=#187 id=187 data-nosnippet>187</a>
+<a href=#188 id=188 data-nosnippet>188</a>    <span class="doccomment">/// Fractal scale.
+<a href=#189 id=189 data-nosnippet>189</a>    </span>FractalScale { time: u64, scale: u64 },
+<a href=#190 id=190 data-nosnippet>190</a>
+<a href=#191 id=191 data-nosnippet>191</a>    <span class="doccomment">/// Effect created or ended.
+<a href=#192 id=192 data-nosnippet>192</a>    </span>Effect51(Effect51),
+<a href=#193 id=193 data-nosnippet>193</a>
+<a href=#194 id=194 data-nosnippet>194</a>    <span class="doccomment">/// Combat ruleset.
+<a href=#195 id=195 data-nosnippet>195</a>    </span>Ruleset(Ruleset),
+<a href=#196 id=196 data-nosnippet>196</a>
+<a href=#197 id=197 data-nosnippet>197</a>    <span class="doccomment">/// Squad marker placed or removed.
+<a href=#198 id=198 data-nosnippet>198</a>    </span>SquadMarker(SquadMarkerEvent),
+<a href=#199 id=199 data-nosnippet>199</a>
+<a href=#200 id=200 data-nosnippet>200</a>    <span class="doccomment">/// ArcDPS build information.
+<a href=#201 id=201 data-nosnippet>201</a>    </span>ArcBuild(ArcBuildEvent),
+<a href=#202 id=202 data-nosnippet>202</a>
+<a href=#203 id=203 data-nosnippet>203</a>    <span class="doccomment">/// Agent gliding state changed.
+<a href=#204 id=204 data-nosnippet>204</a>    </span>Glider(GliderEvent),
+<a href=#205 id=205 data-nosnippet>205</a>
+<a href=#206 id=206 data-nosnippet>206</a>    <span class="doccomment">/// Effect
+<a href=#207 id=207 data-nosnippet>207</a>    </span>Stunbreak(StunbreakEvent),
+<a href=#208 id=208 data-nosnippet>208</a>
+<a href=#209 id=209 data-nosnippet>209</a>    <span class="doccomment">/// Missile created.
+<a href=#210 id=210 data-nosnippet>210</a>    </span>MissileCreate(MissileCreate),
+<a href=#211 id=211 data-nosnippet>211</a>
+<a href=#212 id=212 data-nosnippet>212</a>    <span class="doccomment">/// Missile launched or relaunched.
+<a href=#213 id=213 data-nosnippet>213</a>    </span>MissileLaunch(MissileLaunch),
+<a href=#214 id=214 data-nosnippet>214</a>
+<a href=#215 id=215 data-nosnippet>215</a>    <span class="doccomment">/// Missile removed or destroyed.
+<a href=#216 id=216 data-nosnippet>216</a>    </span>MissileRemove(MissileRemove),
+<a href=#217 id=217 data-nosnippet>217</a>
+<a href=#218 id=218 data-nosnippet>218</a>    <span class="doccomment">/// Ground effect created.
+<a href=#219 id=219 data-nosnippet>219</a>    </span>EffectGroundCreate(GroundEffect),
+<a href=#220 id=220 data-nosnippet>220</a>
+<a href=#221 id=221 data-nosnippet>221</a>    <span class="doccomment">/// Ground effect removed.
+<a href=#222 id=222 data-nosnippet>222</a>    </span>EffectGroundRemove(GroundEffectRemove),
+<a href=#223 id=223 data-nosnippet>223</a>
+<a href=#224 id=224 data-nosnippet>224</a>    <span class="doccomment">/// Effect around agent created.
+<a href=#225 id=225 data-nosnippet>225</a>    </span>EffectAgentCreate(AgentEffect),
+<a href=#226 id=226 data-nosnippet>226</a>
+<a href=#227 id=227 data-nosnippet>227</a>    <span class="doccomment">/// Effect around agent removed.
+<a href=#228 id=228 data-nosnippet>228</a>    </span>EffectAgentRemove(AgentEffectRemove),
+<a href=#229 id=229 data-nosnippet>229</a>
+<a href=#230 id=230 data-nosnippet>230</a>    <span class="doccomment">/// Player IID (unique agent id) change.
+<a href=#231 id=231 data-nosnippet>231</a>    </span>IIDChange { time: u64, id: u64, previous: u64 },
+<a href=#232 id=232 data-nosnippet>232</a>
+<a href=#233 id=233 data-nosnippet>233</a>    <span class="doccomment">/// Map change.
+<a href=#234 id=234 data-nosnippet>234</a>    </span>MapChange { time: u64, map: u64, previous: u64 },
+<a href=#235 id=235 data-nosnippet>235</a>
+<a href=#236 id=236 data-nosnippet>236</a>    <span class="doccomment">/// Animation started.
+<a href=#237 id=237 data-nosnippet>237</a>    </span>AnimationStart(AnimationStart),
+<a href=#238 id=238 data-nosnippet>238</a>
+<a href=#239 id=239 data-nosnippet>239</a>    <span class="doccomment">/// Animation stopped.
+<a href=#240 id=240 data-nosnippet>240</a>    </span>AnimationStop(AnimationStop),
+<a href=#241 id=241 data-nosnippet>241</a>
+<a href=#242 id=242 data-nosnippet>242</a>    <span class="doccomment">/// Buff applied.
+<a href=#243 id=243 data-nosnippet>243</a>    </span>BuffApply(BuffApply),
+<a href=#244 id=244 data-nosnippet>244</a>
+<a href=#245 id=245 data-nosnippet>245</a>    <span class="doccomment">/// Buff changed.
+<a href=#246 id=246 data-nosnippet>246</a>    </span>BuffChange(BuffChange),
+<a href=#247 id=247 data-nosnippet>247</a>
+<a href=#248 id=248 data-nosnippet>248</a>    <span class="doccomment">/// Buff stack removed.
+<a href=#249 id=249 data-nosnippet>249</a>    </span>BuffRemoveSingle(BuffRemoveSingle),
+<a href=#250 id=250 data-nosnippet>250</a>
+<a href=#251 id=251 data-nosnippet>251</a>    <span class="doccomment">/// All stacks of buff removed.
+<a href=#252 id=252 data-nosnippet>252</a>    </span>BuffRemoveAll(BuffRemoveAll),
+<a href=#253 id=253 data-nosnippet>253</a>
+<a href=#254 id=254 data-nosnippet>254</a>    <span class="doccomment">/// Transformation change.
+<a href=#255 id=255 data-nosnippet>255</a>    </span>Transformation(TransformationEvent),
+<a href=#256 id=256 data-nosnippet>256</a>
+<a href=#257 id=257 data-nosnippet>257</a>    <span class="doccomment">/// WvW teams information.
+<a href=#258 id=258 data-nosnippet>258</a>    </span>WvwTeams(WvwTeams),
+<a href=#259 id=259 data-nosnippet>259</a>
+<a href=#260 id=260 data-nosnippet>260</a>    <span class="doccomment">/// WvW objective status.
+<a href=#261 id=261 data-nosnippet>261</a>    </span>WvwObjectiveStatus(WvwObjectiveStatus),
+<a href=#262 id=262 data-nosnippet>262</a>
+<a href=#263 id=263 data-nosnippet>263</a>    <span class="doccomment">/// Stealth state change.
+<a href=#264 id=264 data-nosnippet>264</a>    </span>StealthChange(StealthEvent),
+<a href=#265 id=265 data-nosnippet>265</a>
+<a href=#266 id=266 data-nosnippet>266</a>    <span class="doccomment">/// Gadget model animation.
+<a href=#267 id=267 data-nosnippet>267</a>    </span>GadgetAnimation(GadgetAnimation),
+<a href=#268 id=268 data-nosnippet>268</a>
+<a href=#269 id=269 data-nosnippet>269</a>    <span class="doccomment">/// Gadget name visibility state.
+<a href=#270 id=270 data-nosnippet>270</a>    </span>GadgetName(GadgetName),
+<a href=#271 id=271 data-nosnippet>271</a>
+<a href=#272 id=272 data-nosnippet>272</a>    <span class="doccomment">/// Unknown event.
+<a href=#273 id=273 data-nosnippet>273</a>    </span>Unknown(Event),
+<a href=#274 id=274 data-nosnippet>274</a>}
+<a href=#275 id=275 data-nosnippet>275</a>
+<a href=#276 id=276 data-nosnippet>276</a><span class="kw">impl </span>From&lt;Event&gt; <span class="kw">for </span>EventKind {
+<a href=#277 id=277 data-nosnippet>277</a>    <span class="attr">#[inline]
+<a href=#278 id=278 data-nosnippet>278</a>    </span><span class="kw">fn </span>from(<span class="kw-2">mut </span>event: Event) -&gt; <span class="self">Self </span>{
+<a href=#279 id=279 data-nosnippet>279</a>        <span class="kw">unsafe </span>{
+<a href=#280 id=280 data-nosnippet>280</a>            <span class="kw">match </span>event.get_statechange() {
+<a href=#281 id=281 data-nosnippet>281</a>                StateChange::Combat =&gt; <span class="self">Self</span>::Combat(event.extract()),
+<a href=#282 id=282 data-nosnippet>282</a>                StateChange::EnterCombat =&gt; <span class="self">Self</span>::EnterCombat(event.extract()),
+<a href=#283 id=283 data-nosnippet>283</a>                StateChange::ExitCombat =&gt; <span class="self">Self</span>::ExitCombat(event.extract()),
+<a href=#284 id=284 data-nosnippet>284</a>                StateChange::ChangeUp =&gt; <span class="self">Self</span>::ChangeUp(event.extract()),
+<a href=#285 id=285 data-nosnippet>285</a>                StateChange::ChangeDead =&gt; <span class="self">Self</span>::ChangeDead(event.extract()),
+<a href=#286 id=286 data-nosnippet>286</a>                StateChange::ChangeDown =&gt; <span class="self">Self</span>::ChangeDown(event.extract()),
+<a href=#287 id=287 data-nosnippet>287</a>                StateChange::Spawn =&gt; <span class="self">Self</span>::Spawn(event.extract()),
+<a href=#288 id=288 data-nosnippet>288</a>                StateChange::Despawn =&gt; <span class="self">Self</span>::Despawn(event.extract()),
+<a href=#289 id=289 data-nosnippet>289</a>                StateChange::HealthUpdate =&gt; <span class="self">Self</span>::HealthUpdate(event.extract()),
+<a href=#290 id=290 data-nosnippet>290</a>                StateChange::SquadCombatStart =&gt; <span class="self">Self</span>::SquadCombatStart(event.extract()),
+<a href=#291 id=291 data-nosnippet>291</a>                StateChange::SquadCombatEnd =&gt; <span class="self">Self</span>::SquadCombatEnd(event.extract()),
+<a href=#292 id=292 data-nosnippet>292</a>                StateChange::WeaponSwap =&gt; <span class="self">Self</span>::WeaponSwap(event.extract()),
+<a href=#293 id=293 data-nosnippet>293</a>                StateChange::MaxHealthUpdate =&gt; <span class="self">Self</span>::MaxHealthUpdate(event.extract()),
+<a href=#294 id=294 data-nosnippet>294</a>                StateChange::PointOfView =&gt; <span class="self">Self</span>::PointOfView(event.extract()),
+<a href=#295 id=295 data-nosnippet>295</a>                StateChange::Language =&gt; <span class="self">Self</span>::Language {
+<a href=#296 id=296 data-nosnippet>296</a>                    time: event.time,
+<a href=#297 id=297 data-nosnippet>297</a>                    language: u8::try_from(event.src_agent)
+<a href=#298 id=298 data-nosnippet>298</a>                        .ok()
+<a href=#299 id=299 data-nosnippet>299</a>                        .and_then(|value| Language::try_from(value).ok())
+<a href=#300 id=300 data-nosnippet>300</a>                        .ok_or(event.src_agent),
+<a href=#301 id=301 data-nosnippet>301</a>                },
+<a href=#302 id=302 data-nosnippet>302</a>                StateChange::GWBuild =&gt; <span class="self">Self</span>::GWBuild {
+<a href=#303 id=303 data-nosnippet>303</a>                    time: event.time,
+<a href=#304 id=304 data-nosnippet>304</a>                    build: event.src_agent,
+<a href=#305 id=305 data-nosnippet>305</a>                },
+<a href=#306 id=306 data-nosnippet>306</a>                StateChange::ShardId =&gt; <span class="self">Self</span>::ShardId {
+<a href=#307 id=307 data-nosnippet>307</a>                    time: event.time,
+<a href=#308 id=308 data-nosnippet>308</a>                    shard: event.src_agent,
+<a href=#309 id=309 data-nosnippet>309</a>                },
+<a href=#310 id=310 data-nosnippet>310</a>                StateChange::Reward =&gt; <span class="self">Self</span>::Reward(event.extract()),
+<a href=#311 id=311 data-nosnippet>311</a>                StateChange::BuffInitial =&gt; <span class="self">Self</span>::BuffInitial(event.extract()),
+<a href=#312 id=312 data-nosnippet>312</a>                StateChange::Position =&gt; <span class="self">Self</span>::Position(event.extract()),
+<a href=#313 id=313 data-nosnippet>313</a>                StateChange::Velocity =&gt; <span class="self">Self</span>::Velocity(event.extract()),
+<a href=#314 id=314 data-nosnippet>314</a>                StateChange::Facing =&gt; <span class="self">Self</span>::Facing(event.extract()),
+<a href=#315 id=315 data-nosnippet>315</a>                StateChange::TeamChange =&gt; <span class="self">Self</span>::TeamChange(event.extract()),
+<a href=#316 id=316 data-nosnippet>316</a>                StateChange::AttackTarget =&gt; <span class="self">Self</span>::AttackTarget(event.extract()),
+<a href=#317 id=317 data-nosnippet>317</a>                StateChange::Targetable =&gt; <span class="self">Self</span>::Targetable(event.extract()),
+<a href=#318 id=318 data-nosnippet>318</a>                StateChange::MapId =&gt; <span class="self">Self</span>::MapId {
+<a href=#319 id=319 data-nosnippet>319</a>                    time: event.time,
+<a href=#320 id=320 data-nosnippet>320</a>                    map: event.src_agent,
+<a href=#321 id=321 data-nosnippet>321</a>                },
+<a href=#322 id=322 data-nosnippet>322</a>                StateChange::StackActive =&gt; <span class="self">Self</span>::StackActive(event.extract()),
+<a href=#323 id=323 data-nosnippet>323</a>                StateChange::StackReset =&gt; <span class="self">Self</span>::StackReset(event.extract()),
+<a href=#324 id=324 data-nosnippet>324</a>                StateChange::Guild =&gt; <span class="self">Self</span>::Guild(event.extract()),
+<a href=#325 id=325 data-nosnippet>325</a>                StateChange::BuffInfo =&gt; <span class="self">Self</span>::BuffInfo(event.extract()),
+<a href=#326 id=326 data-nosnippet>326</a>                StateChange::BuffFormula =&gt; <span class="self">Self</span>::BuffFormula(event.extract()),
+<a href=#327 id=327 data-nosnippet>327</a>                StateChange::SkillInfo =&gt; <span class="self">Self</span>::SkillInfo(event.extract()),
+<a href=#328 id=328 data-nosnippet>328</a>                StateChange::SkillTiming =&gt; <span class="self">Self</span>::SkillTiming(event.extract()),
+<a href=#329 id=329 data-nosnippet>329</a>                StateChange::BreakbarState =&gt; <span class="self">Self</span>::BreakbarState(event.extract()),
+<a href=#330 id=330 data-nosnippet>330</a>                StateChange::BreakbarPercent =&gt; <span class="self">Self</span>::BreakbarPercent(event.extract()),
+<a href=#331 id=331 data-nosnippet>331</a>                StateChange::Integrity =&gt; <span class="self">Self</span>::Integrity(event.extract()),
+<a href=#332 id=332 data-nosnippet>332</a>                StateChange::Marker =&gt; <span class="self">Self</span>::AgentMarker(event.extract()),
+<a href=#333 id=333 data-nosnippet>333</a>                StateChange::BarrierUpdate =&gt; <span class="self">Self</span>::BarrierUpdate(event.extract()),
+<a href=#334 id=334 data-nosnippet>334</a>                StateChange::StatReset =&gt; <span class="self">Self</span>::StatReset {
+<a href=#335 id=335 data-nosnippet>335</a>                    time: event.time,
+<a href=#336 id=336 data-nosnippet>336</a>                    target: event.src_agent,
+<a href=#337 id=337 data-nosnippet>337</a>                },
+<a href=#338 id=338 data-nosnippet>338</a>                StateChange::Extension =&gt; <span class="self">Self</span>::Extension {
+<a href=#339 id=339 data-nosnippet>339</a>                    sig: event.get_pad_id(),
+<a href=#340 id=340 data-nosnippet>340</a>                    event,
+<a href=#341 id=341 data-nosnippet>341</a>                },
+<a href=#342 id=342 data-nosnippet>342</a>                StateChange::ApiDelayed =&gt; {
+<a href=#343 id=343 data-nosnippet>343</a>                    event.is_statechange = StateChange::Combat.into();
+<a href=#344 id=344 data-nosnippet>344</a>                    <span class="self">Self</span>::ApiDelayed {
+<a href=#345 id=345 data-nosnippet>345</a>                        event: event.into_kind().into(),
+<a href=#346 id=346 data-nosnippet>346</a>                    }
+<a href=#347 id=347 data-nosnippet>347</a>                }
+<a href=#348 id=348 data-nosnippet>348</a>                StateChange::InstanceStart =&gt; <span class="self">Self</span>::InstanceStart {
+<a href=#349 id=349 data-nosnippet>349</a>                    time: event.time,
+<a href=#350 id=350 data-nosnippet>350</a>                    start: event.src_agent,
+<a href=#351 id=351 data-nosnippet>351</a>                },
+<a href=#352 id=352 data-nosnippet>352</a>                StateChange::RateHealth =&gt; <span class="self">Self</span>::RateHealth {
+<a href=#353 id=353 data-nosnippet>353</a>                    time: event.time,
+<a href=#354 id=354 data-nosnippet>354</a>                    rate: event.src_agent,
+<a href=#355 id=355 data-nosnippet>355</a>                },
+<a href=#356 id=356 data-nosnippet>356</a>                StateChange::Last90BeforeDown =&gt; <span class="self">Self</span>::Last90BeforeDown(event.extract()),
+<a href=#357 id=357 data-nosnippet>357</a>                StateChange::Effect45 =&gt; <span class="self">Self</span>::Effect45(event.extract()),
+<a href=#358 id=358 data-nosnippet>358</a>                StateChange::IdToGUID =&gt; <span class="self">Self</span>::IdToGUID(event.extract()),
+<a href=#359 id=359 data-nosnippet>359</a>                StateChange::LogNPCUpdate =&gt; <span class="self">Self</span>::LogNPCUpdate(event.extract()),
+<a href=#360 id=360 data-nosnippet>360</a>                StateChange::ExtensionCombat =&gt; <span class="self">Self</span>::ExtensionCombat {
+<a href=#361 id=361 data-nosnippet>361</a>                    sig: event.get_pad_id(),
+<a href=#362 id=362 data-nosnippet>362</a>                    event,
+<a href=#363 id=363 data-nosnippet>363</a>                },
+<a href=#364 id=364 data-nosnippet>364</a>                StateChange::FractalScale =&gt; <span class="self">Self</span>::FractalScale {
+<a href=#365 id=365 data-nosnippet>365</a>                    time: event.time,
+<a href=#366 id=366 data-nosnippet>366</a>                    scale: event.src_agent,
+<a href=#367 id=367 data-nosnippet>367</a>                },
+<a href=#368 id=368 data-nosnippet>368</a>                StateChange::Effect51 =&gt; <span class="self">Self</span>::Effect51(event.extract()),
+<a href=#369 id=369 data-nosnippet>369</a>                StateChange::Ruleset =&gt; <span class="self">Self</span>::Ruleset(Ruleset::from_bits_retain(event.src_agent)),
+<a href=#370 id=370 data-nosnippet>370</a>                StateChange::SquadMarker =&gt; <span class="self">Self</span>::SquadMarker(event.extract()),
+<a href=#371 id=371 data-nosnippet>371</a>                StateChange::ArcBuild =&gt; <span class="self">Self</span>::ArcBuild(event.extract()),
+<a href=#372 id=372 data-nosnippet>372</a>                StateChange::Glider =&gt; <span class="self">Self</span>::Glider(event.extract()),
+<a href=#373 id=373 data-nosnippet>373</a>                StateChange::Stunbreak =&gt; <span class="self">Self</span>::Stunbreak(event.extract()),
+<a href=#374 id=374 data-nosnippet>374</a>                StateChange::MissileCreate =&gt; <span class="self">Self</span>::MissileCreate(event.extract()),
+<a href=#375 id=375 data-nosnippet>375</a>                StateChange::MissileLaunch =&gt; <span class="self">Self</span>::MissileLaunch(event.extract()),
+<a href=#376 id=376 data-nosnippet>376</a>                StateChange::MissileRemove =&gt; <span class="self">Self</span>::MissileRemove(event.extract()),
+<a href=#377 id=377 data-nosnippet>377</a>                StateChange::EffectGroundCreate =&gt; <span class="self">Self</span>::EffectGroundCreate(event.extract()),
+<a href=#378 id=378 data-nosnippet>378</a>                StateChange::EffectGroundRemove =&gt; <span class="self">Self</span>::EffectGroundRemove(event.extract()),
+<a href=#379 id=379 data-nosnippet>379</a>                StateChange::EffectAgentCreate =&gt; <span class="self">Self</span>::EffectAgentCreate(event.extract()),
+<a href=#380 id=380 data-nosnippet>380</a>                StateChange::EffectAgentRemove =&gt; <span class="self">Self</span>::EffectAgentRemove(event.extract()),
+<a href=#381 id=381 data-nosnippet>381</a>                StateChange::IIDChange =&gt; <span class="self">Self</span>::IIDChange {
+<a href=#382 id=382 data-nosnippet>382</a>                    time: event.time,
+<a href=#383 id=383 data-nosnippet>383</a>                    id: event.dst_agent,
+<a href=#384 id=384 data-nosnippet>384</a>                    previous: event.src_agent,
+<a href=#385 id=385 data-nosnippet>385</a>                },
+<a href=#386 id=386 data-nosnippet>386</a>                StateChange::MapChange =&gt; <span class="self">Self</span>::MapChange {
+<a href=#387 id=387 data-nosnippet>387</a>                    time: event.time,
+<a href=#388 id=388 data-nosnippet>388</a>                    map: event.src_agent,
+<a href=#389 id=389 data-nosnippet>389</a>                    previous: event.dst_agent,
+<a href=#390 id=390 data-nosnippet>390</a>                },
+<a href=#391 id=391 data-nosnippet>391</a>                StateChange::AnimationStart =&gt; <span class="self">Self</span>::AnimationStart(event.extract()),
+<a href=#392 id=392 data-nosnippet>392</a>                StateChange::AnimationStop =&gt; <span class="self">Self</span>::AnimationStop(event.extract()),
+<a href=#393 id=393 data-nosnippet>393</a>                StateChange::BuffApply =&gt; <span class="self">Self</span>::BuffApply(event.extract()),
+<a href=#394 id=394 data-nosnippet>394</a>                StateChange::BuffChange =&gt; <span class="self">Self</span>::BuffChange(event.extract()),
+<a href=#395 id=395 data-nosnippet>395</a>                StateChange::BuffRemoveSingle =&gt; <span class="self">Self</span>::BuffRemoveSingle(event.extract()),
+<a href=#396 id=396 data-nosnippet>396</a>                StateChange::BuffRemoveAll =&gt; <span class="self">Self</span>::BuffRemoveAll(event.extract()),
+<a href=#397 id=397 data-nosnippet>397</a>                StateChange::Transformation =&gt; <span class="self">Self</span>::Transformation(event.extract()),
+<a href=#398 id=398 data-nosnippet>398</a>                StateChange::WvwTeams =&gt; <span class="self">Self</span>::WvwTeams(event.extract()),
+<a href=#399 id=399 data-nosnippet>399</a>                StateChange::WvwObjectiveStatus =&gt; <span class="self">Self</span>::WvwObjectiveStatus(event.extract()),
+<a href=#400 id=400 data-nosnippet>400</a>                StateChange::StealthChange =&gt; <span class="self">Self</span>::StealthChange(event.extract()),
+<a href=#401 id=401 data-nosnippet>401</a>                StateChange::GadgetAnimation =&gt; <span class="self">Self</span>::GadgetAnimation(event.extract()),
+<a href=#402 id=402 data-nosnippet>402</a>                StateChange::GadgetName =&gt; <span class="self">Self</span>::GadgetName(event.extract()),
+<a href=#403 id=403 data-nosnippet>403</a>                StateChange::IdleEvent | StateChange::ReplInfo | StateChange::EarlyExit =&gt; {
+<a href=#404 id=404 data-nosnippet>404</a>                    <span class="macro">unreachable!</span>(<span class="string">"illegal internal statechange"</span>)
+<a href=#405 id=405 data-nosnippet>405</a>                }
+<a href=#406 id=406 data-nosnippet>406</a>                StateChange::Unknown(<span class="kw">_</span>) =&gt; <span class="self">Self</span>::Unknown(event),
+<a href=#407 id=407 data-nosnippet>407</a>            }
+<a href=#408 id=408 data-nosnippet>408</a>        }
+<a href=#409 id=409 data-nosnippet>409</a>    }
+<a href=#410 id=410 data-nosnippet>410</a>}
+</code></pre></div></section></main></body></html>

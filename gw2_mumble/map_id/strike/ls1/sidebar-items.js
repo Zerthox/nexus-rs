@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["OLD_LIONS_COURT"]};
+window.SIDEBAR_ITEMS = {};

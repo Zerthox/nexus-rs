@@ -1,8 +1,8 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `nexus\src\api\font.rs`."><title>font.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nexus" data-themes="" data-resource-suffix="" data-rustdoc-version="1.92.0 (ded5c06cf 2025-12-08)" data-channel="1.92.0" data-search-js="search-d69d8955.js" data-stringdex-js="stringdex-c3e638e9.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">nexus\api/</div>font.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Font loading.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `nexus\src\api\font.rs`."><title>font.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nexus" data-themes="" data-resource-suffix="" data-rustdoc-version="1.97.1 (8bab26f4f 2026-07-14)" data-channel="1.97.1" data-search-js="search-fd9372ac.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-fcd733ba.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">nexus\api/</div>font.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Font loading.
 <a href=#2 id=2 data-nosnippet>2</a>
 <a href=#3 id=3 data-nosnippet>3</a></span><span class="kw">use crate</span>::{
 <a href=#4 id=4 data-nosnippet>4</a>    AddonApi, FontApi, Revertible,
-<a href=#5 id=5 data-nosnippet>5</a>    util::{OptionRefExt, path_to_c, str_to_c},
+<a href=#5 id=5 data-nosnippet>5</a>    ffi::{OptionRefExt, path_to_utf8, str_to_c},
 <a href=#6 id=6 data-nosnippet>6</a>};
 <a href=#7 id=7 data-nosnippet>7</a><span class="kw">use </span>imgui::sys::{ImFont, ImFontConfig};
 <a href=#8 id=8 data-nosnippet>8</a><span class="kw">use </span>std::{
@@ -53,7 +53,7 @@
 <a href=#53 id=53 data-nosnippet>53</a>    callback: RawFontReceive,
 <a href=#54 id=54 data-nosnippet>54</a>) -&gt; Revertible&lt;<span class="kw">impl </span>Fn() + Send + Sync + <span class="lifetime">'static</span>&gt; {
 <a href=#55 id=55 data-nosnippet>55</a>    <span class="kw">let </span>FontApi { get, release, .. } = AddonApi::get().font;
-<a href=#56 id=56 data-nosnippet>56</a>    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert font identifier"</span>);
+<a href=#56 id=56 data-nosnippet>56</a>    <span class="kw">let </span>identifier = str_to_c(identifier).expect(<span class="string">"failed to convert font identifier"</span>);
 <a href=#57 id=57 data-nosnippet>57</a>    <span class="kw">unsafe </span>{ get(identifier.as_ptr(), callback) };
 <a href=#58 id=58 data-nosnippet>58</a>    <span class="kw">let </span>revert = <span class="kw">move </span>|| <span class="kw">unsafe </span>{ release(identifier.as_ptr(), callback) };
 <a href=#59 id=59 data-nosnippet>59</a>    revert.into()
@@ -62,7 +62,7 @@
 <a href=#62 id=62 data-nosnippet>62</a><span class="doccomment">/// Releases a previously registered callback for the font with the given identifier.
 <a href=#63 id=63 data-nosnippet>63</a></span><span class="kw">pub fn </span>release_font(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;, callback: RawFontReceive) {
 <a href=#64 id=64 data-nosnippet>64</a>    <span class="kw">let </span>FontApi { release, .. } = AddonApi::get().font;
-<a href=#65 id=65 data-nosnippet>65</a>    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert font identifier"</span>);
+<a href=#65 id=65 data-nosnippet>65</a>    <span class="kw">let </span>identifier = str_to_c(identifier).expect(<span class="string">"failed to convert font identifier"</span>);
 <a href=#66 id=66 data-nosnippet>66</a>    <span class="kw">unsafe </span>{ release(identifier.as_ptr(), callback) }
 <a href=#67 id=67 data-nosnippet>67</a>}
 <a href=#68 id=68 data-nosnippet>68</a>
@@ -79,9 +79,9 @@
 <a href=#79 id=79 data-nosnippet>79</a>        release,
 <a href=#80 id=80 data-nosnippet>80</a>        ..
 <a href=#81 id=81 data-nosnippet>81</a>    } = AddonApi::get().font;
-<a href=#82 id=82 data-nosnippet>82</a>    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert font identifier"</span>);
-<a href=#83 id=83 data-nosnippet>83</a>    <span class="kw">let </span>file = path_to_c(file, <span class="string">"failed to convert font file path"</span>);
-<a href=#84 id=84 data-nosnippet>84</a>    <span class="kw">unsafe </span>{
+<a href=#82 id=82 data-nosnippet>82</a>    <span class="kw">let </span>identifier = str_to_c(identifier).expect(<span class="string">"failed to convert font identifier"</span>);
+<a href=#83 id=83 data-nosnippet>83</a>    <span class="kw">let </span>file = path_to_utf8(file).expect(<span class="string">"failed to convert font file path"</span>); <span class="comment">// imgui uses utf8
+<a href=#84 id=84 data-nosnippet>84</a>    </span><span class="kw">unsafe </span>{
 <a href=#85 id=85 data-nosnippet>85</a>        add_from_file(
 <a href=#86 id=86 data-nosnippet>86</a>            identifier.as_ptr(),
 <a href=#87 id=87 data-nosnippet>87</a>            font_size,
@@ -108,7 +108,7 @@
 <a href=#108 id=108 data-nosnippet>108</a>        release,
 <a href=#109 id=109 data-nosnippet>109</a>        ..
 <a href=#110 id=110 data-nosnippet>110</a>    } = AddonApi::get().font;
-<a href=#111 id=111 data-nosnippet>111</a>    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert font identifier"</span>);
+<a href=#111 id=111 data-nosnippet>111</a>    <span class="kw">let </span>identifier = str_to_c(identifier).expect(<span class="string">"failed to convert font identifier"</span>);
 <a href=#112 id=112 data-nosnippet>112</a>    <span class="kw">unsafe </span>{
 <a href=#113 id=113 data-nosnippet>113</a>        add_from_resource(
 <a href=#114 id=114 data-nosnippet>114</a>            identifier.as_ptr(),
@@ -136,7 +136,7 @@
 <a href=#136 id=136 data-nosnippet>136</a>        release,
 <a href=#137 id=137 data-nosnippet>137</a>        ..
 <a href=#138 id=138 data-nosnippet>138</a>    } = AddonApi::get().font;
-<a href=#139 id=139 data-nosnippet>139</a>    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert font identifier"</span>);
+<a href=#139 id=139 data-nosnippet>139</a>    <span class="kw">let </span>identifier = str_to_c(identifier).expect(<span class="string">"failed to convert font identifier"</span>);
 <a href=#140 id=140 data-nosnippet>140</a>    <span class="kw">let </span>data = data.as_ref();
 <a href=#141 id=141 data-nosnippet>141</a>    <span class="kw">unsafe </span>{
 <a href=#142 id=142 data-nosnippet>142</a>        add_from_memory(
@@ -191,6 +191,7 @@
 <a href=#191 id=191 data-nosnippet>191</a><span class="doccomment">/// Resizes an existing font, sending the update to registered callbacks.
 <a href=#192 id=192 data-nosnippet>192</a></span><span class="kw">pub fn </span>resize_font(identifier: <span class="kw">impl </span>AsRef&lt;str&gt;, font_size: f32) {
 <a href=#193 id=193 data-nosnippet>193</a>    <span class="kw">let </span>FontApi { resize, .. } = AddonApi::get().font;
-<a href=#194 id=194 data-nosnippet>194</a>    <span class="kw">let </span>identifier = str_to_c(identifier, <span class="string">"failed to convert font identifier"</span>);
+<a href=#194 id=194 data-nosnippet>194</a>    <span class="kw">let </span>identifier = str_to_c(identifier).expect(<span class="string">"failed to convert font identifier"</span>);
 <a href=#195 id=195 data-nosnippet>195</a>    <span class="kw">unsafe </span>{ resize(identifier.as_ptr(), font_size) }
-<a href=#196 id=196 data-nosnippet>196</a>}</code></pre></div></section></main></body></html>
+<a href=#196 id=196 data-nosnippet>196</a>}
+</code></pre></div></section></main></body></html>

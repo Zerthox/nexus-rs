@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["get_key","get_keybind","handle"],"type":["ExportGetKey","ExportGetKeybind"]};

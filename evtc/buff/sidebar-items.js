@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Attribute","BuffCategory","BuffCategoryOld","BuffRemove","BuffStackType"],"struct":["BuffApply","BuffChange","BuffFormula","BuffInfo","BuffInitialEvent","BuffRemoveAll","BuffRemoveSingle","RawBuffFormula","StackActiveEvent","StackResetEvent"]};

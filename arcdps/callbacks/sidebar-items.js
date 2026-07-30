@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["ArcDpsExport"],"type":["CombatCallback","ImguiCallback","InitFunc","OptionsCallback","OptionsWindowsCallback","RawCombatCallback","RawImguiCallback","RawOptionsCallback","RawOptionsWindowsCallback","RawWndProcCallback","ReleaseFunc","UpdateUrlFunc","WndProcCallback"]};
