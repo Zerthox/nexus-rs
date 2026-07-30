@@ -2,7 +2,7 @@
 
 use crate::{
     AddonApi, FontApi, Revertible,
-    ffi::{OptionRefExt, path_to_ansi, str_to_c},
+    ffi::{OptionRefExt, path_to_utf8, str_to_c},
 };
 use imgui::sys::{ImFont, ImFontConfig};
 use std::{
@@ -67,9 +67,6 @@ pub fn release_font(identifier: impl AsRef<str>, callback: RawFontReceive) {
 }
 
 /// Adds a font from a file path and sends updates to the callback.
-///
-/// A conversion of the file path has to be performed every call.
-/// To avoid the conversion when the path is known to be ASCII, use [`add_font_from_file_ascii`].
 pub fn add_font_from_file(
     identifier: impl AsRef<str>,
     file: impl AsRef<Path>,
@@ -83,41 +80,7 @@ pub fn add_font_from_file(
         ..
     } = AddonApi::get().font;
     let identifier = str_to_c(identifier).expect("failed to convert font identifier");
-    let file = path_to_ansi(file).expect("failed to convert font file path");
-    unsafe {
-        add_from_file(
-            identifier.as_ptr(),
-            font_size,
-            file.as_ptr(),
-            callback,
-            config.as_ptr_opt(),
-        )
-    };
-    let revert = move || unsafe { release(identifier.as_ptr(), callback) };
-    revert.into()
-}
-
-/// Adds a font from a file path and sends updates to the callback.
-///
-/// # Safety
-/// The file path must only contain valid ASCII characters.
-pub unsafe fn add_font_from_file_ascii(
-    identifier: impl AsRef<str>,
-    file: impl AsRef<str>,
-    font_size: f32,
-    config: Option<&ImFontConfig>,
-    callback: RawFontReceive,
-) -> Revertible<impl Fn() + Send + Sync + 'static> {
-    let file = file.as_ref();
-    debug_assert!(file.is_ascii());
-
-    let FontApi {
-        add_from_file,
-        release,
-        ..
-    } = AddonApi::get().font;
-    let identifier = str_to_c(identifier).expect("failed to convert font identifier");
-    let file = str_to_c(file).expect("failed to convert font file path");
+    let file = path_to_utf8(file).expect("failed to convert font file path"); // imgui uses utf8
     unsafe {
         add_from_file(
             identifier.as_ptr(),
