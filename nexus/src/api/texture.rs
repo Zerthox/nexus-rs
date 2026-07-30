@@ -121,7 +121,7 @@ pub fn get_texture(identifier: impl AsRef<str>) -> Option<Texture> {
 
 /// Attempts to retrieve a texture or creates it from the given file path.
 ///
-/// A conversion of the file path has to be performed every call.
+/// A conversion of the file path may have to be performed every call.
 /// To avoid the conversion when the path is known to be ASCII, use [`get_texture_or_create_from_file_ascii`].
 pub fn get_texture_or_create_from_file(
     identifier: impl AsRef<str>,
@@ -224,7 +224,7 @@ pub fn get_texture_or_create_from_memory(
 ///
 /// You can create a [`RawTextureReceiveCallback`] using the [`texture_receive`] macro.
 ///
-/// A conversion of the file path has to be performed every call.
+/// A conversion of the file path may have to be performed every call.
 /// To avoid the conversion when the path is known to be ASCII, use [`load_texture_from_file_ascii`].
 pub fn load_texture_from_file(
     identifier: impl AsRef<str>,
