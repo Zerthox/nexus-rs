@@ -28,10 +28,10 @@ pub fn get_codepage() -> u32 {
 
 /// Attempts to convert an ANSI path string pointer to a [`PathBuf`].
 #[inline]
-pub unsafe fn path_from_ansi(ptr: *const c_char) -> Option<PathBuf> {
+pub unsafe fn path_from_ansi(ptr: *const c_char) -> io::Result<PathBuf> {
     let codepage = get_codepage();
     if codepage == CP_UTF8 {
-        Some(unsafe { path_from_utf8(ptr) })
+        Ok(unsafe { path_from_utf8(ptr) })
     } else {
         unsafe { path_from_ansi_with(ptr, codepage) }
     }
@@ -46,19 +46,25 @@ pub unsafe fn path_from_utf8(ptr: *const c_char) -> PathBuf {
 
 /// Attempts to convert an ANSI path string pointer to a [`PathBuf`] with the given codepage.
 #[inline]
-pub unsafe fn path_from_ansi_with(ptr: *const c_char, codepage: u32) -> Option<PathBuf> {
-    if !ptr.is_null() {
-        let narrow = unsafe { CStr::from_ptr(ptr) }.to_bytes();
-
-        // attempt to convert to WTF-8
-        let flags = MB_ERR_INVALID_CHARS;
-        let size = unsafe { MultiByteToWideChar(codepage, flags, narrow, None) };
-        let mut wide = vec![0; size as usize];
-        let written = unsafe { MultiByteToWideChar(codepage, flags, narrow, Some(&mut wide)) };
-        (written == size).then(|| OsString::from_wide(&wide).into())
-    } else {
-        None
+pub unsafe fn path_from_ansi_with(ptr: *const c_char, codepage: u32) -> io::Result<PathBuf> {
+    if ptr.is_null() {
+        return Err(io::Error::new(io::ErrorKind::InvalidInput, "path was null"));
     }
+
+    let narrow = unsafe { CStr::from_ptr(ptr) }.to_bytes();
+    let flags = MB_ERR_INVALID_CHARS;
+    let size = unsafe { MultiByteToWideChar(codepage, flags, narrow, None) };
+    if size == 0 {
+        return Err(io::Error::last_os_error());
+    }
+
+    let mut wide = vec![0; size as usize];
+    let written = unsafe { MultiByteToWideChar(codepage, flags, narrow, Some(&mut wide)) };
+    if written != size {
+        return Err(io::Error::last_os_error());
+    }
+
+    Ok(OsString::from_wide(&wide).into())
 }
 
 /// Attempts to convert a string to an ANSI [`CString`].
@@ -91,8 +97,8 @@ pub fn path_to_ansi_with(path: impl AsRef<Path>, codepage: u32) -> io::Result<CS
     let path = path.as_ref();
     let wide = path.as_os_str().encode_wide().collect::<Vec<_>>();
 
-    // attempt to convert to ANSI
     const CP_GB18030: u32 = 54936;
+
     let mut used_default = BOOL::from(false);
     let (flags, used_default_char) = if matches!(codepage, CP_UTF8 | CP_GB18030) {
         (WC_ERR_INVALID_CHARS, None)
@@ -110,6 +116,10 @@ pub fn path_to_ansi_with(path: impl AsRef<Path>, codepage: u32) -> io::Result<CS
             used_default_char,
         )
     };
+    if size == 0 {
+        return Err(io::Error::last_os_error());
+    }
+
     let mut narrow = vec![0; size as usize];
     let written = unsafe {
         WideCharToMultiByte(
@@ -122,11 +132,17 @@ pub fn path_to_ansi_with(path: impl AsRef<Path>, codepage: u32) -> io::Result<CS
         )
     };
 
-    if !used_default.as_bool() && written == size {
-        Ok(unsafe { CString::from_vec_unchecked(narrow) })
-    } else {
-        Err(io::Error::last_os_error())
+    if written != size {
+        return Err(io::Error::last_os_error());
     }
+    if used_default.as_bool() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "path is not representable in the current ANSI code page",
+        ));
+    }
+
+    Ok(unsafe { CString::from_vec_unchecked(narrow) })
 }
 
 #[cfg(test)]
