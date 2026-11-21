@@ -28,6 +28,12 @@ pub struct PlayerData {
 
     /// Current state of the character.
     pub character_state: CharacterState,
+
+    /// Current level of the character
+    pub character_level: u32,
+
+    /// Current effective character level (Scaling)
+    pub character_effective_level: u32,
 }
 
 impl PlayerData {
@@ -50,6 +56,8 @@ impl PlayerData {
                 elite_specialization: (*data).elite_specialization,
                 mount_index: (*data).mount_index,
                 character_state: CharacterState::from_bits_retain((*data).character_state),
+                character_level: (*data).character_level,
+                character_effective_level: (*data).character_effective_level,
             }
         }
     }

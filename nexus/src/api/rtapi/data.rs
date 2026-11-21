@@ -79,6 +79,11 @@ pub struct RealTimeData {
 
     /// Whether action camera is enabled.
     pub is_action_camera: IsActionCam,
+
+    /// Character Level
+    pub character_level: u32,
+    /// Effective Character Level (Scaling)
+    pub character_effective_level: u32,
 }
 
 impl RealTimeData {

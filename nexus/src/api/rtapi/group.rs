@@ -190,10 +190,10 @@ pub struct GroupMemberOwned {
     /// 0 for parties, 1-15 according to the squad's subgroup
     pub subgroup: u32,
 
-    /// 0-9 = Profession; -1 Unknown -> e.g. on loading screen or logged out
+    /// 1-9 = Profession; 0 Unknown -> e.g. on loading screen or logged out
     pub profession: u32,
 
-    /// Third Spec ID, not necessarily elite; or -1 Unknown -> e.g. on loading screen or logged out
+    /// Third Spec ID, not necessarily elite; or 0 Unknown -> e.g. on loading screen or logged out
     pub elite_specialization: u32,
 
     /// Is this member the player themselves?
