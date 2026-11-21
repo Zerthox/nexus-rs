@@ -14,7 +14,7 @@ pub struct Specialization {
 
 /// Build of the current character.
 ///
-/// Payload of the `RTAPI_BUILD_CHANGED` event.
+/// Payload of the [`RTAPI_BUILD_CHANGED`](super::event::RTAPI_BUILD_CHANGED) event.
 /// Only valid for the duration of the event callback.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

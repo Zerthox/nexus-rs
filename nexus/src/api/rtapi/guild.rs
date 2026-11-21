@@ -68,7 +68,7 @@ impl Guild {
 
 /// Guilds of the account.
 ///
-/// Payload of the `RTAPI_GUILDS_CHANGED` event.
+/// Payload of the [`RTAPI_GUILDS_CHANGED`](super::event::RTAPI_GUILDS_CHANGED) event.
 /// The payload has variable length, use [`guilds`](GuildList::guilds) to access the entries.
 /// Only valid for the duration of the event callback.
 #[derive(Debug)]

@@ -91,12 +91,12 @@ pub struct RealTimeData {
 
     /// 0-based build template tab.
     ///
-    /// The full build is in the `RTAPI_BUILD_CHANGED` event.
+    /// The full build is in the [`RTAPI_BUILD_CHANGED`](super::event::RTAPI_BUILD_CHANGED) event.
     pub build_template_index: u32,
 
     /// 0-based equipment template tab.
     ///
-    /// The full equipment is in the `RTAPI_GEAR_CHANGED` event.
+    /// The full equipment is in the [`RTAPI_GEAR_CHANGED`](super::event::RTAPI_GEAR_CHANGED) event.
     pub gear_template_index: u32,
 
     /// Attributes from level and equipment, before scaling and effects.

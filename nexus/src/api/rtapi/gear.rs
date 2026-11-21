@@ -72,7 +72,7 @@ impl GearSlot {
 
 /// Equipment of the current character.
 ///
-/// Payload of the `RTAPI_GEAR_CHANGED` event.
+/// Payload of the [`RTAPI_GEAR_CHANGED`](super::event::RTAPI_GEAR_CHANGED) event.
 /// Always the PvE equipment, also in PvP.
 /// Only valid for the duration of the event callback.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

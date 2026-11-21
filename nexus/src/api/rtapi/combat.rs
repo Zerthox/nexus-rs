@@ -4,7 +4,8 @@ use std::ffi::{CStr, c_char};
 
 /// Combat agent.
 ///
-/// Payload of the `RTAPI_COMBAT_AGENT_*` events.
+/// Payload of the [`RTAPI_COMBAT_AGENT_ADDED`](super::event::RTAPI_COMBAT_AGENT_ADDED), [`RTAPI_COMBAT_AGENT_UPDATED`](super::event::RTAPI_COMBAT_AGENT_UPDATED)
+/// and [`RTAPI_COMBAT_AGENT_REMOVED`](super::event::RTAPI_COMBAT_AGENT_REMOVED) events.
 /// Only valid for the duration of the event callback.
 #[derive(Debug, Clone)]
 #[repr(C)]
@@ -201,7 +202,7 @@ impl From<&CombatAgent> for CombatAgentOwned {
 
 /// Combat skill.
 ///
-/// Payload of the `RTAPI_COMBAT_SKILL_*` events.
+/// Payload of the [`RTAPI_COMBAT_SKILL_ADDED`](super::event::RTAPI_COMBAT_SKILL_ADDED) and [`RTAPI_COMBAT_SKILL_UPDATED`](super::event::RTAPI_COMBAT_SKILL_UPDATED) events.
 /// Only valid for the duration of the event callback.
 #[derive(Debug, Clone)]
 #[repr(C)]
@@ -350,7 +351,7 @@ pub struct CombatEventFlags {
     _padding: u32,
 }
 
-/// Payload of the `RTAPI_COMBAT_BREAKBAR` event.
+/// Payload of the [`RTAPI_COMBAT_BREAKBAR`](super::event::RTAPI_COMBAT_BREAKBAR) event.
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct CombatBreakbarEvent {
@@ -360,7 +361,7 @@ pub struct CombatBreakbarEvent {
     pub points: f32,
 }
 
-/// Payload of the `RTAPI_COMBAT_ENERGY` event.
+/// Payload of the [`RTAPI_COMBAT_ENERGY`](super::event::RTAPI_COMBAT_ENERGY) event.
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct CombatEnergyEvent {
@@ -368,7 +369,7 @@ pub struct CombatEnergyEvent {
     pub energy: f32,
 }
 
-/// Payload of the `RTAPI_COMBAT_EXPERIENCE` event.
+/// Payload of the [`RTAPI_COMBAT_EXPERIENCE`](super::event::RTAPI_COMBAT_EXPERIENCE) event.
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct CombatExperienceEvent {
@@ -377,7 +378,7 @@ pub struct CombatExperienceEvent {
     pub bonus_experience: f32,
 }
 
-/// Payload of the `RTAPI_COMBAT_HEALTH` event.
+/// Payload of the [`RTAPI_COMBAT_HEALTH`](super::event::RTAPI_COMBAT_HEALTH) event.
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct CombatHealthEvent {
@@ -390,7 +391,7 @@ pub struct CombatHealthEvent {
     pub barrier: f32,
 }
 
-/// Payload of the `RTAPI_COMBAT_KARMA` event.
+/// Payload of the [`RTAPI_COMBAT_KARMA`](super::event::RTAPI_COMBAT_KARMA) event.
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct CombatKarmaEvent {
@@ -398,7 +399,7 @@ pub struct CombatKarmaEvent {
     pub karma: f32,
 }
 
-/// Payload of the `RTAPI_COMBAT_LUCK` event.
+/// Payload of the [`RTAPI_COMBAT_LUCK`](super::event::RTAPI_COMBAT_LUCK) event.
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct CombatLuckEvent {
@@ -406,7 +407,7 @@ pub struct CombatLuckEvent {
     pub luck: f32,
 }
 
-/// Payload of the `RTAPI_COMBAT_RESIST` event.
+/// Payload of the [`RTAPI_COMBAT_RESIST`](super::event::RTAPI_COMBAT_RESIST) event.
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct CombatResistEvent {
@@ -416,7 +417,7 @@ pub struct CombatResistEvent {
     pub effect: u32,
 }
 
-/// Payload of the `RTAPI_COMBAT_PVP_SCORE` and `RTAPI_COMBAT_WVW_SCORE` events.
+/// Payload of the [`RTAPI_COMBAT_PVP_SCORE`](super::event::RTAPI_COMBAT_PVP_SCORE) and [`RTAPI_COMBAT_WVW_SCORE`](super::event::RTAPI_COMBAT_WVW_SCORE) events.
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct CombatScoreEvent {
@@ -424,7 +425,7 @@ pub struct CombatScoreEvent {
     pub score: i32,
 }
 
-/// Payload of the `RTAPI_COMBAT_WVW_EXPERIENCE` event.
+/// Payload of the [`RTAPI_COMBAT_WVW_EXPERIENCE`](super::event::RTAPI_COMBAT_WVW_EXPERIENCE) event.
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct CombatWvWExperienceEvent {

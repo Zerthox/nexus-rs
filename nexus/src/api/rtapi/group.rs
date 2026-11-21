@@ -59,6 +59,11 @@ pub enum GroupType {
 
 /// Group member.
 ///
+/// Payload of the [`RTAPI_GROUP_MEMBER_JOINED`](super::event::RTAPI_GROUP_MEMBER_JOINED),
+/// [`RTAPI_GROUP_MEMBER_LEFT`](super::event::RTAPI_GROUP_MEMBER_LEFT)
+/// and [`RTAPI_GROUP_MEMBER_UPDATE`](super::event::RTAPI_GROUP_MEMBER_UPDATE) events.
+/// Only valid for the duration of the event callback.
+///
 /// This struct uses the C layout.
 /// Instead of cloning this it is recommended to convert to [`GroupMemberOwned`] via [`Into`] or [`to_owned`](GroupMember::to_owned).
 #[derive(Debug, Clone)]
