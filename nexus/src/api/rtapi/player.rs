@@ -91,3 +91,20 @@ bitflags! {
         const IsFlying = 1 << 6;
     }
 }
+
+/// Character attributes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[repr(C)]
+pub struct Attributes {
+    pub power: u32,
+    pub precision: u32,
+    pub toughness: u32,
+    pub vitality: u32,
+    pub ferocity: u32,
+    pub healing_power: u32,
+    pub condition_damage: u32,
+    pub concentration: u32,
+    pub expertise: u32,
+    pub agony_resistance: u32,
+}

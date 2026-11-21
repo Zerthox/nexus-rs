@@ -88,6 +88,9 @@ pub struct GroupMember {
 
     /// Member flags.
     flags: GroupMemberFlags,
+
+    /// Contact nickname of the player for this account in UTF-8, empty if none.
+    nickname: [c_char; 140],
 }
 
 impl GroupMember {
@@ -133,6 +136,28 @@ impl GroupMember {
         self.character_name_cstr().to_string_lossy().into_owned()
     }
 
+    /// Returns the contact nickname of the member as pointer.
+    #[inline]
+    pub const fn nickname_ptr(&self) -> *const c_char {
+        self.nickname.as_ptr()
+    }
+
+    /// Returns the contact nickname of the member as [`CStr`].
+    ///
+    /// Empty if the player has no nickname set for this account.
+    #[inline]
+    pub fn nickname_cstr(&self) -> &CStr {
+        unsafe { CStr::from_ptr(self.nickname.as_ptr()) }
+    }
+
+    /// Returns the contact nickname of the member as owned [`String`].
+    ///
+    /// Empty if the player has no nickname set for this account.
+    #[inline]
+    pub fn nickname(&self) -> String {
+        self.nickname_cstr().to_string_lossy().into_owned()
+    }
+
     /// Returns the flags of the member.
     #[inline]
     pub const fn flags(&self) -> GroupMemberFlags {
@@ -162,6 +187,28 @@ impl GroupMember {
     pub const fn is_lieutenant(&self) -> bool {
         self.flags.is_lieutenant()
     }
+
+    /// Returns whether the member is alive.
+    ///
+    /// Only valid if the member is in the current instance.
+    #[inline]
+    pub const fn is_alive(&self) -> bool {
+        self.flags.is_alive()
+    }
+
+    /// Returns whether the member is downed.
+    ///
+    /// Only valid if the member is in the current instance.
+    #[inline]
+    pub const fn is_downed(&self) -> bool {
+        self.flags.is_downed()
+    }
+
+    /// Returns whether the member owns the map instance the group is in.
+    #[inline]
+    pub const fn is_instance_owner(&self) -> bool {
+        self.flags.is_instance_owner()
+    }
 }
 
 #[bitfield(u32)]
@@ -172,8 +219,11 @@ pub struct GroupMemberFlags {
     pub is_in_instance: bool,
     pub is_commander: bool,
     pub is_lieutenant: bool,
+    pub is_alive: bool,
+    pub is_downed: bool,
+    pub is_instance_owner: bool,
 
-    #[bits(28)]
+    #[bits(25)]
     _padding: u32,
 }
 
@@ -207,6 +257,18 @@ pub struct GroupMemberOwned {
 
     /// Is this member a lieutenant?
     pub is_lieutenant: bool,
+
+    /// Is alive. Only valid if in the same map instance as the player.
+    pub is_alive: bool,
+
+    /// Is downed. Only valid if in the same map instance as the player.
+    pub is_downed: bool,
+
+    /// Owns the map instance the group is in.
+    pub is_instance_owner: bool,
+
+    /// Contact nickname of the player for this account, empty if none.
+    pub nickname: String,
 }
 
 impl From<&GroupMember> for GroupMemberOwned {
@@ -221,6 +283,46 @@ impl From<&GroupMember> for GroupMemberOwned {
             is_in_instance: member.is_in_instance(),
             is_commander: member.is_commander(),
             is_lieutenant: member.is_lieutenant(),
+            is_alive: member.is_alive(),
+            is_downed: member.is_downed(),
+            is_instance_owner: member.is_instance_owner(),
+            nickname: member.nickname(),
         }
+    }
+}
+
+/// Vitals of a group member.
+///
+/// Part of [`RealTimeGroupData`](super::data::RealTimeGroupData).
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct GroupMemberVitals {
+    /// Account name of the group member, matches [`GroupMember::account_name`].
+    account_name: [c_char; 140],
+
+    /// Health in percent, 0-100.
+    ///
+    /// Currently whole numbers, as the game shows them.
+    /// 0 if the member is not in the current instance.
+    pub health: f32,
+}
+
+impl GroupMemberVitals {
+    /// Returns the account name of the member as pointer.
+    #[inline]
+    pub const fn account_name_ptr(&self) -> *const c_char {
+        self.account_name.as_ptr()
+    }
+
+    /// Returns the account name of the member as [`CStr`].
+    #[inline]
+    pub fn account_name_cstr(&self) -> &CStr {
+        unsafe { CStr::from_ptr(self.account_name.as_ptr()) }
+    }
+
+    /// Returns the account name of the member as owned [`String`].
+    #[inline]
+    pub fn account_name(&self) -> String {
+        self.account_name_cstr().to_string_lossy().into_owned()
     }
 }

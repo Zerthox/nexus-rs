@@ -11,16 +11,21 @@
 //! }
 //! ```
 
+mod build;
 mod camera;
 mod combat;
 pub mod data;
 pub mod event;
 mod game;
+mod gear;
 mod group;
+mod guild;
 mod player;
 mod world;
 
-pub use self::{camera::*, combat::*, game::*, group::*, player::*, world::*};
+pub use self::{
+    build::*, camera::*, combat::*, game::*, gear::*, group::*, guild::*, player::*, world::*,
+};
 
 use self::data::RealTimeData;
 use std::ptr::NonNull;
