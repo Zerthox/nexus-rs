@@ -42,7 +42,7 @@ features = [
 ]
 
 [features]
-default = ["panic", "panic_trace", "panic_msgbox"]
+default = ["panic", "panic_trace", "panic_msgbox", "rtapi"]
 arc = ["dep:evtc"]
 arcdps = ["arc"]
 evtc = ["arc"]

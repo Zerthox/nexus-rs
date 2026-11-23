@@ -1,7 +1,7 @@
 use super::{
-    CombatAgent, CombatBreakbarEvent, CombatEnergyEvent, CombatEvent, CombatExperienceEvent,
-    CombatHealthEvent, CombatKarmaEvent, CombatLuckEvent, CombatResistEvent, CombatScoreEvent,
-    CombatSkill, CombatWvWExperienceEvent, GroupMember,
+    BuildData, CombatAgent, CombatBreakbarEvent, CombatEnergyEvent, CombatEvent,
+    CombatExperienceEvent, CombatHealthEvent, CombatKarmaEvent, CombatLuckEvent, CombatResistEvent,
+    CombatScoreEvent, CombatSkill, CombatWvWExperienceEvent, GearData, GroupMember, GuildList,
 };
 use crate::event::Event;
 
@@ -16,6 +16,21 @@ pub const RTAPI_GROUP_MEMBER_LEFT: Event<GroupMember> =
 /// RealTime API group member updated event.
 pub const RTAPI_GROUP_MEMBER_UPDATE: Event<GroupMember> =
     unsafe { Event::new("RTAPI_GROUP_MEMBER_UPDATED") };
+
+/// RealTime API build changed event.
+///
+/// Raised on change and to addons loaded later.
+pub const RTAPI_BUILD_CHANGED: Event<BuildData> = unsafe { Event::new("RTAPI_BUILD_CHANGED") };
+
+/// RealTime API gear changed event.
+///
+/// Raised on change and to addons loaded later.
+pub const RTAPI_GEAR_CHANGED: Event<GearData> = unsafe { Event::new("RTAPI_GEAR_CHANGED") };
+
+/// RealTime API guilds changed event.
+///
+/// Raised on change and to addons loaded later.
+pub const RTAPI_GUILDS_CHANGED: Event<GuildList> = unsafe { Event::new("RTAPI_GUILDS_CHANGED") };
 
 /// RealTime API combat agent added event.
 ///
