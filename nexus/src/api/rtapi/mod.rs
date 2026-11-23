@@ -12,6 +12,7 @@
 //! ```
 
 mod camera;
+mod combat;
 pub mod data;
 pub mod event;
 mod game;
@@ -19,7 +20,7 @@ mod group;
 mod player;
 mod world;
 
-pub use self::{camera::*, game::*, group::*, player::*, world::*};
+pub use self::{camera::*, combat::*, game::*, group::*, player::*, world::*};
 
 use self::data::RealTimeData;
 use std::ptr::NonNull;
