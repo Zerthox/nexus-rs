@@ -21,10 +21,12 @@ mod gear;
 mod group;
 mod guild;
 mod player;
+mod target;
 mod world;
 
 pub use self::{
-    build::*, camera::*, combat::*, game::*, gear::*, group::*, guild::*, player::*, world::*,
+    build::*, camera::*, combat::*, game::*, gear::*, group::*, guild::*, player::*, target::*,
+    world::*,
 };
 
 use self::data::RealTimeData;
@@ -107,5 +109,26 @@ impl RealTimeApi {
     pub fn read_camera(&self) -> Option<CameraData> {
         self.is_active()
             .then(|| unsafe { CameraData::read(self.as_ptr()) })
+    }
+
+    /// Reads the [`TargetData`].
+    ///
+    /// Returns [`None`] if nothing is selected or RTAPI is too old to provide the target.
+    #[inline]
+    pub fn read_target(&self) -> Option<TargetData> {
+        if !self.is_active() || !self.has_field_end(Self::TARGET_END) {
+            return None;
+        }
+        unsafe { TargetData::read(self.as_ptr()) }
+    }
+
+    /// End offset of the target fields in [`RealTimeData`].
+    const TARGET_END: usize =
+        std::mem::offset_of!(RealTimeData, target_breakbar) + size_of::<f32>();
+
+    /// Checks whether RTAPI writes at least `end` bytes of [`RealTimeData`].
+    #[inline]
+    fn has_field_end(&self, end: usize) -> bool {
+        unsafe { (*self.as_ptr()).size as usize >= end }
     }
 }

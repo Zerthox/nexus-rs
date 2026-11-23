@@ -14,11 +14,17 @@ pub struct Guild {
 
     /// Tag in UTF-8, without brackets.
     ///
-    /// Not provided yet, always empty.
+    /// Not provided yet, always empty: look it up with the official API
     tag: [c_char; 8],
 }
 
 impl Guild {
+    /// Converts the guild to a [`GuildOwned`].
+    #[inline]
+    pub fn to_owned(&self) -> GuildOwned {
+        self.into()
+    }
+
     /// Returns the guild id as [`CStr`].
     #[inline]
     pub fn id_cstr(&self) -> &CStr {
@@ -51,7 +57,7 @@ impl Guild {
 
     /// Returns the guild tag as [`CStr`].
     ///
-    /// Not provided yet, always empty.
+    /// Not provided yet, always empty: look it up with the official API
     #[inline]
     pub fn tag_cstr(&self) -> &CStr {
         unsafe { CStr::from_ptr(self.tag.as_ptr()) }
@@ -59,7 +65,7 @@ impl Guild {
 
     /// Returns the guild tag as owned [`String`].
     ///
-    /// Not provided yet, always empty.
+    /// Not provided yet, always empty: look it up with the official API
     #[inline]
     pub fn tag(&self) -> String {
         self.tag_cstr().to_string_lossy().into_owned()
@@ -92,5 +98,41 @@ impl GuildList {
     #[inline]
     pub fn guilds(&self) -> &[Guild] {
         unsafe { std::slice::from_raw_parts(self.guilds.as_ptr(), self.count as usize) }
+    }
+
+    /// Converts the guilds to [`GuildOwned`].
+    ///
+    /// Only call this on the list passed to the event callback, same as [`guilds`](GuildList::guilds).
+    #[inline]
+    pub fn to_owned(&self) -> Vec<GuildOwned> {
+        self.guilds().iter().map(GuildOwned::from).collect()
+    }
+}
+
+/// Guild as owned version.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct GuildOwned {
+    /// GUID as the official API writes it, for example `4BBB52AA-D768-4FC6-8EDE-C299F2822F0F`.
+    pub id: String,
+
+    /// Name of the guild.
+    ///
+    /// Only known for the represented guild, otherwise empty.
+    pub name: String,
+
+    /// Tag of the guild, without brackets.
+    ///
+    /// Not provided yet, always empty: look it up with the official API
+    pub tag: String,
+}
+
+impl From<&Guild> for GuildOwned {
+    fn from(guild: &Guild) -> Self {
+        Self {
+            id: guild.id(),
+            name: guild.name(),
+            tag: guild.tag(),
+        }
     }
 }

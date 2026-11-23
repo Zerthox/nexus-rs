@@ -1,4 +1,4 @@
-use super::RealTimeData;
+use super::{GuildOwned, RealTimeData};
 use bitflags::bitflags;
 use std::ffi::CStr;
 
@@ -34,6 +34,27 @@ pub struct PlayerData {
 
     /// Current effective character level (Scaling)
     pub character_effective_level: u32,
+
+    /// 0-based build template tab.
+    ///
+    /// The full build is in the [`RTAPI_BUILD_CHANGED`](super::event::RTAPI_BUILD_CHANGED) event.
+    pub build_template_index: u32,
+
+    /// 0-based equipment template tab.
+    ///
+    /// The full equipment is in the [`RTAPI_GEAR_CHANGED`](super::event::RTAPI_GEAR_CHANGED) event.
+    pub gear_template_index: u32,
+
+    /// Attributes from level and equipment, before scaling and effects.
+    pub base_attributes: Attributes,
+
+    /// Attributes as the hero panel shows them, scaled and including boons such as Might.
+    pub effective_attributes: Attributes,
+
+    /// Guild the character represents, [`None`] if not representing a guild.
+    ///
+    /// The tag is always empty, RTAPI does not provide it here.
+    pub represented_guild: Option<GuildOwned>,
 }
 
 impl PlayerData {
@@ -58,6 +79,24 @@ impl PlayerData {
                 character_state: CharacterState::from_bits_retain((*data).character_state),
                 character_level: (*data).character_level,
                 character_effective_level: (*data).character_effective_level,
+                build_template_index: (*data).build_template_index,
+                gear_template_index: (*data).gear_template_index,
+                base_attributes: (*data).base_attributes,
+                effective_attributes: (*data).effective_attributes,
+                represented_guild: {
+                    let id = CStr::from_ptr((*data).represented_guild_id.as_ptr());
+                    if id.is_empty() {
+                        None
+                    } else {
+                        Some(GuildOwned {
+                            id: id.to_string_lossy().into_owned(),
+                            name: CStr::from_ptr((*data).represented_guild_id.as_ptr())
+                                .to_string_lossy()
+                                .into_owned(),
+                            tag: String::new(),
+                        })
+                    }
+                },
             }
         }
     }
